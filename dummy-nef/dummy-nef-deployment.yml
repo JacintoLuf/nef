@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dummy-nef-deployment
+  labels:
+    app: nef
+spec:
+  selector:
+    matchLabels:
+      app: nef
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nef
+    spec:
+      containers:
+        - name: dummy-nef-deployment
+          image: jacintoluf/nef:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+      imagePullSecrets:
+        - name: dockerhub-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dummy-nef-deployment
+  labels:
+    app: nef
+spec:
+  ports:
+  - port: 8000
+    protocol: TCP
+    name: nef
+    targetPort: 8000
+  selector:
+    app: nef
+  type: LoadBalancer
