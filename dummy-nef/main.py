@@ -2,6 +2,7 @@ from typing import Union
 from fastapi import FastAPI
 #from hyper import HTTPConnection
 import httpx
+from httpx._config import SSLConfig
 
 app = FastAPI()
 
@@ -12,19 +13,19 @@ def read_root():
 
 @app.get("/test2")
 async def test_conn2():
-    async with httpx.AsyncClient(http2=True, verify=False) as client:
+    ssl = SSLConfig(
+        version=ssl.PROTOCOL_TLSv1_2,
+        cipher_suite=ssl.TLS_CIPHERS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+    )
+
+    async with httpx.AsyncClient(http2=True, verify=False, ssl=ssl) as client:
         response = await client.get("https://10.244.2.42:80//nnrf-nfm/v1/nf-instances", headers={'Accept': 'application/json'})
+        print(response.text)
     return response.json()
 
 @app.get("/test")
-def test_conn():
-    endpoint = "https://10.244.2.42:80"
-
-    conn = HTTPConnection(endpoint)
-    conn.request('GET', '/nnrf-nfm/v1/nf-instances', headers={'Accept': 'application/json'})
-    response = conn.get_response()
-
-    print(response.status_code)
-    print(response.content)
-
-    return {"mesage": response.read()}
+async def test_conn():
+    async with httpx.AsyncClient(http2=True, verify=False, alpn_protocols=["h2"], ssl="TLSv1.3") as client:
+        response = await client.get("https://10.244.2.42:80//nnrf-nfm/v1/nf-instances", headers={'Accept': 'application/json'})
+        print(response.text)
+    return response.json()
