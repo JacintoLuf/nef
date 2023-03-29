@@ -23,7 +23,7 @@ async def test_conn():
     ctx.options |= ssl.OP_NO_COMPRESSION
     ctx.set_alpn_protocols(["h2"])
 
-    async with httpx.AsyncClient(http2=True, verify=False, ssl=ctx) as client:
+    async with httpx.AsyncClient(http2=True, verify=ctx) as client:
         response = await client.get(
             "https://10.244.2.42/nnrf-nfm/v1/nf-instances",
             headers={'Accept': 'application/json,application/problem+json'}
@@ -51,7 +51,7 @@ def test_conn2():
     context.load_verify_locations('cert.pem')
 
     # connect to the Open5GS NRF using HTTPS
-    conn = http.client.HTTPSConnection('10.244.2.42', port=443, context=context)
+    conn = http.client.HTTPSConnection('https://10.244.2.42', context=context)
 
     # send a GET request
     conn.request('GET', '/nnrf-nfm/v1/nf-instances', headers={'Accept': 'application/json'})
