@@ -1,7 +1,7 @@
 from typing import Union
 from fastapi import FastAPI
 import httpx
-from httx._config import SSLConfig
+from httpx._config import SSLConfig
 import ssl
 
 app = FastAPI()
