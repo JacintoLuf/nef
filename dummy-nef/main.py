@@ -1,7 +1,6 @@
 from typing import Union
 from fastapi import FastAPI
 import httpx
-from open5gs import create_ssl_context_for_client
 
 app = FastAPI()
 
@@ -12,12 +11,10 @@ def read_root():
 
 @app.get("/test2")
 async def test_conn2():
-    ssl_ctx = create_ssl_context_for_client()
-
-    async with httpx.AsyncClient(http2=True, verify=False, ssl=ssl_ctx) as client:
+    async with httpx.AsyncClient(http2=True, verify=False) as client:
         response = await client.get(
-            "https://10.244.2.42/nnrf-nfm/v1/nf-instances",
-            headers={'Accept': 'application/json'},
+            "http://10.106.127.186/nnrf-nfm/v1/nf-instances",
+            headers={'Accept': 'application/json,application/problem+json'},
         )
         print(response.text)
     return response.json()
