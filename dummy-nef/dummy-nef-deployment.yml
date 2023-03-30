@@ -20,7 +20,7 @@ spec:
           image: jacintoluf/nef:v1
           imagePullPolicy: Always
           ports:
-            - containerPort: 8000
+            - containerPort: 80
       imagePullSecrets:
         - name: dockerhub-secret
 
@@ -33,10 +33,10 @@ metadata:
     app: nef
 spec:
   ports:
-  - port: 8000
+  - port: 80
     protocol: TCP
     name: nef
-    targetPort: 8000
+    targetPort: 80
   selector:
     app: nef
   type: LoadBalancer
