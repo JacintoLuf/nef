@@ -14,7 +14,7 @@ async def test_conn():
 
     async with httpx.AsyncClient(http2=True) as client:
         response = await client.get(
-            "http://10.244.2.42:80/nnrf-nfm/v1/nf-instances",
+            "http://10.244.2.53:80/nnrf-nfm/v1/nf-instances",
             headers={'Accept': 'application/json'}
         )
         print(response.http_version)
