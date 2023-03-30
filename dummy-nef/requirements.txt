@@ -1,5 +1,6 @@
 fastapi
 uvicorn
+httpx[http2]
 #hypercorn
 #hyper
-httpx >= 0.19.0
+#httpx >= 0.19.0
