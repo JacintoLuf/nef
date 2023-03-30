@@ -17,4 +17,6 @@ COPY . .
 EXPOSE 8000
 
 #It is the command that will start and run the FastAPI application container
-CMD ["hypercorn", "--keyfile", "key.pem", "--certfile", "cert.pem", "main:app"]
+#HTTP2/ server
+#CMD ["hypercorn", "--keyfile", "key.pem", "--certfile", "cert.pem", "main:app"]
+CMD ["uvicorn", "main:app", "--host=0.0.0.0", "--port=80"]
