@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dummy-nef-deployment
+  name: nef-deployment
   labels:
     app: nef
 spec:
@@ -16,7 +16,7 @@ spec:
         app: nef
     spec:
       containers:
-        - name: dummy-nef-deployment
+        - name: nef
           image: jacintoluf/nef:v1
           imagePullPolicy: Always
           ports:
@@ -28,10 +28,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: dummy-nef-deployment
+  name: nef
   labels:
     app: nef
 spec:
+  #added
+  #clusterIP: 10.102.141.12
+  #clusterIPs:
+  #  - 10.102.141.12
   ports:
   - port: 80
     protocol: TCP
@@ -40,3 +44,4 @@ spec:
   selector:
     app: nef
   type: LoadBalancer
+  #type: clusterIP

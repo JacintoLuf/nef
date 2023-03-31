@@ -1,0 +1,290 @@
+{
+  "nefInfo": {
+      "pfdData": {
+        "appIds": [
+          "appIds",
+          "appIds"
+        ],
+        "afIds": [
+          "afIds",
+          "afIds"
+        ]
+      },
+      "afEeData": {
+        "appIds": [
+          "appIds",
+          "appIds"
+        ],
+        "afEvents": [
+          "",
+          ""
+        ],
+        "afIds": [
+          "afIds",
+          "afIds"
+        ]
+      },
+      "nefId": "nefId",
+      "externalGroupIdentifiersRanges": [
+        null,
+        null
+      ],
+      "gpsiRanges": [
+        null,
+        null
+      ],
+      "servedFqdnList": [
+        "servedFqdnList",
+        "servedFqdnList"
+      ]
+    },
+
+
+    "nfInstanceId": "51b207a0-cdf1-41ed-bc30-9567a0fdfbd9",
+    "nfType":       "AUSF",
+    "nfStatus":     "REGISTERED",
+    "ipv4Addresses":        ["10.105.25.30"],
+    "nfServices":   [{
+                    "serviceInstanceId":    "51b78202-cdf1-41ed-bc30-9567a0fdfbd9",
+                    "serviceName":  "nausf-auth",
+                    "versions":     [{
+                                    "apiVersionInUri":      "v1",
+                                    "apiFullVersion":       "1.0.0"
+                            }],
+                    "scheme":       "http",
+                    "nfServiceStatus":      "REGISTERED",
+                    "ipEndPoints":  [{
+                                    "ipv4Address":  "10.105.25.30"
+                            }]
+            }],
+    "nfProfileChangesSupportInd":   true,
+
+
+    
+    "nfInstanceId": "069e9638-bd67-41ed-89b3-bf77215e38d7",
+    "nfType":       "UDR",
+    "nfStatus":     "REGISTERED",
+    "heartBeatTimer":       10,
+    "ipv4Addresses":        ["10.96.250.249"],
+    "nfServices":   [{
+                    "serviceInstanceId":    "06a057de-bd67-41ed-89b3-bf77215e38d7",
+                    "serviceName":  "nudr-dr",
+                    "versions":     [{
+                                    "apiVersionInUri":      "v1",
+                                    "apiFullVersion":       "1.0.0"
+                            }],
+                    "scheme":       "http",
+                    "nfServiceStatus":      "REGISTERED",
+                    "ipEndPoints":  [{
+                                    "ipv4Address":  "10.96.250.249"
+                            }]
+            }],
+    "nfProfileChangesSupportInd":   true
+
+
+    "nfInstanceId": "f564ef0c-cdbf-41ed-92d4-bd8f255728d4",
+    "nfType":       "SMF",
+    "nfStatus":     "REGISTERED",
+    "heartBeatTimer":       10,
+    "ipv4Addresses":        ["10.111.153.168"],
+    "nfServices":   [{
+                    "serviceInstanceId":    "f566ff54-cdbf-41ed-92d4-bd8f255728d4",
+                    "serviceName":  "nsmf-pdusession",
+                    "versions":     [{
+                                    "apiVersionInUri":      "v1",
+                                    "apiFullVersion":       "1.0.0"
+                            }],
+                    "scheme":       "http",
+                    "nfServiceStatus":      "REGISTERED",
+                    "ipEndPoints":  [{
+                                    "ipv4Address":  "10.111.153.168"
+                            }]
+            }],
+    "nfProfileChangesSupportInd":   true
+
+
+    "nfInstanceId": "ea269be0-cdbf-41ed-ae95-d16d59cd3e76",
+    "nfType":       "UDM",
+    "nfStatus":     "REGISTERED",
+    "heartBeatTimer":       10,
+    "ipv4Addresses":        ["10.104.8.216"],
+    "nfServices":   [{
+                    "serviceInstanceId":    "ea280f16-cdbf-41ed-ae95-d16d59cd3e76",
+                    "serviceName":  "nudm-ueau",
+                    "versions":     [{
+                                    "apiVersionInUri":      "v1",
+                                    "apiFullVersion":       "1.0.0"
+                            }],
+                    "scheme":       "http",
+                    "nfServiceStatus":      "REGISTERED",
+                    "ipEndPoints":  [{
+                                    "ipv4Address":  "10.104.8.216"
+                            }]
+            }, {
+                    "serviceInstanceId":    "ea283522-cdbf-41ed-ae95-d16d59cd3e76",
+                    "serviceName":  "nudm-uecm",
+                    "versions":     [{
+                                    "apiVersionInUri":      "v1",
+                                    "apiFullVersion":       "1.0.0"
+                            }],
+                    "scheme":       "http",
+                    "nfServiceStatus":      "REGISTERED",
+                    "ipEndPoints":  [{
+                                    "ipv4Address":  "10.104.8.216"
+                            }]
+            }, {
+                    "serviceInstanceId":    "ea28654c-cdbf-41ed-ae95-d16d59cd3e76",
+                    "serviceName":  "nudm-sdm",
+                    "versions":     [{
+                                    "apiVersionInUri":      "v2",
+                                    "apiFullVersion":       "2.0.0"
+                            }],
+                    "scheme":       "http",
+                    "nfServiceStatus":      "REGISTERED",
+                    "ipEndPoints":  [{
+                                    "ipv4Address":  "10.104.8.216"
+                            }]
+            }],
+    "nfProfileChangesSupportInd":   true
+
+
+    "nfInstanceId": "056f0ba8-bd67-41ed-b552-91b366edd5b0",
+    "nfType":       "PCF",
+    "nfStatus":     "REGISTERED",
+    "heartBeatTimer":       10,
+    "ipv4Addresses":        ["10.96.44.28"],
+    "nfServices":   [{
+                    "serviceInstanceId":    "05717cd0-bd67-41ed-b552-91b366edd5b0",
+                    "serviceName":  "npcf-am-policy-control",
+                    "versions":     [{
+                                    "apiVersionInUri":      "v1",
+                                    "apiFullVersion":       "1.0.0"
+                            }],
+                    "scheme":       "http",
+                    "nfServiceStatus":      "REGISTERED",
+                    "ipEndPoints":  [{
+                                    "ipv4Address":  "10.96.44.28"
+                            }]
+            }, {
+                    "serviceInstanceId":    "05719fd0-bd67-41ed-b552-91b366edd5b0",
+                    "serviceName":  "npcf-smpolicycontrol",
+                    "versions":     [{
+                                    "apiVersionInUri":      "v1",
+                                    "apiFullVersion":       "1.0.0"
+                            }],
+                    "scheme":       "http",
+                    "nfServiceStatus":      "REGISTERED",
+                    "ipEndPoints":  [{
+                                    "ipv4Address":  "10.96.44.28"
+                            }]
+            }],
+    "nfProfileChangesSupportInd":   true
+
+
+    "nfInstanceId": "ffeadcca-bd66-41ed-8a7f-379d789ac078",
+    "nfType":       "NSSF",
+    "nfStatus":     "REGISTERED",
+    "heartBeatTimer":       10,
+    "ipv4Addresses":        ["10.109.30.67"],
+    "nfServices":   [{
+                    "serviceInstanceId":    "ffeddfb0-bd66-41ed-8a7f-379d789ac078",
+                    "serviceName":  "nnssf-nsselection",
+                    "versions":     [{
+                                    "apiVersionInUri":      "v2",
+                                    "apiFullVersion":       "2.0.0"
+                            }],
+                    "scheme":       "http",
+                    "nfServiceStatus":      "REGISTERED",
+                    "ipEndPoints":  [{
+                                    "ipv4Address":  "10.109.30.67"
+                            }]
+            }],
+    "nfProfileChangesSupportInd":   true,
+
+    "nfInstanceId": "e1d1c898-cdbf-41ed-b7b2-a71e6ac9aaae",
+    "nfType":       "AMF",
+    "nfStatus":     "REGISTERED",
+    "heartBeatTimer":       10,
+    "ipv4Addresses":        ["10.111.27.77"],
+    "nfServices":   [{
+                    "serviceInstanceId":    "e1d41364-cdbf-41ed-b7b2-a71e6ac9aaae",
+                    "serviceName":  "namf-comm",
+                    "versions":     [{
+                                    "apiVersionInUri":      "v1",
+                                    "apiFullVersion":       "1.0.0"
+                            }],
+                    "scheme":       "http",
+                    "nfServiceStatus":      "REGISTERED",
+                    "ipEndPoints":  [{
+                                    "ipv4Address":  "10.111.27.77"
+                            }]
+            }],
+    "nfProfileChangesSupportInd":   true,
+
+        "nfInstanceId": "123e4567-e89b-12d3-a456-426655440000",
+        "nfType": "NEF",
+        "nfStatus": "REGISTERED",
+        "heartBeatTimer": 10,
+        "ipv4Addresses": ["192.168.1.1"],
+        "nfServices": [{
+                        "serviceInstanceId": "123e4567-e89b-12d3-a456-426655440001",
+                        "serviceName": "nnef-nsmf",
+                        "versions": [{
+                                "apiVersionInUri": "v1",
+                                "apiFullVersion": "1.0.0"
+                        }],
+                        "scheme": "http",
+                        "nfServiceStatus": "REGISTERED",
+                        "ipEndPoints": [{
+                                "ipv4Address": "192.168.1.1"
+                        }]
+                }],
+        "nfProfileChangesSupportInd": true,
+
+        
+        "nfInstanceId": "1234-5678-9012",
+        "nfType": "NEF",
+        "nfStatus": "REGISTERED",
+        "ipv4Addresses": ["192.168.1.1"],
+        "nfServices": [
+                {
+                "serviceInstanceId": "1",
+                "serviceName": "nudm_ue_authentication",
+                "versions": [
+                        {
+                        "apiVersionInUri": "v1",
+                        "apiFullVersion": "1.0.0"
+                        }
+                ],
+                "scheme": "http",
+                "nfServiceStatus": "REGISTERED",
+                "ipEndPoints": [
+                        {
+                        "ipv4Address": "192.168.1.1",
+                        "port": 443
+                        }
+                ]
+                },
+                {
+                "serviceInstanceId": "2",
+                "serviceName": "nudm_ue_context",
+                "versions": [
+                        {
+                        "apiVersionInUri": "v1",
+                        "apiFullVersion": "1.0.0"
+                        }
+                ],
+                "scheme": "http",
+                "nfServiceStatus": "REGISTERED",
+                "ipEndPoints": [
+                        {
+                        "ipv4Address": "192.168.1.1",
+                        "port": 443
+                        }
+                ]
+                }
+        ],
+        "nfProfileChangesSupportInd": true
+            
+}
+      
