@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from models.nf_profile import NFProfile
-from session import client, close
+from session import db_client, close
 import httpx
 import logging
 import json
@@ -18,7 +18,7 @@ smf = "10.111.153.168:80"
 @app.on_event("startup")
 async def startup():
     try:
-        db = client.nef
+        db = db_client.nef
         uuids = []
         instances = ""
         async with httpx.AsyncClient(http1=False, http2=True) as client:
