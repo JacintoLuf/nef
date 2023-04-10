@@ -19,9 +19,27 @@ smf = "10.111.153.168:80"
 async def startup():
     try:
         db = client.nef
-        
+        uuids = []
+        instances = ""
+        async with httpx.AsyncClient(http1=False, http2=True) as client:
+            response = await client.get(
+                "http://"+nrf+"/nnrf-nfm/v1/nf-instances",
+                headers={'Accept': 'application/json'}
+            )
+            logger.debug("resonse code: %s", response.status_code)
+            j = json.loads(response.text)
+            uuids = [i["href"].split('/')[-1] for i in j["_links"]["items"]]
+        async with httpx.AsyncClient(http1=False, http2=True) as client:
+            for ids in uuids:
+                response = await client.get(
+                    "http://"+nrf+"/nnrf-nfm/v1/nf-instances/"+ids,
+                    headers={'Accept': 'application/json'}
+                )
+                instances += response.text
+        print(instances)
     except Exception as e:
         logger.error(e)
+        print(e)
         raise e
     
 @app.on_event("shutdown")
@@ -72,7 +90,7 @@ async def register_nf():
         print(response.text)
     return response.text
 
-@app.get("/nf-discovery/{nfType}")
+@app.get("/test3")
 async def get_nf_instances():
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(

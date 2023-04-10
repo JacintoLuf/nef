@@ -1,0 +1,23 @@
+{
+	"validityPeriod":	3600,
+	"nfInstances":	[{
+			"nfInstanceId":	"5a8a7c7a-d636-41ed-9eda-cf90e35d95e9",
+			"nfType":	"AMF",
+			"nfStatus":	"REGISTERED",
+			"ipv4Addresses":	["10.111.27.77"],
+			"nfServices":	[{
+					"serviceInstanceId":	"5a90ff6e-d636-41ed-9eda-cf90e35d95e9",
+					"serviceName":	"namf-comm",
+					"versions":	[{
+							"apiVersionInUri":	"v1",
+							"apiFullVersion":	"1.0.0"
+						}],
+					"scheme":	"http",
+					"nfServiceStatus":	"REGISTERED",
+					"ipEndPoints":	[{
+							"ipv4Address":	"10.111.27.77"
+						}]
+				}],
+			"nfProfileChangesSupportInd":	true
+		}]
+}
