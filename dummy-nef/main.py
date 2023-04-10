@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from models.nf_profile import NFProfile
-from session import SessionLocal
+from session import client, close
 import httpx
 import logging
 import json
@@ -16,14 +16,17 @@ smf = "10.111.153.168:80"
 
 
 @app.on_event("startup")
-def startup():
+async def startup():
     try:
-        db = SessionLocal()
-        # Try to create session to check if DB is awake
-        db.execute("SELECT 1")
+        db = client.nef
+        
     except Exception as e:
         logger.error(e)
         raise e
+    
+@app.on_event("shutdown")
+async def shutdown():
+    close()
 
 @app.get("/")
 def read_root():
