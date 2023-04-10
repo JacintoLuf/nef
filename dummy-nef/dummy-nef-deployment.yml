@@ -47,4 +47,4 @@ spec:
   selector:
     app: nef
   #type: LoadBalancer
-  type: clusterIP
+  type: ClusterIP
