@@ -20,7 +20,7 @@ async def startup():
     try:
         db = db_client.nef
         uuids = []
-        instances = ""
+        instances = {}
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(
                 "http://"+nrf+"/nnrf-nfm/v1/nf-instances",
@@ -30,12 +30,12 @@ async def startup():
             j = json.loads(response.text)
             uuids = [i["href"].split('/')[-1] for i in j["_links"]["items"]]
         async with httpx.AsyncClient(http1=False, http2=True) as client:
-            for ids in uuids:
+            for x in len(uuids):
                 response = await client.get(
-                    "http://"+nrf+"/nnrf-nfm/v1/nf-instances/"+ids,
+                    "http://"+nrf+"/nnrf-nfm/v1/nf-instances/"+uuids[x],
                     headers={'Accept': 'application/json'}
                 )
-                instances += response.text
+                instances[x] = response.text
         print(instances)
     except Exception as e:
         logger.error(e)
