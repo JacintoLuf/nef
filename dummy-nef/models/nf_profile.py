@@ -53,8 +53,7 @@ class NFProfile(object):
         self._nf_instance_id = nf_instance_id
 
     def nf_instance_id_gen(self):
-
-        self._nf_instance_id = uuid.uuid4()
+        self._nf_instance_id = str(uuid.uuid4())
 
     @property
     def nf_type(self):

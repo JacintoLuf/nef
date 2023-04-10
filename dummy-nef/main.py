@@ -1,16 +1,29 @@
-from typing import Union
 from fastapi import FastAPI
-from fastapi.encoders import jsonable_encoder
 from models.nf_profile import NFProfile
-#from pydantic import BaseModel
+from session import SessionLocal
 import httpx
+import logging
+import json
 import logging
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
 nef_profile = NFProfile()
 tmp = {}
+nrf = "10.106.127.186:80"
+amf = "10.111.27.77:80"
+smf = "10.111.153.168:80"
 
+
+@app.on_event("startup")
+def startup():
+    try:
+        db = SessionLocal()
+        # Try to create session to check if DB is awake
+        db.execute("SELECT 1")
+    except Exception as e:
+        logger.error(e)
+        raise e
 
 @app.get("/")
 def read_root():
@@ -21,13 +34,14 @@ async def test_conn():
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
-            "http://10.244.2.53:80/nnrf-nfm/v1/nf-instances",
+            "http://"+nrf+"/nnrf-nfm/v1/nf-instances",
             headers={'Accept': 'application/json'}
         )
         logger.debug("resonse code: %s", response.status_code)
-        print(response.status_code)
-        print(response.headers)
         print(response.text)
+        j = json.loads(response.text)
+        links = [i["href"].split('/')[-1] for i in j["_links"]["items"]]
+        print(links)
     return response.text
 
 @app.get("/test2")
@@ -35,7 +49,7 @@ async def test_conn():
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
-            "http://10.106.127.186:80/nnrf-disc/v1/nf-instances",
+            "http://"+nrf+"/nnrf-disc/v1/nf-instances",
             headers={'Accept': 'application/json,application/problem+json'},
             params= {"target-nf-type": "AMF", "requester-nf-type": "NEF"}
         )
@@ -49,7 +63,7 @@ async def test_conn():
 async def register_nf():
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
-            "http://10.106.127.186:80/nnrf-nfm/v1/nf-instances/"+nef_profile.nf_instance_id,
+            "http://"+nrf+"/nnrf-nfm/v1/nf-instances/"+nef_profile.nf_instance_id,
             headers={'Accept': 'application/json,application/problem+json'}
         )
         print(response.text)
@@ -59,8 +73,18 @@ async def register_nf():
 async def get_nf_instances():
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
-            "http://10.244.2.53:80/nnrf-nfm/v1/",
+            "http://"+nrf+"/nnrf-nfm/v1/",
             headers={'Accept': 'application/json,application/problem+json'}
         )
         print(response.text)
     return response.text
+
+@app.get("/smf-test")
+async def test_smf():
+    """smf event exposure"""
+    return ""
+
+@app.get("/smf-test2")
+async def test_smf():
+    """smf NIDD"""
+    return ""
