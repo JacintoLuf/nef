@@ -18,7 +18,7 @@ smf = "10.111.153.168:80"
 @app.on_event("startup")
 async def startup():
     try:
-        db = db_client.nef
+        db = db_client
         uuids = []
         instances = {}
         async with httpx.AsyncClient(http1=False, http2=True) as client:
@@ -44,6 +44,7 @@ async def startup():
     
 @app.on_event("shutdown")
 async def shutdown():
+    print("Database reset complete.")
     close()
 
 @app.get("/")
