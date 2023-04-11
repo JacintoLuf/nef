@@ -2,6 +2,9 @@
 
 # Find and delete the Docker image by name
 IMAGE_ID=$(docker images -q nef)
+if [ ! -z "$IMAGE_ID" ]; then
+  docker rmi $IMAGE_ID
+fi
 docker rmi -f $IMAGE_ID
 
 # Pull the latest changes from Git
@@ -14,5 +17,12 @@ docker build -t nef .
 docker tag nef:latest jacintoluf/nef:v1
 docker push jacintoluf/nef:v1
 
+# Delete existing deployment and service
+kubectl delete deployment -n open5gs nef-deployment
+kubectl delete service -n open5gs nef
+
 # Deploy the app to Kubernetes
 kubectl apply -n open5gs -f dummy-nef-deployment.yml
+
+# Port forward to service
+#kubectl port-forward -n open5gs svc/nef 9000:80
