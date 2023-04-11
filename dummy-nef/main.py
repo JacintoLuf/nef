@@ -31,8 +31,9 @@ async def startup():
             logger.debug("resonse code: %s", response.status_code)
             j = json.loads(response.text)
             uuids = [i["href"].split('/')[-1] for i in j["_links"]["items"]]
+            print(uuids)
         async with httpx.AsyncClient(http1=False, http2=True) as client:
-            for x in len(uuids):
+            for x in range(len(uuids)):
                 response = await client.get(
                     "http://"+nrf+"/nnrf-nfm/v1/nf-instances/"+uuids[x],
                     headers={'Accept': 'application/json'}

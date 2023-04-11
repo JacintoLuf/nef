@@ -15,7 +15,7 @@ def init_db(db: static_client) -> None:
             is_superuser=True,
         )
         result = collection.insert_one(user_in.__dict__)
-        print("Super user added: "+result.inserted_id)
+        print("Super user added: "+str(result.inserted_id))
         #user = crud.user.create(db, obj_in=user_in)  # noqa: F841
     else:
         print("Super user already in database")
@@ -29,7 +29,7 @@ def init_db(db: static_client) -> None:
             is_superuser=False,
         )
         result = collection.insert_one(user_in.__dict__)
-        print("User added: "+result.inserted_id)
+        print("User added: "+str(result.inserted_id))
         #user = crud.user.create(db, obj_in=user_in) 
     else:
         print("User already in database")
