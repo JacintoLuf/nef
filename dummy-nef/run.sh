@@ -3,9 +3,9 @@
 # Find and delete the Docker image by name
 IMAGE_ID=$(docker images -q nef)
 if [ ! -z "$IMAGE_ID" ]; then
-  docker rmi $IMAGE_ID
+  echo $IMAGE_ID
+  docker rmi -f $IMAGE_ID
 fi
-docker rmi -f $IMAGE_ID
 
 # Pull the latest changes from Git
 git pull
