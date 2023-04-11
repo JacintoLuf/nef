@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from models.nf_profile import NFProfile
 from session import async_client, close
-import init_db
+from init_db import init_db
 import httpx
 import logging
 import json
