@@ -41,7 +41,7 @@ async def startup():
                 )
                 instances[x] = response.text
                 result = collection.insert_one(json.loads(response.text))
-        js_formatted_str = json.dumps(instances, indent=2)
+        js_formatted_str = json.dumps(instances, indent=4)
         print(js_formatted_str)
 
     except Exception as e:
@@ -62,7 +62,7 @@ def read_root():
 async def get_users():
 
     collection = async_client["users"]
-    users = await collection.find().to_list(length=None)
+    users = await collection.find()
     return users
 
 @app.get("/test")
