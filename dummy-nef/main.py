@@ -41,9 +41,9 @@ async def startup():
                 )
                 instances[x] = response.text
                 result = collection.insert_one(json.loads(response.text))
-                print(type(result))
-                print(str(result))
-        print(instances)
+        js_obj = json.loads(instances)
+        js_formatted_str = json.dumps(js_obj, indent=2)
+        print(js_formatted_str)
 
     except Exception as e:
         logger.error(e)
