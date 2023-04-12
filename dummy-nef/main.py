@@ -34,14 +34,13 @@ async def startup():
             uuids = [i["href"].split('/')[-1] for i in j["_links"]["items"]]
             print(uuids)
         async with httpx.AsyncClient(http1=False, http2=True) as client:
-            for x in range(len(uuids)):
+            for id in uuids:
                 response = await client.get(
-                    "http://"+nrf+"/nnrf-nfm/v1/nf-instances/"+uuids[x],
+                    "http://"+nrf+"/nnrf-nfm/v1/nf-instances/"+id,
                     headers={'Accept': 'application/json'}
                 )
-                instances[x] = response.text
+                instances.append(json.loads(response.text))
                 result = collection.insert_one(json.loads(response.text))
-        js = json.loads(str(instances))
         js_formatted_str = json.dumps(instances, indent=4)
         print(js_formatted_str)
 
@@ -66,7 +65,8 @@ async def get_users():
     users = []
     async for user in collection.find({}):
         users.append(user)
-    return json.dumps(json.loads(str(users)), indent=4)
+        print(type(user))
+    return str(user)
 
 @app.get("/test")
 async def test_conn():
