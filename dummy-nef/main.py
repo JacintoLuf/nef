@@ -41,7 +41,8 @@ async def startup():
                 )
                 instances[x] = response.text
                 result = collection.insert_one(json.loads(response.text))
-                print(str(result.inserted_id))
+                print(type(result))
+                print(str(result))
         print(instances)
 
     except Exception as e:
