@@ -23,7 +23,7 @@ async def startup():
         collection = db["nf_instances"]
         init_db(db)
         uuids = []
-        instances = {}
+        instances = []
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(
                 "http://"+nrf+"/nnrf-nfm/v1/nf-instances",
