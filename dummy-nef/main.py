@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from models.nf_profile import NFProfile
-from session import static_client, close
+from session import static_client, async_client, close
 from init_db import init_db
 import httpx
 import logging
@@ -19,7 +19,8 @@ smf = "10.111.153.168:80"
 @app.on_event("startup")
 async def startup():
     try:
-        db = static_client
+        db = async_client
+        collection = db["nf_instances"]
         init_db(db)
         uuids = []
         instances = {}
@@ -39,7 +40,10 @@ async def startup():
                     headers={'Accept': 'application/json'}
                 )
                 instances[x] = response.text
+                result = collection.insert_one(json.loads(response.text))
+                print(str(result.inserted_id))
         print(instances)
+
     except Exception as e:
         logger.error(e)
         print(e)
@@ -53,6 +57,13 @@ async def shutdown():
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+@app.get("/users")
+async def get_users():
+
+    collection = async_client["users"]
+    users = await collection.find({})
+    return str(users)
 
 @app.get("/test")
 async def test_conn():
