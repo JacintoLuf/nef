@@ -40,6 +40,12 @@ async def startup():
                     headers={'Accept': 'application/json'}
                 )
                 instances[x] = response.text
+                print("---------plain---------")
+                print(response.text)
+                print("---------loads---------")
+                print(json.loads(response.text))
+                print("---------str->loads---------")
+                print(str(json.loads(response.text)))
                 result = collection.insert_one(json.loads(response.text))
         js_formatted_str = json.dumps(instances, indent=4)
         print(js_formatted_str)
@@ -65,7 +71,7 @@ async def get_users():
     users = []
     async for user in collection.find({}):
         users.append(user)
-    return str(users)
+    return json.dumps(users, indent=4)
 
 @app.get("/test")
 async def test_conn():
