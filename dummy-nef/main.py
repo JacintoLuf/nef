@@ -62,8 +62,10 @@ def read_root():
 async def get_users():
 
     collection = async_client["users"]
-    users = await collection.find({}).to_list(length=None)
-    return users
+    users = []
+    async for user in collection.find({}):
+        users.append(user)
+    return str(users)
 
 @app.get("/test")
 async def test_conn():
