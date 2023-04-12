@@ -65,7 +65,6 @@ async def get_users():
     users = []
     async for user in collection.find({}):
         users.append(user)
-        print(type(user))
     return str(user)
 
 @app.get("/test")
