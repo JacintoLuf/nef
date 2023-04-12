@@ -62,7 +62,7 @@ def read_root():
 async def get_users():
 
     collection = async_client["users"]
-    users = collection.find()
+    users = await collection.find({}).to_list(length=None)
     return users
 
 @app.get("/test")
