@@ -81,14 +81,14 @@ async def get_users():
         users.append(user)
     return str(user)
 
-@app.get("/ip/{nf}")
-async def get_nf_ip():
+@app.get("/ip/{nf_type}")
+async def get_nf_ip(nf_type: str):
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
             "http://"+nrf+"/nnrf-disc/v1/nf-instances",
             headers={'Accept': 'application/json,application/problem+json'},
-            params= {"target-nf-type": "{nf}", "requester-nf-type": "NEF"}
+            params= {"target-nf-type": "{nf_type}", "requester-nf-type": "NEF"}
         )
     print("-----------------------response-------------------------------")
     print(response.text)

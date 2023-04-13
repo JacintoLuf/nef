@@ -79,7 +79,7 @@
                                     "ipv4Address":  "10.96.250.249"
                             }]
             }],
-    "nfProfileChangesSupportInd":   true
+    "nfProfileChangesSupportInd":   true,
 
 
     "nfInstanceId": "f564ef0c-cdbf-41ed-92d4-bd8f255728d4",
@@ -100,7 +100,7 @@
                                     "ipv4Address":  "10.111.153.168"
                             }]
             }],
-    "nfProfileChangesSupportInd":   true
+    "nfProfileChangesSupportInd":   true,
 
 
     "nfInstanceId": "ea269be0-cdbf-41ed-ae95-d16d59cd3e76",
@@ -145,7 +145,7 @@
                                     "ipv4Address":  "10.104.8.216"
                             }]
             }],
-    "nfProfileChangesSupportInd":   true
+    "nfProfileChangesSupportInd":   true,
 
 
     "nfInstanceId": "056f0ba8-bd67-41ed-b552-91b366edd5b0",
@@ -178,7 +178,7 @@
                                     "ipv4Address":  "10.96.44.28"
                             }]
             }],
-    "nfProfileChangesSupportInd":   true
+    "nfProfileChangesSupportInd":   true,
 
 
     "nfInstanceId": "ffeadcca-bd66-41ed-8a7f-379d789ac078",
