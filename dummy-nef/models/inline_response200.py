@@ -14,14 +14,14 @@ class InlineResponse200(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, links: Dict[str, Object]=None):  # noqa: E501
+    def __init__(self, links: Dict[str, object]=None):  # noqa: E501
         """InlineResponse200 - a model defined in Swagger
 
         :param links: The links of this InlineResponse200.  # noqa: E501
-        :type links: Dict[str, Object]
+        :type links: Dict[str, object]
         """
         self.swagger_types = {
-            'links': Dict[str, Object]
+            'links': Dict[str, object]
         }
 
         self.attribute_map = {
@@ -41,24 +41,24 @@ class InlineResponse200(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def links(self) -> Dict[str, Object]:
+    def links(self) -> Dict[str, object]:
         """Gets the links of this InlineResponse200.
 
         List of the URI of NF instances. It has two members whose names are item and self. The item one contains an array of URIs.  # noqa: E501
 
         :return: The links of this InlineResponse200.
-        :rtype: Dict[str, Object]
+        :rtype: Dict[str, object]
         """
         return self._links
 
     @links.setter
-    def links(self, links: Dict[str, Object]):
+    def links(self, links: Dict[str, object]):
         """Sets the links of this InlineResponse200.
 
         List of the URI of NF instances. It has two members whose names are item and self. The item one contains an array of URIs.  # noqa: E501
 
         :param links: The links of this InlineResponse200.
-        :type links: Dict[str, Object]
+        :type links: Dict[str, object]
         """
 
         self._links = links

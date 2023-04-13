@@ -15,7 +15,7 @@ class NfinstancesNfInstanceIDBody(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, op: AnyOfnfinstancesNfInstanceIDBodyOp=None, path: str=None, _from: str=None, value: Object=None):  # noqa: E501
+    def __init__(self, op: AnyOfnfinstancesNfInstanceIDBodyOp=None, path: str=None, _from: str=None, value: object=None):  # noqa: E501
         """NfinstancesNfInstanceIDBody - a model defined in Swagger
 
         :param op: The op of this NfinstancesNfInstanceIDBody.  # noqa: E501
@@ -25,13 +25,13 @@ class NfinstancesNfInstanceIDBody(Model):
         :param _from: The _from of this NfinstancesNfInstanceIDBody.  # noqa: E501
         :type _from: str
         :param value: The value of this NfinstancesNfInstanceIDBody.  # noqa: E501
-        :type value: Object
+        :type value: object
         """
         self.swagger_types = {
             'op': AnyOfnfinstancesNfInstanceIDBodyOp,
             'path': str,
             '_from': str,
-            'value': Object
+            'value': object
         }
 
         self.attribute_map = {
@@ -130,22 +130,22 @@ class NfinstancesNfInstanceIDBody(Model):
         self.__from = _from
 
     @property
-    def value(self) -> Object:
+    def value(self) -> object:
         """Gets the value of this NfinstancesNfInstanceIDBody.
 
 
         :return: The value of this NfinstancesNfInstanceIDBody.
-        :rtype: Object
+        :rtype: object
         """
         return self._value
 
     @value.setter
-    def value(self, value: Object):
+    def value(self, value: object):
         """Sets the value of this NfinstancesNfInstanceIDBody.
 
 
         :param value: The value of this NfinstancesNfInstanceIDBody.
-        :type value: Object
+        :type value: object
         """
 
         self._value = value

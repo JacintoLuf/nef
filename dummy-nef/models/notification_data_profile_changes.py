@@ -15,7 +15,7 @@ class NotificationDataProfileChanges(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, op: AnyOfNotificationDataProfileChangesOp=None, path: str=None, _from: str=None, orig_value: Object=None, new_value: Object=None):  # noqa: E501
+    def __init__(self, op: AnyOfNotificationDataProfileChangesOp=None, path: str=None, _from: str=None, orig_value: object=None, new_value: object=None):  # noqa: E501
         """NotificationDataProfileChanges - a model defined in Swagger
 
         :param op: The op of this NotificationDataProfileChanges.  # noqa: E501
@@ -25,16 +25,16 @@ class NotificationDataProfileChanges(Model):
         :param _from: The _from of this NotificationDataProfileChanges.  # noqa: E501
         :type _from: str
         :param orig_value: The orig_value of this NotificationDataProfileChanges.  # noqa: E501
-        :type orig_value: Object
+        :type orig_value: object
         :param new_value: The new_value of this NotificationDataProfileChanges.  # noqa: E501
-        :type new_value: Object
+        :type new_value: object
         """
         self.swagger_types = {
             'op': AnyOfNotificationDataProfileChangesOp,
             'path': str,
             '_from': str,
-            'orig_value': Object,
-            'new_value': Object
+            'orig_value': object,
+            'new_value': object
         }
 
         self.attribute_map = {
@@ -135,43 +135,43 @@ class NotificationDataProfileChanges(Model):
         self.__from = _from
 
     @property
-    def orig_value(self) -> Object:
+    def orig_value(self) -> object:
         """Gets the orig_value of this NotificationDataProfileChanges.
 
 
         :return: The orig_value of this NotificationDataProfileChanges.
-        :rtype: Object
+        :rtype: object
         """
         return self._orig_value
 
     @orig_value.setter
-    def orig_value(self, orig_value: Object):
+    def orig_value(self, orig_value: object):
         """Sets the orig_value of this NotificationDataProfileChanges.
 
 
         :param orig_value: The orig_value of this NotificationDataProfileChanges.
-        :type orig_value: Object
+        :type orig_value: object
         """
 
         self._orig_value = orig_value
 
     @property
-    def new_value(self) -> Object:
+    def new_value(self) -> object:
         """Gets the new_value of this NotificationDataProfileChanges.
 
 
         :return: The new_value of this NotificationDataProfileChanges.
-        :rtype: Object
+        :rtype: object
         """
         return self._new_value
 
     @new_value.setter
-    def new_value(self, new_value: Object):
+    def new_value(self, new_value: object):
         """Sets the new_value of this NotificationDataProfileChanges.
 
 
         :param new_value: The new_value of this NotificationDataProfileChanges.
-        :type new_value: Object
+        :type new_value: object
         """
 
         self._new_value = new_value
