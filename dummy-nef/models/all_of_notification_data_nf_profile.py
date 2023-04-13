@@ -41,7 +41,7 @@ class AllOfNotificationDataNfProfile(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, nf_instance_id: str=None, nf_instance_name: str=None, nf_type: NFType=None, nf_status: NFStatus=None, heart_beat_timer: int=None, plmn_list: List[NFProfilePlmnList]=None, snpn_list: List[NFProfileSnpnList]=None, s_nssais: List[Object]=None, per_plmn_snssai_list: List[PlmnSnssai]=None, nsi_list: List[str]=None, fqdn: Fqdn=None, inter_plmn_fqdn: Fqdn=None, ipv4_addresses: List[str]=None, ipv6_addresses: List[str]=None, allowed_plmns: List[NFProfilePlmnList]=None, allowed_snpns: List[NFProfileSnpnList]=None, allowed_nf_types: List[NFType]=None, allowed_nf_domains: List[str]=None, allowed_nssais: List[Object]=None, priority: int=None, capacity: int=None, load: int=None, load_time_stamp: datetime=None, locality: str=None, udr_info: UdrInfo=None, udr_info_list: Dict[str, UdrInfo]=None, udm_info: UdmInfo=None, udm_info_list: Dict[str, UdmInfo]=None, ausf_info: AusfInfo=None, ausf_info_list: Dict[str, AusfInfo]=None, amf_info: AmfInfo=None, amf_info_list: Dict[str, AmfInfo]=None, smf_info: SmfInfo=None, smf_info_list: Dict[str, SmfInfo]=None, upf_info: UpfInfo=None, upf_info_list: Dict[str, UpfInfo]=None, pcf_info: PcfInfo=None, pcf_info_list: Dict[str, PcfInfo]=None, bsf_info: BsfInfo=None, bsf_info_list: Dict[str, BsfInfo]=None, chf_info: ChfInfo=None, chf_info_list: Dict[str, ChfInfo]=None, nef_info: NefInfo=None, nrf_info: NrfInfo=None, udsf_info: UdsfInfo=None, udsf_info_list: Dict[str, UdsfInfo]=None, nwdaf_info: NwdafInfo=None, pcscf_info_list: Dict[str, PcscfInfo]=None, hss_info_list: Dict[str, HssInfo]=None, custom_info: object=None, recovery_time: datetime=None, nf_service_persistence: bool=False, nf_services: List[Object]=None, nf_service_list: Dict[str, NFService]=None, nf_profile_changes_support_ind: bool=False, nf_profile_changes_ind: bool=False, default_notification_subscriptions: List[DefaultNotificationSubscription]=None, lmf_info: LmfInfo=None, gmlc_info: GmlcInfo=None, nf_set_id_list: List[str]=None, serving_scope: List[str]=None, lc_h_support_ind: bool=False, olc_h_support_ind: bool=False, nf_set_recovery_time_list: Dict[str, datetime]=None, service_set_recovery_time_list: Dict[str, datetime]=None, scp_domains: List[str]=None, scp_info: ScpInfo=None):  # noqa: E501
+    def __init__(self, nf_instance_id: str=None, nf_instance_name: str=None, nf_type: NFType=None, nf_status: NFStatus=None, heart_beat_timer: int=None, plmn_list: List[NFProfilePlmnList]=None, snpn_list: List[NFProfileSnpnList]=None, s_nssais: List[object]=None, per_plmn_snssai_list: List[PlmnSnssai]=None, nsi_list: List[str]=None, fqdn: Fqdn=None, inter_plmn_fqdn: Fqdn=None, ipv4_addresses: List[str]=None, ipv6_addresses: List[str]=None, allowed_plmns: List[NFProfilePlmnList]=None, allowed_snpns: List[NFProfileSnpnList]=None, allowed_nf_types: List[NFType]=None, allowed_nf_domains: List[str]=None, allowed_nssais: List[object]=None, priority: int=None, capacity: int=None, load: int=None, load_time_stamp: datetime=None, locality: str=None, udr_info: UdrInfo=None, udr_info_list: Dict[str, UdrInfo]=None, udm_info: UdmInfo=None, udm_info_list: Dict[str, UdmInfo]=None, ausf_info: AusfInfo=None, ausf_info_list: Dict[str, AusfInfo]=None, amf_info: AmfInfo=None, amf_info_list: Dict[str, AmfInfo]=None, smf_info: SmfInfo=None, smf_info_list: Dict[str, SmfInfo]=None, upf_info: UpfInfo=None, upf_info_list: Dict[str, UpfInfo]=None, pcf_info: PcfInfo=None, pcf_info_list: Dict[str, PcfInfo]=None, bsf_info: BsfInfo=None, bsf_info_list: Dict[str, BsfInfo]=None, chf_info: ChfInfo=None, chf_info_list: Dict[str, ChfInfo]=None, nef_info: NefInfo=None, nrf_info: NrfInfo=None, udsf_info: UdsfInfo=None, udsf_info_list: Dict[str, UdsfInfo]=None, nwdaf_info: NwdafInfo=None, pcscf_info_list: Dict[str, PcscfInfo]=None, hss_info_list: Dict[str, HssInfo]=None, custom_info: object=None, recovery_time: datetime=None, nf_service_persistence: bool=False, nf_services: List[object]=None, nf_service_list: Dict[str, NFService]=None, nf_profile_changes_support_ind: bool=False, nf_profile_changes_ind: bool=False, default_notification_subscriptions: List[DefaultNotificationSubscription]=None, lmf_info: LmfInfo=None, gmlc_info: GmlcInfo=None, nf_set_id_list: List[str]=None, serving_scope: List[str]=None, lc_h_support_ind: bool=False, olc_h_support_ind: bool=False, nf_set_recovery_time_list: Dict[str, datetime]=None, service_set_recovery_time_list: Dict[str, datetime]=None, scp_domains: List[str]=None, scp_info: ScpInfo=None):  # noqa: E501
         """AllOfNotificationDataNfProfile - a model defined in Swagger
 
         :param nf_instance_id: The nf_instance_id of this AllOfNotificationDataNfProfile.  # noqa: E501
@@ -59,7 +59,7 @@ class AllOfNotificationDataNfProfile(Model):
         :param snpn_list: The snpn_list of this AllOfNotificationDataNfProfile.  # noqa: E501
         :type snpn_list: List[NFProfileSnpnList]
         :param s_nssais: The s_nssais of this AllOfNotificationDataNfProfile.  # noqa: E501
-        :type s_nssais: List[Object]
+        :type s_nssais: List[object]
         :param per_plmn_snssai_list: The per_plmn_snssai_list of this AllOfNotificationDataNfProfile.  # noqa: E501
         :type per_plmn_snssai_list: List[PlmnSnssai]
         :param nsi_list: The nsi_list of this AllOfNotificationDataNfProfile.  # noqa: E501
@@ -81,7 +81,7 @@ class AllOfNotificationDataNfProfile(Model):
         :param allowed_nf_domains: The allowed_nf_domains of this AllOfNotificationDataNfProfile.  # noqa: E501
         :type allowed_nf_domains: List[str]
         :param allowed_nssais: The allowed_nssais of this AllOfNotificationDataNfProfile.  # noqa: E501
-        :type allowed_nssais: List[Object]
+        :type allowed_nssais: List[object]
         :param priority: The priority of this AllOfNotificationDataNfProfile.  # noqa: E501
         :type priority: int
         :param capacity: The capacity of this AllOfNotificationDataNfProfile.  # noqa: E501
@@ -149,7 +149,7 @@ class AllOfNotificationDataNfProfile(Model):
         :param nf_service_persistence: The nf_service_persistence of this AllOfNotificationDataNfProfile.  # noqa: E501
         :type nf_service_persistence: bool
         :param nf_services: The nf_services of this AllOfNotificationDataNfProfile.  # noqa: E501
-        :type nf_services: List[Object]
+        :type nf_services: List[object]
         :param nf_service_list: The nf_service_list of this AllOfNotificationDataNfProfile.  # noqa: E501
         :type nf_service_list: Dict[str, NFService]
         :param nf_profile_changes_support_ind: The nf_profile_changes_support_ind of this AllOfNotificationDataNfProfile.  # noqa: E501
@@ -187,7 +187,7 @@ class AllOfNotificationDataNfProfile(Model):
             'heart_beat_timer': int,
             'plmn_list': List[NFProfilePlmnList],
             'snpn_list': List[NFProfileSnpnList],
-            's_nssais': List[Object],
+            's_nssais': List[object],
             'per_plmn_snssai_list': List[PlmnSnssai],
             'nsi_list': List[str],
             'fqdn': Fqdn,
@@ -198,7 +198,7 @@ class AllOfNotificationDataNfProfile(Model):
             'allowed_snpns': List[NFProfileSnpnList],
             'allowed_nf_types': List[NFType],
             'allowed_nf_domains': List[str],
-            'allowed_nssais': List[Object],
+            'allowed_nssais': List[object],
             'priority': int,
             'capacity': int,
             'load': int,
@@ -232,7 +232,7 @@ class AllOfNotificationDataNfProfile(Model):
             'custom_info': object,
             'recovery_time': datetime,
             'nf_service_persistence': bool,
-            'nf_services': List[Object],
+            'nf_services': List[object],
             'nf_service_list': Dict[str, NFService],
             'nf_profile_changes_support_ind': bool,
             'nf_profile_changes_ind': bool,
@@ -553,22 +553,22 @@ class AllOfNotificationDataNfProfile(Model):
         self._snpn_list = snpn_list
 
     @property
-    def s_nssais(self) -> List[Object]:
+    def s_nssais(self) -> List[object]:
         """Gets the s_nssais of this AllOfNotificationDataNfProfile.
 
 
         :return: The s_nssais of this AllOfNotificationDataNfProfile.
-        :rtype: List[Object]
+        :rtype: List[object]
         """
         return self._s_nssais
 
     @s_nssais.setter
-    def s_nssais(self, s_nssais: List[Object]):
+    def s_nssais(self, s_nssais: List[object]):
         """Sets the s_nssais of this AllOfNotificationDataNfProfile.
 
 
         :param s_nssais: The s_nssais of this AllOfNotificationDataNfProfile.
-        :type s_nssais: List[Object]
+        :type s_nssais: List[object]
         """
 
         self._s_nssais = s_nssais
@@ -784,22 +784,22 @@ class AllOfNotificationDataNfProfile(Model):
         self._allowed_nf_domains = allowed_nf_domains
 
     @property
-    def allowed_nssais(self) -> List[Object]:
+    def allowed_nssais(self) -> List[object]:
         """Gets the allowed_nssais of this AllOfNotificationDataNfProfile.
 
 
         :return: The allowed_nssais of this AllOfNotificationDataNfProfile.
-        :rtype: List[Object]
+        :rtype: List[object]
         """
         return self._allowed_nssais
 
     @allowed_nssais.setter
-    def allowed_nssais(self, allowed_nssais: List[Object]):
+    def allowed_nssais(self, allowed_nssais: List[object]):
         """Sets the allowed_nssais of this AllOfNotificationDataNfProfile.
 
 
         :param allowed_nssais: The allowed_nssais of this AllOfNotificationDataNfProfile.
-        :type allowed_nssais: List[Object]
+        :type allowed_nssais: List[object]
         """
 
         self._allowed_nssais = allowed_nssais
@@ -1502,22 +1502,22 @@ class AllOfNotificationDataNfProfile(Model):
         self._nf_service_persistence = nf_service_persistence
 
     @property
-    def nf_services(self) -> List[Object]:
+    def nf_services(self) -> List[object]:
         """Gets the nf_services of this AllOfNotificationDataNfProfile.
 
 
         :return: The nf_services of this AllOfNotificationDataNfProfile.
-        :rtype: List[Object]
+        :rtype: List[object]
         """
         return self._nf_services
 
     @nf_services.setter
-    def nf_services(self, nf_services: List[Object]):
+    def nf_services(self, nf_services: List[object]):
         """Sets the nf_services of this AllOfNotificationDataNfProfile.
 
 
         :param nf_services: The nf_services of this AllOfNotificationDataNfProfile.
-        :type nf_services: List[Object]
+        :type nf_services: List[object]
         """
 
         self._nf_services = nf_services
