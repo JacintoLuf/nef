@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from models.nf_profile import NFProfile
 from session import static_client, async_client, close
 from init_db import init_db
@@ -7,6 +7,12 @@ import logging
 import json
 import logging
 from models.nf_profile import NFProfile
+from models.amf_create_event_subscription import AmfCreateEventSubscription
+from models.amf_event_subscription import AmfEventSubscription
+from models.amf_event import AmfEvent
+from enums.amf_event_type import AmfEventType
+from models.amf_event_notification import AmfEventNotification
+import uuid
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
@@ -15,6 +21,7 @@ tmp = {}
 nrf = "10.106.127.186:80"
 amf = "10.111.27.77:80"
 smf = "10.111.153.168:80"
+self_uuid = ""
 
 
 @app.on_event("startup")
@@ -33,7 +40,12 @@ async def startup():
             logger.debug("resonse code: %s", response.status_code)
             j = json.loads(response.text)
             uuids = [i["href"].split('/')[-1] for i in j["_links"]["items"]]
-            print(uuids)
+
+            while True:
+                self_uuid = str(uuid.uuid4())
+                if self_uuid in uuids:
+                    break
+
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             for id in uuids:
                 response = await client.get(
@@ -78,38 +90,32 @@ async def get_nf_ip():
             headers={'Accept': 'application/json,application/problem+json'},
             params= {"target-nf-type": "{nf}", "requester-nf-type": "NEF"}
         )
+    print("-----------------------response-------------------------------")
+    print(response.text)
     r = NFProfile.from_dict(response.json())
+    print("-----------------------response deserialized-------------------------------")
+    print(r.__str__)
     return r.ipv4_addresses
 
-@app.get("/test")
-async def test_conn():
-
+@app.get("/amf-sub")
+async def test_amf():
+    event = AmfEvent(AmfEventType.CONNECTIVITY_STATE_REPORT, True)
+    sub = AmfEventSubscription([event], "http://10.102.141.12:80/amf-sub-res", "1", self_uuid, any_ue=True)
+    create = AmfCreateEventSubscription(sub)
     async with httpx.AsyncClient(http1=False, http2=True) as client:
-        response = await client.get(
-            "http://"+nrf+"/nnrf-nfm/v1/nf-instances",
-            headers={'Accept': 'application/json'}
-        )
-        logger.debug("resonse code: %s", response.status_code)
-        print(response.text)
-        j = json.loads(response.text)
-        links = [i["href"].split('/')[-1] for i in j["_links"]["items"]]
-        print(links)
-    return response.text
-
-@app.get("/test2")
-async def test_conn():
-
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-        response = await client.get(
-            "http://"+nrf+"/nnrf-disc/v1/nf-instances",
+        response = await client.put(
+            "http://"+nrf+"/namf-comm/v1/subscriptions/",
             headers={'Accept': 'application/json,application/problem+json'},
-            params= {"target-nf-type": "AMF", "requester-nf-type": "NEF"}
+            data = json.dumps(create.to_dict())
         )
-        logger.debug("resonse code: %s", response.status_code)
-        print(response.status_code)
-        print(response.headers)
         print(response.text)
     return response.text
+
+@app.post("/amf-sub-res")
+async def test_amf_res(data: dict):
+    sub = AmfEventSubscription.from_dict(data)
+    print(sub.to_str)
+    return Response(status_code=204)
 
 @app.get("/nf-register")
 async def register_nf():
@@ -120,23 +126,3 @@ async def register_nf():
         )
         print(response.text)
     return response.text
-
-@app.get("/test3")
-async def get_nf_instances():
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-        response = await client.get(
-            "http://"+nrf+"/nnrf-nfm/v1/",
-            headers={'Accept': 'application/json,application/problem+json'}
-        )
-        print(response.text)
-    return response.text
-
-@app.get("/smf-test")
-async def test_smf():
-    """smf event exposure"""
-    return ""
-
-@app.get("/smf-test2")
-async def test_smf():
-    """smf NIDD"""
-    return ""
