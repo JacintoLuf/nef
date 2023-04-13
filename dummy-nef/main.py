@@ -43,7 +43,7 @@ async def startup():
 
             while True:
                 self_uuid = str(uuid.uuid4())
-                if self_uuid in uuids:
+                if self_uuid not in uuids:
                     break
 
         async with httpx.AsyncClient(http1=False, http2=True) as client:
