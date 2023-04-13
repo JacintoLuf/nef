@@ -40,7 +40,8 @@ async def startup():
                     "http://"+nrf+"/nnrf-nfm/v1/nf-instances/"+id,
                     headers={'Accept': 'application/json'}
                 )
-                instances.append(json.loads(response.text))
+                #instances.append(json.loads(response.text))
+                instances.append(response.json())
                 result = collection.insert_one(json.loads(response.text))
         js_formatted_str = json.dumps(instances, indent=4)
         print(js_formatted_str)
