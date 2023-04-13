@@ -6,6 +6,7 @@ import httpx
 import logging
 import json
 import logging
+from models.nf_profile import NFProfile
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
@@ -66,6 +67,18 @@ async def get_users():
     async for user in collection.find({}):
         users.append(user)
     return str(user)
+
+@app.get("/ip/{nf}")
+async def get_nf_ip():
+
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.get(
+            "http://"+nrf+"/nnrf-disc/v1/nf-instances",
+            headers={'Accept': 'application/json,application/problem+json'},
+            params= {"target-nf-type": "{nf}", "requester-nf-type": "NEF"}
+        )
+    r = NFProfile.from_dict(response.json())
+    return r.ipv4_addresses
 
 @app.get("/test")
 async def test_conn():
