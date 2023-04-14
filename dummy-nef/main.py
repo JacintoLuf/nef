@@ -91,6 +91,8 @@ async def get_nf_ip(nf_type: str):
             params= {"target-nf-type": f"{nf_type}", "requester-nf-type": "NEF"}
         )
     r = NFProfile.from_dict(response.json()["nfInstances"])
+    print(response.json()["nfInstances"])
+    print(r.ipv4_addresses)
     print("deserialized")
     return {"nf instance id" : r.nf_instance_id, "ipv4 address": r.ipv4_addresses}
 
@@ -99,6 +101,11 @@ async def test_amf():
     event = AmfEvent(type=AmfEventType.CONNECTIVITY_STATE_REPORT, immediate_flag=True)
     sub = AmfEventSubscription([event], "http://10.102.141.12:80/amf-sub-res", "1", self_uuid, any_ue=True)
     create = AmfCreateEventSubscription(sub)
+    d = create.to_dict()
+    keys = []
+    for key in d.keys():
+        keys.append(key)
+    print(keys)
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
             "http://"+nrf+"/namf-comm/v1/subscriptions/",
