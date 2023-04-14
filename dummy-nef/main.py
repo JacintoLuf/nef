@@ -115,7 +115,7 @@ async def test_amf():
         response = await client.put(
             "http://"+nrf+"/namf-comm/v1/subscriptions/",
             headers={'Accept': 'application/json,application/problem+json'},
-            data = json.dumps('{"subscription": {"event_list": [{"type": "CONNECTIVITY_STATE_REPORT","immediate_flag": true,}],"event_notify_uri": "http://10.102.141.12:80/amf-sub-res","notify_correlation_id": "1","nf_id": "",},"}')
+            data = json.dumps('{"subscription": {"event_list": [{"type": "CONNECTIVITY_STATE_REPORT","immediate_flag": true}],"event_notify_uri": "http://10.102.141.12:80/amf-sub-res","notify_correlation_id": "1","nf_id": ""}}')
             #data = json.dumps(create.to_dict())
         )
         print(response.text)
