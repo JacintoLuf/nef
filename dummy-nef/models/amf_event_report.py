@@ -9,7 +9,7 @@ from models.base_model_ import Model
 from models.amf_event_area import AmfEventArea  # noqa: F401,E501
 from models.amf_event_report_location import AmfEventReportLocation  # noqa: F401,E501
 from models.amf_event_state import AmfEventState  # noqa: F401,E501
-from models.amf_event_type import AmfEventType  # noqa: F401,E501
+#from models.amf_event_type import AmfEventType  # noqa: F401,E501
 from models.cm_info import CmInfo  # noqa: F401,E501
 from models.communication_failure import CommunicationFailure  # noqa: F401,E501
 from models.idle_status_indication import IdleStatusIndication  # noqa: F401,E501
@@ -33,7 +33,7 @@ class AmfEventReport(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, type: AmfEventType=None, state: AmfEventState=None, time_stamp: datetime=None, subscription_id: str=None, any_ue: bool=None, supi: str=None, area_list: List[AmfEventArea]=None, ref_id: int=None, gpsi: str=None, pei: str=None, location: AmfEventReportLocation=None, additional_location: AmfEventReportLocation=None, timezone: str=None, access_type_list: List[str]=None, rm_info_list: List[RmInfo]=None, cm_info_list: List[CmInfo]=None, reachability: UeReachability=None, comm_failure: CommunicationFailure=None, loss_of_connect_reason: LossOfConnectivityReason=None, number_of_ues: int=None, _5gs_user_state_list: List[Model5GsUserStateInfo]=None, type_code: str=None, registration_number: int=None, max_availability_time: datetime=None, ue_id_ext: List[UEIdExt]=None, snssai_tai_list: List[SnssaiTaiMapping]=None, idle_status_indication: IdleStatusIndication=None, ue_access_behavior_trends: List[UeAccessBehaviorReportItem]=None, ue_location_trends: List[UeLocationTrendsReportItem]=None, mm_trans_location_report_list: List[MmTransactionLocationReportItem]=None, mm_trans_slice_report_list: List[MmTransactionSliceReportItem]=None, term_reason: SubTerminationReason=None):  # noqa: E501
+    def __init__(self, type: str=None, state: AmfEventState=None, time_stamp: datetime=None, subscription_id: str=None, any_ue: bool=None, supi: str=None, area_list: List[AmfEventArea]=None, ref_id: int=None, gpsi: str=None, pei: str=None, location: AmfEventReportLocation=None, additional_location: AmfEventReportLocation=None, timezone: str=None, access_type_list: List[str]=None, rm_info_list: List[RmInfo]=None, cm_info_list: List[CmInfo]=None, reachability: UeReachability=None, comm_failure: CommunicationFailure=None, loss_of_connect_reason: LossOfConnectivityReason=None, number_of_ues: int=None, _5gs_user_state_list: List[Model5GsUserStateInfo]=None, type_code: str=None, registration_number: int=None, max_availability_time: datetime=None, ue_id_ext: List[UEIdExt]=None, snssai_tai_list: List[SnssaiTaiMapping]=None, idle_status_indication: IdleStatusIndication=None, ue_access_behavior_trends: List[UeAccessBehaviorReportItem]=None, ue_location_trends: List[UeLocationTrendsReportItem]=None, mm_trans_location_report_list: List[MmTransactionLocationReportItem]=None, mm_trans_slice_report_list: List[MmTransactionSliceReportItem]=None, term_reason: SubTerminationReason=None):  # noqa: E501
         """AmfEventReport - a model defined in Swagger
 
         :param type: The type of this AmfEventReport.  # noqa: E501
@@ -102,7 +102,7 @@ class AmfEventReport(Model):
         :type term_reason: SubTerminationReason
         """
         self.swagger_types = {
-            'type': AmfEventType,
+            'type': str,
             'state': AmfEventState,
             'time_stamp': datetime,
             'subscription_id': str,
@@ -215,7 +215,7 @@ class AmfEventReport(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def type(self) -> AmfEventType:
+    def type(self) -> str:
         """Gets the type of this AmfEventReport.
 
 
@@ -225,7 +225,7 @@ class AmfEventReport(Model):
         return self._type
 
     @type.setter
-    def type(self, type: AmfEventType):
+    def type(self, type: str):
         """Sets the type of this AmfEventReport.
 
 
