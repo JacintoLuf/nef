@@ -1,11 +1,11 @@
 from fastapi import FastAPI, Response
-from models.nf_profile import NFProfile
 from session import static_client, async_client, close
 from init_db import init_db
 import httpx
 import logging
 import json
 import logging
+from models.nf_profile import NFProfile
 from models.nf_profile import NFProfile
 from models.amf_create_event_subscription import AmfCreateEventSubscription
 from models.amf_event_subscription import AmfEventSubscription
@@ -92,11 +92,19 @@ async def get_nf_ip(nf_type: str):
         )
     r = NFProfile.from_dict(response.json())
     print("deserialized")
-    return {"nf instance id" : r.nf_instance_id, "ipv4 address": r.ipv4_addresses[0]}
+    print("type")
+    print(type(r.ipv4_addresses))
+    print("address")
+    ipv4 = response.json()["ipv4Addresses"]
+    print(str(ipv4))
+    if type(r.ipv4_addresses) == None and ipv4 != None:
+        r.ipv4_addresses = str(ipv4)
+        print("assigned")
+    return {"nf instance id" : r.nf_instance_id, "ipv4 address": "default: "+amf if ipv4 is None else str(ipv4)}
 
 @app.get("/amf-sub")
 async def test_amf():
-    event = AmfEvent(AmfEventType.CONNECTIVITY_STATE_REPORT, True)
+    event = AmfEvent(type=AmfEventType.CONNECTIVITY_STATE_REPORT, immediate_flag=True)
     sub = AmfEventSubscription([event], "http://10.102.141.12:80/amf-sub-res", "1", self_uuid, any_ue=True)
     create = AmfCreateEventSubscription(sub)
     async with httpx.AsyncClient(http1=False, http2=True) as client:

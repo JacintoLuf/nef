@@ -8,7 +8,7 @@ from typing import List, Dict  # noqa: F401
 from models.base_model_ import Model
 from models.amf_event_area import AmfEventArea  # noqa: F401,E501
 from models.amf_event_presence_info_list import AmfEventPresenceInfoList  # noqa: F401,E501
-from models.amf_event_type import AmfEventType  # noqa: F401,E501
+#from models.amf_event_type import AmfEventType  # noqa: F401,E501
 from models.dispersion_area import DispersionArea  # noqa: F401,E501
 from models.location_filter import LocationFilter  # noqa: F401,E501
 from models.reachability_filter import ReachabilityFilter  # noqa: F401,E501
