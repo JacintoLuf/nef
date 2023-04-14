@@ -94,13 +94,13 @@ async def get_nf_ip(nf_type: str):
     print("deserialized")
     print("type")
     print(type(r.ipv4_addresses))
-    print("address")
-    ipv4 = response.json()["ipv4Addresses"]
-    print(str(ipv4))
-    if type(r.ipv4_addresses) == None and ipv4 != None:
-        r.ipv4_addresses = str(ipv4)
-        print("assigned")
-    return {"nf instance id" : r.nf_instance_id, "ipv4 address": "default: "+amf if ipv4 is None else str(ipv4)}
+    print("keys")
+    profile = response.json()
+    keys = []
+    for key in profile.keys():
+        keys.append(key)
+    print(keys)
+    return {"nf instance id" : r.nf_instance_id, "ipv4 address": "default: "+amf}
 
 @app.get("/amf-sub")
 async def test_amf():
