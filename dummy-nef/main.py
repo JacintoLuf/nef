@@ -110,13 +110,13 @@ async def test_amf():
     event = AmfEvent(type=AmfEventType.CONNECTIVITY_STATE_REPORT, immediate_flag=True)
     sub = AmfEventSubscription([event], "http://10.102.141.12:80/amf-sub-res", "1", self_uuid, any_ue=True)
     create = AmfCreateEventSubscription(sub)
-    print(str(create.to_dict()))
+    print(type(AmfEventType.ACCESS_TYPE_REPORT))
+    print(json.dumps(create.to_dict()))
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
             "http://"+nrf+"/namf-comm/v1/subscriptions/",
             headers={'Accept': 'application/json,application/problem+json'},
-            data = json.dumps('{"subscription": {"event_list": [{"type": "CONNECTIVITY_STATE_REPORT","immediate_flag": true}],"event_notify_uri": "http://10.102.141.12:80/amf-sub-res","notify_correlation_id": "1","nf_id": ""}}')
-            #data = json.dumps(create.to_dict())
+            data = json.dumps(create.to_dict())
         )
         print(response.text)
     try:
