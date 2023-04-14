@@ -88,7 +88,7 @@ async def get_nf_ip(nf_type: str):
         response = await client.get(
             "http://"+nrf+"/nnrf-disc/v1/nf-instances",
             headers={'Accept': 'application/json,application/problem+json'},
-            params= {"target-nf-type": "{nf_type}", "requester-nf-type": "NEF"}
+            params= {"target-nf-type": f"{nf_type}", "requester-nf-type": "NEF"}
         )
     print("-----------------------response-------------------------------")
     print(response.text)

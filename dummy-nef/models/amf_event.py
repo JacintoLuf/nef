@@ -24,7 +24,7 @@ class AmfEvent(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, type: str | AmfEventType=None, immediate_flag: bool=False, area_list: List[AmfEventArea]=None, location_filter_list: List[LocationFilter]=None, ref_id: int=None, traffic_descriptor_list: List[TrafficDescriptor]=None, report_ue_reachable: bool=False, reachability_filter: ReachabilityFilter=None, udm_detect_ind: bool=False, max_reports: int=None, presence_info_list: Dict[str, AmfEventPresenceInfoList]=None, max_response_time: int=None, target_area: TargetArea=None, snssai_filter: List[AllOfAmfEventSnssaiFilterItems]=None, ue_in_area_filter: UeInAreaFilter=None, min_interval: int=None, next_report: datetime=None, idle_status_ind: bool=False, dispersion_area: DispersionArea=None):  # noqa: E501
+    def __init__(self, type: str=None, immediate_flag: bool=False, area_list: List[AmfEventArea]=None, location_filter_list: List[LocationFilter]=None, ref_id: int=None, traffic_descriptor_list: List[TrafficDescriptor]=None, report_ue_reachable: bool=False, reachability_filter: ReachabilityFilter=None, udm_detect_ind: bool=False, max_reports: int=None, presence_info_list: Dict[str, AmfEventPresenceInfoList]=None, max_response_time: int=None, target_area: TargetArea=None, snssai_filter: List[AllOfAmfEventSnssaiFilterItems]=None, ue_in_area_filter: UeInAreaFilter=None, min_interval: int=None, next_report: datetime=None, idle_status_ind: bool=False, dispersion_area: DispersionArea=None):  # noqa: E501
         """AmfEvent - a model defined in Swagger
 
         :param type: The type of this AmfEvent.  # noqa: E501
@@ -141,7 +141,7 @@ class AmfEvent(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def type(self) -> AmfEventType:
+    def type(self) -> str: #AmfEventType
         """Gets the type of this AmfEvent.
 
 
@@ -151,7 +151,7 @@ class AmfEvent(Model):
         return self._type
 
     @type.setter
-    def type(self, type: AmfEventType):
+    def type(self, type: str): #AmfEventType
         """Sets the type of this AmfEvent.
 
 
