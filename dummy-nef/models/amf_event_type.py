@@ -14,19 +14,15 @@ class AmfEventType(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, type: str=None):  # noqa: E501
+    def __init__(self):  # noqa: E501
         """AmfEventType - a model defined in Swagger
 
         """
         self.swagger_types = {
-            'type': str
         }
 
         self.attribute_map = {
-            'type': 'type'
         }
-
-        self._type = type
 
     @classmethod
     def from_dict(cls, dikt) -> 'AmfEventType':

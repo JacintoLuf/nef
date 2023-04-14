@@ -1,6 +1,6 @@
 from enum import Enum
 
-class AmfEventType(Enum):
+class AmfEventType(str, Enum):
     LOCATION_REPORT = "LOCATION_REPORT"
     PRESENCE_IN_AOI_REPORT = "PRESENCE_IN_AOI_REPORT"
     TIMEZONE_REPORT = "TIMEZONE_REPORT"
