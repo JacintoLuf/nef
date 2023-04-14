@@ -67,7 +67,7 @@ class AmfEvent(Model):
         :type dispersion_area: DispersionArea
         """
         self.swagger_types = {
-            'type': str | AmfEventType,
+            'type': str,
             'immediate_flag': bool,
             'area_list': List[AmfEventArea],
             'location_filter_list': List[LocationFilter],

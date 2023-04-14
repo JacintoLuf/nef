@@ -90,12 +90,9 @@ async def get_nf_ip(nf_type: str):
             headers={'Accept': 'application/json,application/problem+json'},
             params= {"target-nf-type": f"{nf_type}", "requester-nf-type": "NEF"}
         )
-    print("-----------------------response-------------------------------")
-    print(response.text)
     r = NFProfile.from_dict(response.json())
-    print("-----------------------response deserialized-------------------------------")
-    print(r.__str__)
-    return r.ipv4_addresses
+    print("deserialized")
+    return {"nf instance id" : r.nf_instance_id, "ipv4 address": r.ipv4_addresses[0]}
 
 @app.get("/amf-sub")
 async def test_amf():
