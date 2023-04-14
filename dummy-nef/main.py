@@ -90,7 +90,14 @@ async def get_nf_ip(nf_type: str):
             headers={'Accept': 'application/json,application/problem+json'},
             params= {"target-nf-type": f"{nf_type}", "requester-nf-type": "NEF"}
         )
-    js = response.jason()["nfInstances"]
+    try:
+        keys = []
+        for key in response.json().keys():
+            keys.append(key)
+        print(keys)
+    except:
+        None
+    js = response.json()["nfInstances"]
     profiles = []
     for item in js:
         profiles.append(NFProfile.from_dict(item))
@@ -102,11 +109,7 @@ async def test_amf():
     event = AmfEvent(type=AmfEventType.CONNECTIVITY_STATE_REPORT, immediate_flag=True)
     sub = AmfEventSubscription([event], "http://10.102.141.12:80/amf-sub-res", "1", self_uuid, any_ue=True)
     create = AmfCreateEventSubscription(sub)
-    d = create.to_dict()
-    keys = []
-    for key in d.keys():
-        keys.append(key)
-    print(keys)
+    print(str(create.to_dict()))
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
             "http://"+nrf+"/namf-comm/v1/subscriptions/",
@@ -114,10 +117,25 @@ async def test_amf():
             data = json.dumps(create.to_dict())
         )
         print(response.text)
+    try:
+        keys = []
+        for key in response.json().keys():
+            keys.append(key)
+        print(keys)
+    except:
+        None
     return response.text
 
 @app.post("/amf-sub-res")
 async def test_amf_res(data: dict):
+    try:
+        keys = []
+        for key in data.keys():
+            keys.append(key)
+        print(keys)
+    except:
+        None
+    print(str(data))
     sub = AmfEventSubscription.from_dict(data)
     print(sub.to_str)
     return Response(status_code=204)
