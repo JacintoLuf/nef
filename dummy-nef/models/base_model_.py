@@ -29,9 +29,10 @@ class Model(object):
         """
         result = {}
 
+        for att in six.iteritems(self.attribute_map):
+            print(att)
         for attr, _ in six.iteritems(self.swagger_types):
             print(type(attr))
-            print(type(_))
             print("attr: %s", str(attr))
             value = getattr(self, attr)
             if isinstance(value, list):

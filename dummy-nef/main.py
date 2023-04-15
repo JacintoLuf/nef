@@ -67,8 +67,29 @@ async def shutdown():
     close()
 
 @app.get("/")
-def read_root():
-    return {"Hello": "World"}
+async def read_root():
+    #return {"Hello": "World"}
+    event = AmfEvent(type=AmfEventType.CONNECTIVITY_STATE_REPORT, immediate_flag=True)
+    sub = AmfEventSubscription([event], "http://10.102.141.12:80/amf-sub-res", "1", self_uuid, any_ue=True)
+    create = AmfCreateEventSubscription(sub)
+    #print(json.dumps(create.to_dict()))
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.put(
+            "http://"+nrf+"/namf-comm/v1/subscriptions/",
+            headers={'Accept': 'application/json,application/problem+json'},
+            #data = '{"AmfEventSubscription": {"eventList": [{"type": "CONNECTIVITY_STATE_REPORT","immediateFlag": true}],"notifyUri": "http://10.102.141.12:80/amf-sub-res","notifyCorrelationId": "1","nfId": "5343ae63-424f-412d-8ccb-1677a20c8bcf"}}'
+            #data = '{"AmfCreateEventSubscription" :{"AmfEventSubscription": {"eventList": [{"type": "CONNECTIVITY_STATE_REPORT","immediateFlag": true}],"notifyUri": "http://10.102.141.12:80/amf-sub-res","notifyCorrelationId": "1","nfId": "5343ae63-424f-412d-8ccb-1677a20c8bcf"}}}'
+            data = json.dumps(create.to_dict())
+        )
+        print(response.text)
+    try:
+        keys = []
+        for key in response.json().keys():
+            keys.append(key)
+        print(keys)
+    except:
+        None
+    return response.text
 
 @app.get("/users")
 async def get_users():
@@ -100,7 +121,6 @@ async def test_amf():
     event = AmfEvent(type=AmfEventType.CONNECTIVITY_STATE_REPORT, immediate_flag=True)
     sub = AmfEventSubscription([event], "http://10.102.141.12:80/amf-sub-res", "1", self_uuid, any_ue=True)
     create = AmfCreateEventSubscription(sub)
-    print(type(AmfEventType.ACCESS_TYPE_REPORT))
     #print(json.dumps(create.to_dict()))
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
