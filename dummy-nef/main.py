@@ -81,6 +81,7 @@ async def read_root():
             #data = '{"AmfCreateEventSubscription" :{"AmfEventSubscription": {"eventList": [{"type": "CONNECTIVITY_STATE_REPORT","immediateFlag": true}],"notifyUri": "http://10.102.141.12:80/amf-sub-res","notifyCorrelationId": "1","nfId": "5343ae63-424f-412d-8ccb-1677a20c8bcf"}}}'
             data = json.dumps(create.to_dict())
         )
+        print(json.dumps(create.to_dict()))
         print(response.text)
     return response.text
 

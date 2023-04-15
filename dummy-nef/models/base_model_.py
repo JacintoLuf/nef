@@ -32,25 +32,25 @@ class Model(object):
         for att in six.iteritems(self.attribute_map):
             print(type(att))
             print(att)
-        for attr, _ in six.iteritems(self.swagger_types):
+        for attr, _ in six.iteritems(self.attribute_map):
             print(type(attr))
             print("attr: %s", str(attr))
-            value = getattr(self, attr)
+            value = getattr(self, attr(0))
             if isinstance(value, list):
-                result[attr] = list(map(
+                result[attr(1)] = list(map(
                     lambda x: x.to_dict() if hasattr(x, "to_dict") else x,
                     value
                 ))
             elif hasattr(value, "to_dict"):
-                result[attr] = value.to_dict()
+                result[attr(1)] = value.to_dict()
             elif isinstance(value, dict):
-                result[attr] = dict(map(
+                result[attr(1)] = dict(map(
                     lambda item: (item[0], item[1].to_dict())
                     if hasattr(item[1], "to_dict") else item,
                     value.items()
                 ))
             else:
-                result[attr] = value
+                result[attr(1)] = value
 
         return result
 
