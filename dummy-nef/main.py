@@ -72,20 +72,28 @@ async def read_root():
     event = AmfEvent(type=AmfEventType.CONNECTIVITY_STATE_REPORT, immediate_flag=True)
     sub = AmfEventSubscription([event], "http://10.102.141.12:80/amf-sub-res", "1", self_uuid, any_ue=True)
     create = AmfCreateEventSubscription(sub)
-    #print(json.dumps(create.to_dict()))
     create_event = {"amfCreateEventSubscription": create.to_dict()}
-    print("---------------------dumped event--------------------")
-    print(json.dumps(event.to_dict()))
-    print("---------------------dumped create--------------------")
     print(json.dumps(create_event))
+    print(json.dumps(event.to_dict()))
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.post(
             "http://"+amf+"/namf-comm/v1/subscriptions/",
-            headers={'Accept': 'application/json'},#application/problem+json
-            #data = '{"AmfEventSubscription": {"eventList": [{"type": "CONNECTIVITY_STATE_REPORT","immediateFlag": true}],"notifyUri": "http://10.102.141.12:80/amf-sub-res","notifyCorrelationId": "1","nfId": "5343ae63-424f-412d-8ccb-1677a20c8bcf"}}'
-            #data = '{"AmfCreateEventSubscription" :{"AmfEventSubscription": {"eventList": [{"type": "CONNECTIVITY_STATE_REPORT","immediateFlag": true}],"notifyUri": "http://10.102.141.12:80/amf-sub-res","notifyCorrelationId": "1","nfId": "5343ae63-424f-412d-8ccb-1677a20c8bcf"}}}'
-            #data = json.dumps(create.to_dict())
+            headers={'Accept': 'application/json,application/problem+json'},
             data = json.dumps(create_event)
+        )
+        print(response.text)
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.post(
+            "http://"+amf+"/namf-comm/v1/subscriptions/",
+            headers={'Accept': 'application/json,application/problem+json'},
+            data = json.dumps(create.to_dict())
+        )
+        print(response.text)
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.post(
+            "http://"+amf+"/namf-comm/v1/subscriptions/",
+            headers={'Accept': 'application/json,application/problem+json'},
+            data = create
         )
         print(response.text)
     return response.text
