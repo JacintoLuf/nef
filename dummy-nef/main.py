@@ -74,8 +74,13 @@ async def read_root():
     create = AmfCreateEventSubscription(sub)
     create_event = {"AmfCreateEventSubscription": create.to_dict()}
     create_event2 = {"amfCreateEventSubscription": create.to_dict()}
+    create_event3 = {"amf_create_event_subscription": create.to_dict()}
     print("--------------------------------")
     print(json.dumps(create_event))
+    print("--------------------------------")
+    print(json.dumps(create_event2))
+    print("--------------------------------")
+    print(json.dumps(create_event3))
     print("--------------------------------")
     print(json.dumps(create.to_dict()))
     async with httpx.AsyncClient(http1=False, http2=True) as client:
@@ -96,6 +101,16 @@ async def read_root():
                 'Content-Type': 'application/json'
             },
             data = json.dumps(create_event2)
+        )
+        print(response.text)
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.post(
+            "http://"+amf+"/namf-comm/v1/subscriptions/",
+            headers={
+                'Accept': 'application/json,application/problem+json',
+                'Content-Type': 'application/json'
+            },
+            data = json.dumps(create_event3)
         )
         print(response.text)
     async with httpx.AsyncClient(http1=False, http2=True) as client:
