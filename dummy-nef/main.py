@@ -88,7 +88,7 @@ async def get_nf_ip(nf_type: str):
         response = await client.get(
             "http://"+nrf+"/nnrf-disc/v1/nf-instances",
             headers={'Accept': 'application/json,application/problem+json'},
-            params= {"target-nf-type": f"{nf_type}", "requester-nf-type": "NEF"}
+            params= {"target-nf-type": f"{nf_type.upper()}", "requester-nf-type": "NEF"}
         )
     try:
         keys = []
@@ -116,9 +116,9 @@ async def test_amf():
         response = await client.put(
             "http://"+nrf+"/namf-comm/v1/subscriptions/",
             headers={'Accept': 'application/json,application/problem+json'},
-            data = '{"AmfEventSubscription": {"eventList": [{"type": "CONNECTIVITY_STATE_REPORT","immediateFlag": true}],"notifyUri": "http://10.102.141.12:80/amf-sub-res","notifyCorrelationId": "1","nfId": "5343ae63-424f-412d-8ccb-1677a20c8bcf"}}'
+            #data = '{"AmfEventSubscription": {"eventList": [{"type": "CONNECTIVITY_STATE_REPORT","immediateFlag": true}],"notifyUri": "http://10.102.141.12:80/amf-sub-res","notifyCorrelationId": "1","nfId": "5343ae63-424f-412d-8ccb-1677a20c8bcf"}}'
             #data = '{"AmfCreateEventSubscription" :{"AmfEventSubscription": {"eventList": [{"type": "CONNECTIVITY_STATE_REPORT","immediateFlag": true}],"notifyUri": "http://10.102.141.12:80/amf-sub-res","notifyCorrelationId": "1","nfId": "5343ae63-424f-412d-8ccb-1677a20c8bcf"}}}'
-            #data = json.dumps(create.to_dict())
+            data = json.dumps(create.to_dict())
         )
         print(response.text)
     try:
