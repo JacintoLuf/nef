@@ -29,28 +29,25 @@ class Model(object):
         """
         result = {}
 
-        for att in six.iteritems(self.attribute_map):
-            print(type(att))
-            print(att)
-        for attr, _ in six.iteritems(self.attribute_map):
+        for attr, _ in six.iteritems(self.swagger_types):
             print(type(attr))
-            print("attr: %s", str(attr))
-            value = getattr(self, attr(0))
+            print("map %s -> %s", attr, self.attribute_map[attr])
+            value = getattr(self, attr)
             if isinstance(value, list):
-                result[attr(1)] = list(map(
+                result[attr] = list(map(
                     lambda x: x.to_dict() if hasattr(x, "to_dict") else x,
                     value
                 ))
             elif hasattr(value, "to_dict"):
-                result[attr(1)] = value.to_dict()
+                result[attr] = value.to_dict()
             elif isinstance(value, dict):
-                result[attr(1)] = dict(map(
+                result[attr] = dict(map(
                     lambda item: (item[0], item[1].to_dict())
                     if hasattr(item[1], "to_dict") else item,
                     value.items()
                 ))
             else:
-                result[attr(1)] = value
+                result[attr] = value
 
         return result
 
