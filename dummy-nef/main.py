@@ -82,13 +82,6 @@ async def read_root():
             data = json.dumps(create.to_dict())
         )
         print(response.text)
-    try:
-        keys = []
-        for key in response.json().keys():
-            keys.append(key)
-        print(keys)
-    except:
-        None
     return response.text
 
 @app.get("/users")

@@ -30,6 +30,7 @@ class Model(object):
         result = {}
 
         for att in six.iteritems(self.attribute_map):
+            print(type(att))
             print(att)
         for attr, _ in six.iteritems(self.swagger_types):
             print(type(attr))
