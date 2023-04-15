@@ -30,7 +30,9 @@ class Model(object):
         result = {}
 
         for attr, _ in six.iteritems(self.swagger_types):
+            print("attr: %s", str(attr))
             value = getattr(self, attr)
+            print("value: %s", str(value))
             if isinstance(value, list):
                 result[attr] = list(map(
                     lambda x: x.to_dict() if hasattr(x, "to_dict") else x,

@@ -55,8 +55,6 @@ async def startup():
                 #instances.append(json.loads(response.text))
                 instances.append(response.json())
                 result = collection.insert_one(json.loads(response.text))
-        js_formatted_str = json.dumps(instances, indent=4)
-        print(js_formatted_str)
 
     except Exception as e:
         logger.error(e)
@@ -90,14 +88,6 @@ async def get_nf_ip(nf_type: str):
             headers={'Accept': 'application/json,application/problem+json'},
             params= {"target-nf-type": f"{nf_type.upper()}", "requester-nf-type": "NEF"}
         )
-    try:
-        keys = []
-        for key in response.json().keys():
-            keys.append(key)
-        print(keys)
-    except:
-        None
-    print(response.json()["validityPeriod"])
     js = response.json()["nfInstances"]
     profiles = []
     for item in js:
@@ -111,7 +101,7 @@ async def test_amf():
     sub = AmfEventSubscription([event], "http://10.102.141.12:80/amf-sub-res", "1", self_uuid, any_ue=True)
     create = AmfCreateEventSubscription(sub)
     print(type(AmfEventType.ACCESS_TYPE_REPORT))
-    print(json.dumps(create.to_dict()))
+    #print(json.dumps(create.to_dict()))
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
             "http://"+nrf+"/namf-comm/v1/subscriptions/",
