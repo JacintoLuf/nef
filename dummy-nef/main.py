@@ -78,14 +78,20 @@ async def read_root():
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.post(
             "http://"+amf+"/namf-comm/v1/subscriptions/",
-            headers={'Accept': 'application/json,application/problem+json'},
+            headers={
+                'Accept': 'application/json,application/problem+json',
+                'Content-Type': 'application/json'
+            },
             data = json.dumps(create_event)
         )
         print(response.text)
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.post(
             "http://"+amf+"/namf-comm/v1/subscriptions/",
-            headers={'Accept': 'application/json,application/problem+json'},
+            headers={
+                'Accept': 'application/json,application/problem+json',
+                'Content-Type': 'application/json'
+            },
             data = json.dumps(event.to_dict())
         )
         print(response.text)
