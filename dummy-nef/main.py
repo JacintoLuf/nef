@@ -73,9 +73,7 @@ async def read_root():
     sub = AmfEventSubscription([event], "http://10.102.141.12:80/amf-sub-res", "1", self_uuid, any_ue=True)
     create = AmfCreateEventSubscription(sub)
     #print(json.dumps(create.to_dict()))
-    create_event = {"amf_create_event_subscription": create.to_dict()}
-    print("--------------------create event----------------")
-    print(create_event)
+    create_event = {"amfCreateEventSubscription": create.to_dict()}
     print("---------------------dumped--------------------")
     print(json.dumps(create_event))
     async with httpx.AsyncClient(http1=False, http2=True) as client:
@@ -84,6 +82,7 @@ async def read_root():
             headers={'Accept': 'application/json'},#application/problem+json
             #data = '{"AmfEventSubscription": {"eventList": [{"type": "CONNECTIVITY_STATE_REPORT","immediateFlag": true}],"notifyUri": "http://10.102.141.12:80/amf-sub-res","notifyCorrelationId": "1","nfId": "5343ae63-424f-412d-8ccb-1677a20c8bcf"}}'
             #data = '{"AmfCreateEventSubscription" :{"AmfEventSubscription": {"eventList": [{"type": "CONNECTIVITY_STATE_REPORT","immediateFlag": true}],"notifyUri": "http://10.102.141.12:80/amf-sub-res","notifyCorrelationId": "1","nfId": "5343ae63-424f-412d-8ccb-1677a20c8bcf"}}}'
+            #data = json.dumps(create.to_dict())
             data = json.dumps(create_event)
         )
         print(response.text)
