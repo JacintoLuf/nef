@@ -30,8 +30,6 @@ class Model(object):
         result = {}
 
         for attr, _ in six.iteritems(self.swagger_types):
-            print(type(attr))
-            print(f"map {attr} -> {self.attribute_map[attr]}")
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[self.attribute_map[attr]] = list(map(

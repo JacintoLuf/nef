@@ -73,15 +73,15 @@ async def read_root():
     sub = AmfEventSubscription([event], "http://10.102.141.12:80/amf-sub-res", "1", self_uuid, any_ue=True)
     create = AmfCreateEventSubscription(sub)
     #print(json.dumps(create.to_dict()))
+    create_event = {"AmfCreateEventSubscription": create.to_dict()}
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
             "http://"+nrf+"/namf-comm/v1/subscriptions/",
             headers={'Accept': 'application/json,application/problem+json'},
             #data = '{"AmfEventSubscription": {"eventList": [{"type": "CONNECTIVITY_STATE_REPORT","immediateFlag": true}],"notifyUri": "http://10.102.141.12:80/amf-sub-res","notifyCorrelationId": "1","nfId": "5343ae63-424f-412d-8ccb-1677a20c8bcf"}}'
             #data = '{"AmfCreateEventSubscription" :{"AmfEventSubscription": {"eventList": [{"type": "CONNECTIVITY_STATE_REPORT","immediateFlag": true}],"notifyUri": "http://10.102.141.12:80/amf-sub-res","notifyCorrelationId": "1","nfId": "5343ae63-424f-412d-8ccb-1677a20c8bcf"}}}'
-            data = json.dumps(create.to_dict())
+            data = json.dumps(create_event)
         )
-        print(json.dumps(create.to_dict()))
         print(response.text)
     return response.text
 
