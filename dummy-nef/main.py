@@ -86,7 +86,7 @@ async def read_root():
         response = await client.post(
             "http://"+amf+"/namf-comm/v1/subscriptions/",
             headers={'Accept': 'application/json,application/problem+json'},
-            data = json.dumps(create.to_dict())
+            data = json.dumps(event.to_dict())
         )
         print(response.text)
     return response.text
