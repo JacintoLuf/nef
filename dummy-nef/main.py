@@ -73,7 +73,7 @@ async def read_root():
     sub = AmfEventSubscription([event], "http://10.102.141.12:80/amf-sub-res", "1", self_uuid, any_ue=True)
     create = AmfCreateEventSubscription(sub)
     #print(json.dumps(create.to_dict()))
-    create_event = {"AmfCreateEventSubscription": create.to_dict()}
+    create_event = {"amf_create_event_subscription": create.to_dict()}
     print("--------------------create event----------------")
     print(create_event)
     print("---------------------dumped--------------------")
