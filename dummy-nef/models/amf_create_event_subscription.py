@@ -17,7 +17,7 @@ class AmfCreateEventSubscription(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, subscription: AmfEventSubscription=None, supported_features: str=None, old_guami: AmfCreateEventSubscriptionOldGuami=None):  # noqa: E501
+    def __init__(self, amf_event_subscription: AmfEventSubscription=None, supported_features: str=None, old_guami: AmfCreateEventSubscriptionOldGuami=None):  # noqa: E501
         """AmfCreateEventSubscription - a model defined in Swagger
 
         :param subscription: The subscription of this AmfCreateEventSubscription.  # noqa: E501
@@ -28,17 +28,17 @@ class AmfCreateEventSubscription(Model):
         :type old_guami: AmfCreateEventSubscriptionOldGuami
         """
         self.swagger_types = {
-            'subscription': AmfEventSubscription,
+            'amf_event_subscription': AmfEventSubscription,
             'supported_features': str,
             'old_guami': AmfCreateEventSubscriptionOldGuami
         }
 
         self.attribute_map = {
-            'subscription': 'AmfEventSubscription',
+            'amf_event_subscription': 'AmfEventSubscription',
             'supported_features': 'supportedFeatures',
             'old_guami': 'oldGuami'
         }
-        self._subscription = subscription
+        self._amf_event_subscription = amf_event_subscription
         self._supported_features = supported_features
         self._old_guami = old_guami
 
@@ -54,27 +54,27 @@ class AmfCreateEventSubscription(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def subscription(self) -> AmfEventSubscription:
+    def amf_event_subscription(self) -> AmfEventSubscription:
         """Gets the subscription of this AmfCreateEventSubscription.
 
 
         :return: The subscription of this AmfCreateEventSubscription.
         :rtype: AmfEventSubscription
         """
-        return self._subscription
+        return self._amf_event_subscription
 
-    @subscription.setter
-    def subscription(self, subscription: AmfEventSubscription):
+    @amf_event_subscription.setter
+    def subscription(self, amf_event_subscription: AmfEventSubscription):
         """Sets the subscription of this AmfCreateEventSubscription.
 
 
         :param subscription: The subscription of this AmfCreateEventSubscription.
         :type subscription: AmfEventSubscription
         """
-        if subscription is None:
+        if amf_event_subscription is None:
             raise ValueError("Invalid value for `subscription`, must not be `None`")  # noqa: E501
 
-        self._subscription = subscription
+        self._amf_event_subscription = amf_event_subscription
 
     @property
     def supported_features(self) -> str:
