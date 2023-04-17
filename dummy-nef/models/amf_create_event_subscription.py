@@ -34,7 +34,7 @@ class AmfCreateEventSubscription(Model):
         }
 
         self.attribute_map = {
-            'amf_event_subscription': 'AmfEventSubscription',
+            'amf_event_subscription': 'amfEventSubscription',
             'supported_features': 'supportedFeatures',
             'old_guami': 'oldGuami'
         }
