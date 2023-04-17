@@ -69,8 +69,8 @@ async def shutdown():
 @app.get("/")
 async def read_root():
     #return {"Hello": "World"}
-    event = AmfEvent(type=AmfEventType.CONNECTIVITY_STATE_REPORT, immediate_flag=True)
-    sub = AmfEventSubscription(event, "http://10.102.141.12:80/amf-sub-res", "1", str(uuid.uuid4()), any_ue=True)
+    event = AmfEvent(type=AmfEventType.CONNECTIVITY_STATE_REPORT)
+    sub = AmfEventSubscription([event], "http://10.102.141.12:80/amf-sub-res", "1", str(uuid.uuid4()), any_ue=True)
     create = AmfCreateEventSubscription(sub)
     create_event = {"AmfCreateEventSubscription": create.to_dict()}
     create_event2 = {"amfCreateEventSubscription": create.to_dict()}
