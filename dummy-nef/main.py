@@ -85,7 +85,7 @@ async def read_root():
     print(json.dumps(create.to_dict()))
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.post(
-            "http://"+amf+"/namf-comm/v1/subscriptions/",
+            "http://"+amf+"/namf-evts/v1/subscriptions",
             headers={
                 'Accept': 'application/json,application/problem+json',
                 'Content-Type': 'application/json'
@@ -95,7 +95,7 @@ async def read_root():
         print(response.text)
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.post(
-            "http://"+amf+"/namf-comm/v1/subscriptions/",
+            "http://"+amf+"/namf-evts/v1/subscriptions",
             headers={
                 'Accept': 'application/json,application/problem+json',
                 'Content-Type': 'application/json'
@@ -105,7 +105,7 @@ async def read_root():
         print(response.text)
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.post(
-            "http://"+amf+"/namf-comm/v1/subscriptions/",
+            "http://"+amf+"/namf-evts/v1/subscriptions",
             headers={
                 'Accept': 'application/json,application/problem+json',
                 'Content-Type': 'application/json'
@@ -115,7 +115,7 @@ async def read_root():
         print(response.text)
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.post(
-            "http://"+amf+"/namf-comm/v1/subscriptions/",
+            "http://"+amf+"/namf-evts/v1/subscriptions",
             headers={
                 'Accept': 'application/json,application/problem+json',
                 'Content-Type': 'application/json'
