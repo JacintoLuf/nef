@@ -18,8 +18,8 @@ app = FastAPI()
 logger = logging.getLogger(__name__)
 nef_profile = NFProfile()
 tmp = {}
-nrf = "10.106.127.186:80"
-amf = "10.111.27.77:80"
+nrf = "10.100.30.126:7777"
+amf = "10.108.158.206:7777"
 smf = "10.111.153.168:80"
 self_uuid = ""
 
@@ -73,16 +73,8 @@ async def read_root():
     sub = AmfEventSubscription([event], "http://10.102.141.12:80/amf-sub-res", "1", str(uuid.uuid4()), any_ue=True)
     create = AmfCreateEventSubscription(sub)
     create_event = {"AmfCreateEventSubscription": create.to_dict()}
-    create_event2 = {"amfCreateEventSubscription": create.to_dict()}
-    create_event3 = {"amf_create_event_subscription": create.to_dict()}
     print("--------------------------------")
     print(json.dumps(create_event))
-    print("--------------------------------")
-    print(json.dumps(create_event2))
-    print("--------------------------------")
-    print(json.dumps(create_event3))
-    print("--------------------------------")
-    print(json.dumps(create.to_dict()))
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.post(
             "http://"+amf+"/namf-evts/v1/subscriptions",
@@ -91,36 +83,6 @@ async def read_root():
                 'Content-Type': 'application/json'
             },
             data = json.dumps(create_event)
-        )
-        print(response.text)
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-        response = await client.post(
-            "http://"+amf+"/namf-evts/v1/subscriptions",
-            headers={
-                'Accept': 'application/json,application/problem+json',
-                'Content-Type': 'application/json'
-            },
-            data = json.dumps(create_event2)
-        )
-        print(response.text)
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-        response = await client.post(
-            "http://"+amf+"/namf-evts/v1/subscriptions",
-            headers={
-                'Accept': 'application/json,application/problem+json',
-                'Content-Type': 'application/json'
-            },
-            data = json.dumps(create_event3)
-        )
-        print(response.text)
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-        response = await client.post(
-            "http://"+amf+"/namf-evts/v1/subscriptions",
-            headers={
-                'Accept': 'application/json,application/problem+json',
-                'Content-Type': 'application/json'
-            },
-            data = json.dumps(create.to_dict())
         )
         print(response.text)
     return response.text
