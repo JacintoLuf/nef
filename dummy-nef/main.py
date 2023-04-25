@@ -54,9 +54,8 @@ async def startup():
                 )
                 instances.append(json.loads(response.text))
                 #instances.append(response.json())
-                print(response.json())
+                print(response.text)
                 result = collection.insert_one(json.loads(response.text))
-            print(instances)
     except Exception as e:
         logger.error(e)
         print(e)
