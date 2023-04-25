@@ -52,11 +52,11 @@ async def startup():
                     "http://"+nrf+"/nnrf-nfm/v1/nf-instances/"+id,
                     headers={'Accept': 'application/json'}
                 )
-                #instances.append(json.loads(response.text))
-                instances.append(response.json())
+                instances.append(json.loads(response.text))
+                #instances.append(response.json())
                 print(response.json())
                 result = collection.insert_one(json.loads(response.text))
-
+            print(instances)
     except Exception as e:
         logger.error(e)
         print(e)
