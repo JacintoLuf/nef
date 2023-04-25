@@ -82,7 +82,7 @@ async def read_root():
                 'Accept': 'application/json,application/problem+json',
                 'Content-Type': 'application/json'
             },
-            data = json.dumps(create_event)
+            data = json.dumps(create.to_dict())
         )
         print(response.text)
     return response.text
