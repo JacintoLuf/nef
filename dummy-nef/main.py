@@ -18,8 +18,8 @@ app = FastAPI()
 logger = logging.getLogger(__name__)
 nef_profile = NFProfile()
 tmp = {}
-nrf = "10.100.30.126:7777"
-amf = "10.108.158.206:7777"
+nrf = "10.103.218.237:7777"
+amf = "10.102.17.49:7777"
 smf = "10.111.153.168:80"
 self_uuid = ""
 
