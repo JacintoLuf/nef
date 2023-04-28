@@ -1,5 +1,5 @@
 from session import static_client
-from api.config import settings
+from api.config import config
 
 from schemas.user import UserCreate
 

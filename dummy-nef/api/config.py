@@ -1,17 +1,18 @@
+import os
 import uuid
 
 class Settings():
-    MONGO_URI = "mongodb://10.99.149.247/nef"
+    MONGO_IP = os.getenv('MONGO_IP')
+    MONGO_URI = "mongodb://"+MONGO_IP+"/nef"  #10.99.149.247
     #MONGO_URI = "mongodb://root:pass@nef-mongodb.open5gs.svc.cluster.local:27017/admin?authSource=admin"
-    MONGO_USER = "root"
-    MONGO_PASS = "pass"
     FIRST_SUPERUSER = "admin@it.av.pt"
     FIRST_SUPERUSER_PASSWORD = "1234"
 
     API_UUID = uuid.uuid4()
     
-    # def gen_uuid():
-    #     API_UUID = uuid.uuid4()
+    NRF_IP = os.getenv('NRF_IP')+":7777" or os.getenv('OPEN5GS-NRF-SBI-SERVICE-HOST')+":7777"
+    AMF_IP = os.getenv('AMF_IP')+":7777" or os.getenv('OPEN5GS-AMF-SBI-SERVICE-HOST')+":7777"
+    SMF_IP = os.getenv('SMF_IP')+":7777" or os.getenv('OPEN5GS-SMF-SBI-SERVICE-HOST')+":7777"
 
 
-settings = Settings()
+config = Settings()

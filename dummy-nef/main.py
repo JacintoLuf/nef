@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Response
-from session import static_client, async_client, close
+from session import async_client, close
 from init_db import init_db
 import httpx
 import logging
@@ -13,6 +13,7 @@ from models.amf_event import AmfEvent
 from enums.amf_event_type import AmfEventType
 from models.amf_event_notification import AmfEventNotification
 import uuid
+from api.config import config
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
@@ -34,7 +35,7 @@ async def startup():
         instances = []
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(
-                "http://"+nrf+"/nnrf-nfm/v1/nf-instances",
+                "http://"+config.NRF_IP+"/nnrf-nfm/v1/nf-instances",
                 headers={'Accept': 'application/json'}
             )
             logger.debug("resonse code: %s", response.status_code)
@@ -49,7 +50,7 @@ async def startup():
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             for id in uuids:
                 response = await client.get(
-                    "http://"+nrf+"/nnrf-nfm/v1/nf-instances/"+id,
+                    "http://"+config.NRF_IP+"/nnrf-nfm/v1/nf-instances/"+id,
                     headers={'Accept': 'application/json'}
                 )
                 instances.append(json.loads(response.text))
@@ -77,7 +78,7 @@ async def read_root():
     print(json.dumps(create_event))
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.post(
-            "http://"+amf+"/namf-comm/v1/subscriptions",
+            "http://"+config.AMF_IP+"/namf-comm/v1/subscriptions",
             headers={
                 'Accept': 'application/json,application/problem+json',
                 'Content-Type': 'application/json'

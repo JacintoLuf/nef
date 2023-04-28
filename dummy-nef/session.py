@@ -1,9 +1,9 @@
 from pymongo import MongoClient
 from motor.motor_asyncio import AsyncIOMotorClient
-from api.config import settings
+from api.config import config
 
-conn = MongoClient(settings.MONGO_URI)
-async_conn = AsyncIOMotorClient(settings.MONGO_URI)
+conn = MongoClient(config.MONGO_URI)
+async_conn = AsyncIOMotorClient(config.MONGO_URI)
 async_client = async_conn["nef"]
 static_client = conn["nef"]
 
