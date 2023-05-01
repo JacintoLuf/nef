@@ -69,24 +69,7 @@ async def shutdown():
 
 @app.get("/")
 async def read_root():
-    #return {"Hello": "World"}
-    event = AmfEvent(type=AmfEventType.CONNECTIVITY_STATE_REPORT)
-    sub = AmfEventSubscription([event], "http://10.102.141.12:80/amf-sub-res", "1", str(uuid.uuid4()), any_ue=True)
-    create = AmfCreateEventSubscription(sub)
-    create_event = {"AmfCreateEventSubscription": create.to_dict()}
-    print("--------------------------------")
-    print(json.dumps(create_event))
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-        response = await client.post(
-            "http://"+config.AMF_IP+"/namf-comm/v1/subscriptions",
-            headers={
-                'Accept': 'application/json,application/problem+json',
-                'Content-Type': 'application/json'
-            },
-            data = json.dumps(create_event)
-        )
-        print(response.text)
-    return response.text
+    return {"Hello": "World"}
 
 @app.get("/users")
 async def get_users():
@@ -96,6 +79,11 @@ async def get_users():
     async for user in collection.find({}):
         users.append(user)
     return str(user)
+
+@app.get("amf-sub-data")
+async def amf_comm():
+
+    return None
 
 @app.get("/ip/{nf_type}")
 async def get_nf_ip(nf_type: str):
@@ -115,26 +103,22 @@ async def get_nf_ip(nf_type: str):
 
 @app.get("/amf-sub")
 async def test_amf():
-    event = AmfEvent(type=AmfEventType.CONNECTIVITY_STATE_REPORT, immediate_flag=True)
-    sub = AmfEventSubscription([event], "http://10.102.141.12:80/amf-sub-res", "1", self_uuid, any_ue=True)
+    event = AmfEvent(type=AmfEventType.CONNECTIVITY_STATE_REPORT)
+    sub = AmfEventSubscription([event], "http://10.102.141.12:80/amf-sub-res", "1", str(uuid.uuid4()), any_ue=True)
     create = AmfCreateEventSubscription(sub)
-    #print(json.dumps(create.to_dict()))
+    create_event = {"AmfCreateEventSubscription": create.to_dict()}
+    print("--------------------------------")
+    print(json.dumps(create_event))
     async with httpx.AsyncClient(http1=False, http2=True) as client:
-        response = await client.put(
-            "http://"+nrf+"/namf-comm/v1/subscriptions/",
-            headers={'Accept': 'application/json,application/problem+json'},
-            #data = '{"AmfEventSubscription": {"eventList": [{"type": "CONNECTIVITY_STATE_REPORT","immediateFlag": true}],"notifyUri": "http://10.102.141.12:80/amf-sub-res","notifyCorrelationId": "1","nfId": "5343ae63-424f-412d-8ccb-1677a20c8bcf"}}'
-            #data = '{"AmfCreateEventSubscription" :{"AmfEventSubscription": {"eventList": [{"type": "CONNECTIVITY_STATE_REPORT","immediateFlag": true}],"notifyUri": "http://10.102.141.12:80/amf-sub-res","notifyCorrelationId": "1","nfId": "5343ae63-424f-412d-8ccb-1677a20c8bcf"}}}'
-            data = json.dumps(create.to_dict())
+        response = await client.post(
+            "http://"+config.AMF_IP+"/namf-comm/v1/subscriptions",
+            headers={
+                'Accept': 'application/json,application/problem+json',
+                'Content-Type': 'application/json'
+            },
+            data = json.dumps(create_event)
         )
         print(response.text)
-    try:
-        keys = []
-        for key in response.json().keys():
-            keys.append(key)
-        print(keys)
-    except:
-        None
     return response.text
 
 @app.post("/amf-sub-res")
