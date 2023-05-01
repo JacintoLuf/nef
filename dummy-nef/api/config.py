@@ -2,8 +2,11 @@ import os
 import uuid
 
 class Settings():
-    MONGO_IP = os.getenv('MONGO_IP')
-    MONGO_URI = "mongodb://"+MONGO_IP+"/nef"  #10.99.149.247
+    MONGO_IP = os.getenv('MONGO_IP') or os.getenv('NEF-MONGODB-SERVICE-HOST') or "10.99.149.247"
+    if os.getenv('NEF-MONGODB-SERVICE-HOST') is None:
+        print("no kube mongo host")
+        MONGO_IP = "10.99.149.247"  #10.99.149.247
+    MONGO_URI = "mongodb://"+MONGO_IP+"/nef"  
     #MONGO_URI = "mongodb://root:pass@nef-mongodb.open5gs.svc.cluster.local:27017/admin?authSource=admin"
     FIRST_SUPERUSER = "admin@it.av.pt"
     FIRST_SUPERUSER_PASSWORD = "1234"
