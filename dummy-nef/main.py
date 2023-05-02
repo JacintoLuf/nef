@@ -119,6 +119,11 @@ async def nrf_register_callback():
 
     return None
 
+@app.get("smf-policy-control")
+async def smf_policy_control():
+    #/npcf-smpolicycontrol/v1
+    return None
+
 @app.get("/ip/{nf_type}")
 async def get_nf_ip(nf_type: str):
 
