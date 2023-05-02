@@ -6,7 +6,6 @@ import logging
 import json
 import logging
 from models.nf_profile import NFProfile
-from models.nf_profile import NFProfile
 from models.amf_create_event_subscription import AmfCreateEventSubscription
 from models.amf_event_subscription import AmfEventSubscription
 from models.amf_event import AmfEvent
