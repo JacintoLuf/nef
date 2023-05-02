@@ -11,7 +11,7 @@ from models.amf_create_event_subscription import AmfCreateEventSubscription
 from models.amf_event_subscription import AmfEventSubscription
 from models.amf_event import AmfEvent
 from enums.amf_event_type import AmfEventType
-from models.amf_event_notification import AmfEventNotification
+from models.subscription_data import SubscriptionData
 import uuid
 from api.config import config
 
@@ -80,10 +80,21 @@ async def get_users():
         users.append(user)
     return str(user)
 
-@app.get("amf-sub-data")
+@app.get("amf-status")
 async def amf_comm():
-
-    return None
+    sub = SubscriptionData("http://10.102.141.12:80/amf-status-res", str(uuid.uuid4()), subscription_id="1")
+    print(json.dumps(sub))
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.post(
+            "http://"+config.AMF_IP+"/namf-comm/v1/subscriptions",
+            headers={
+                'Accept': 'application/json,application/problem+json',
+                'Content-Type': 'application/json'
+            },
+            data = json.dumps(sub)
+        )
+        print(response.text)
+    return response.text
 
 @app.get("/ip/{nf_type}")
 async def get_nf_ip(nf_type: str):
@@ -121,7 +132,7 @@ async def test_amf():
         print(response.text)
     return response.text
 
-@app.post("/amf-sub-res")
+@app.post("/amf-status-res")
 async def test_amf_res(data: dict):
     try:
         keys = []
@@ -131,7 +142,7 @@ async def test_amf_res(data: dict):
     except:
         None
     print(str(data))
-    sub = AmfEventSubscription.from_dict(data)
+    sub = SubscriptionData.from_dict(data)
     print(sub.to_str)
     return Response(status_code=204)
 
