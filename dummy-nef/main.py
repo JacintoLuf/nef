@@ -81,7 +81,7 @@ async def get_users():
 
 @app.get("amf-status")
 async def amf_comm():
-    sub = SubscriptionData("http://10.102.141.12:80/amf-status-res", str(uuid.uuid4()), subscription_id="1")
+    sub = SubscriptionData("http://10.102.141.12:80/amf-status-callback", str(uuid.uuid4()), subscription_id="1")
     print(json.dumps(sub))
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.post(
@@ -94,6 +94,30 @@ async def amf_comm():
         )
         print(response.text)
     return response.text
+
+@app.post("/amf-status-callback")
+async def amf_status_callback(data: dict):
+    try:
+        keys = []
+        for key in data.keys():
+            keys.append(key)
+        print(keys)
+    except:
+        None
+    print(str(data))
+    sub = SubscriptionData.from_dict(data)
+    print(sub.to_str)
+    return Response(status_code=204)
+
+@app.get("nrf-register")
+async def nrf_register():
+
+    return None
+
+@app.get("nrf-register-callback")
+async def nrf_register_callback():
+
+    return None
 
 @app.get("/ip/{nf_type}")
 async def get_nf_ip(nf_type: str):
@@ -130,20 +154,6 @@ async def test_amf():
         )
         print(response.text)
     return response.text
-
-@app.post("/amf-status-res")
-async def test_amf_res(data: dict):
-    try:
-        keys = []
-        for key in data.keys():
-            keys.append(key)
-        print(keys)
-    except:
-        None
-    print(str(data))
-    sub = SubscriptionData.from_dict(data)
-    print(sub.to_str)
-    return Response(status_code=204)
 
 @app.get("/nf-register")
 async def register_nf():
