@@ -16,7 +16,6 @@ from api.config import config
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
-nef_profile = NFProfile()
 tmp = {}
 nrf = "10.103.218.237:7777"
 amf = "10.102.17.49:7777"
@@ -111,8 +110,18 @@ async def amf_status_callback(data: dict):
 
 @app.get("nrf-register")
 async def nrf_register():
-
-    return None
+    nef_profile = config.nef_profile
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.put(
+            "http://"+nrf+"/nnrf-nfm/v1/nf-instances/"+config.API_UUID,
+            headers={
+                'Accept': 'application/json,application/problem+json',
+                'Content-Type': 'application/json'
+            },
+            data = json.dumps(nef_profile)
+        )
+    print(response.text)
+    return response.json()
 
 @app.get("nrf-register-callback")
 async def nrf_register_callback():
@@ -126,13 +135,13 @@ async def smf_policy_control():
 
 @app.get("/ip/{nf_type}")
 async def get_nf_ip(nf_type: str):
-
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
             "http://"+nrf+"/nnrf-disc/v1/nf-instances",
             headers={'Accept': 'application/json,application/problem+json'},
             params= {"target-nf-type": f"{nf_type.upper()}", "requester-nf-type": "NEF"}
         )
+    print(response.text)
     js = response.json()["nfInstances"]
     profiles = []
     for item in js:

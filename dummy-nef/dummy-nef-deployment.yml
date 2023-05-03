@@ -62,5 +62,5 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: nef-mongodb
   hostPath:
-    path: /path/on/host
+    path: /mnt/nef/mongodb
     type: DirectoryOrCreate
