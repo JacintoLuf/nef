@@ -61,6 +61,10 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: nef-mongodb
+  claimRef:
+    name: nef-mongodb
+    namespace: open5gs
   hostPath:
     path: /mnt/nef/mongodb
-    type: DirectoryOrCreate
+    type: ''
+  volumeMode: Filesystem
