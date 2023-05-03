@@ -51,28 +51,16 @@ spec:
 
 ---
 apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: nef-mongodb
-spec:
-  accessModes:
-    - "ReadWriteOnce"
-  resources:
-    requests:
-      storage: "8Gi"
-
----
-apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: nef-mongodb-pv-volume
+  name: nef-mongodb
 spec:
   capacity:
     storage: 8Gi
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: nef-mongodb-pv-volume
+  storageClassName: nef-mongodb
   hostPath:
     path: /path/on/host
     type: DirectoryOrCreate
