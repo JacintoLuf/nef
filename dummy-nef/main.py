@@ -128,9 +128,9 @@ async def nrf_register_callback():
 
     return None
 
-@app.get("smf-policy-control")
+@app.get("smf-pdu-session")
 async def smf_policy_control():
-    #/npcf-smpolicycontrol/v1
+    #/npcf-/v1
     return None
 
 @app.get("/ip/{nf_type}")

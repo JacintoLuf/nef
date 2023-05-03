@@ -30,7 +30,14 @@ class Settings():
             self.AMF_IP = "10.102.17.49:7777"
             self.SMF_IP = "10.111.153.168:80"
 
-        self.nef_profile = NFProfile(self.API_UUID, nf_type="NEF", nf_status="REGISTERED", ipv4_addresses=["10.102.141.12"], nf_service_list=[])
+        self.nef_profile = NFProfile(
+            self.API_UUID, nf_type="NEF",
+            nf_status="REGISTERED",
+            heart_beat_timer=10,
+            ipv4_addresses=["10.102.141.12"],
+            nf_service_list=[],
+            nf_profile_changes_support_ind=True
+        )
 
 
 config = Settings()
