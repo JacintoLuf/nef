@@ -33,7 +33,7 @@ async def startup():
         instances = []
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(
-                "http://"+config.NRF_IP+"/nnrf-nfm/v1/nf-instances",
+                "http://"+conf.NRF_IP+"/nnrf-nfm/v1/nf-instances",
                 headers={'Accept': 'application/json'}
             )
             logger.debug("resonse code: %s", response.status_code)
@@ -48,7 +48,7 @@ async def startup():
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             for id in uuids:
                 response = await client.get(
-                    "http://"+config.NRF_IP+"/nnrf-nfm/v1/nf-instances/"+id,
+                    "http://"+conf.NRF_IP+"/nnrf-nfm/v1/nf-instances/"+id,
                     headers={'Accept': 'application/json'}
                 )
                 instances.append(json.loads(response.text))
