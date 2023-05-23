@@ -12,7 +12,7 @@ from models.amf_event import AmfEvent
 from enums.amf_event_type import AmfEventType
 from models.subscription_data import SubscriptionData
 import uuid
-from api.config import config
+from api.config import conf
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
