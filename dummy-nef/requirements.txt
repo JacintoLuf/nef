@@ -6,6 +6,7 @@ pydantic[email]==1.7.3
 pymongo
 motor
 six==1.16.0
+kubernetes
 #hypercorn
 #hyper
 #httpx >= 0.19.0

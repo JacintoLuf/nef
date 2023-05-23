@@ -1,14 +1,32 @@
 import os
 import uuid
 from models.nf_profile import NFProfile
+from kubernetes import client, config
 
 class Settings():
     def __init__(self):
+        
+        config.load_kube_config()
+        v1 = client.CoreV1Api()
+        
+        namespace = "open5gs"
+        nef_svc_name = "nef"
+        nrf_svc_name = "open5gs-nrf"
+        pcf_svc_name = "open5gs-pcf"
+        udm_svc_name = "open5gs-udm"
+        udr_svc_name = "open5gs-udr"
+        bsf_svc_name = "open5gs-bsf"
+
+        svc = v1.read_namespaced_service(bsf_svc_name, namespace)
+        svc_ip = svc.spec.cluster_ip
+
+        print(f"BSF service IP: {svc_ip}")
+
         if os.getenv('MONGO_IP') is not None:
             self.MONGO_IP = os.getenv('MONGO_IP')
             print("Mongo DNS resolve docker-compose")
-        elif os.getenv('NEF-MONGODB-HOST') is not None:
-            self.MONGO_IP = os.getenv('NEF-MONGODB-HOST')
+        elif os.getenv('NEF_MONGODB_HOST') is not None:
+            self.MONGO_IP = os.getenv('NEF_MONGODB_HOST')
             print("Mongo DNS resolve kubernetes")
         else:
             self.MONGO_IP = "10.99.149.247"
@@ -25,10 +43,10 @@ class Settings():
             self.AMF_IP = os.getenv('AMF_IP')+":7777"
             self.SMF_IP = os.getenv('SMF_IP')+":7777"
             print("NFs DNS resolve docker-compose")
-        elif os.getenv('OPEN5GS-NRF-SBI-HOST') is not None and os.getenv('OPEN5GS-AMF-SBI-HOST') is not None and os.getenv('OPEN5GS-SMF-SBI-HOST') is not None:
-            self.NRF_IP = os.getenv('OPEN5GS-NRF-SBI-HOST')+":7777"
-            self.AMF_IP = os.getenv('OPEN5GS-AMF-SBI-HOST')+":7777"
-            self.SMF_IP = os.getenv('OPEN5GS-SMF-SBI-HOST')+":7777"
+        elif os.getenv('OPEN5GS_NRF_SBI_HOST') is not None and os.getenv('OPEN5GS_AMF_SBI_HOST') is not None and os.getenv('OPEN5GS_SMF_SBI_HOST') is not None:
+            self.NRF_IP = os.getenv('OPEN5GS_NRF_SBI_HOST')+":7777"
+            self.AMF_IP = os.getenv('OPEN5GS_AMF_SBI_HOST')+":7777"
+            self.SMF_IP = os.getenv('OPEN5GS_SMF_SBI_HOST')+":7777"
             print("NFs DNS resolve kubernetes")
         else:
             self.NRF_IP = "10.103.218.237:7777"
@@ -46,4 +64,4 @@ class Settings():
         )
 
 
-config = Settings()
+conf = Settings()

@@ -1,17 +1,17 @@
 from session import static_client
-from api.config import config
+from api.config import conf
 
 from schemas.user import UserCreate
 
 def init_db(db: static_client) -> None:
 
     collection = db["users"]
-    user = collection.find_one({'email': config.FIRST_SUPERUSER})
+    user = collection.find_one({'email': conf.FIRST_SUPERUSER})
     #user = crud.user.get_by_email(db, email=settings.FIRST_SUPERUSER)
     if not user:
         user_in = UserCreate(
-            email=config.FIRST_SUPERUSER,
-            password=config.FIRST_SUPERUSER_PASSWORD,
+            email=conf.FIRST_SUPERUSER,
+            password=conf.FIRST_SUPERUSER_PASSWORD,
             is_superuser=True,
         )
         result = collection.insert_one(user_in.__dict__)
