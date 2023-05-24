@@ -25,7 +25,7 @@ self_uuid = ""
 
 @app.on_event("startup")
 async def startup():
-    nrf_handler.nrf_discovery()
+    await nrf_handler.nrf_discovery()
     # try:
     #     db = async_client
     #     collection = db["nf_instances"]
