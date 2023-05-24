@@ -1,9 +1,9 @@
-from session import static_client
+from session import async_db
 from api.config import conf
 
 from schemas.user import UserCreate
 
-def init_db(db: static_client) -> None:
+def init_db(db: async_db) -> None:
 
     collection = db["users"]
     user = collection.find_one({'email': conf.FIRST_SUPERUSER})

@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Response
 from session import async_client, close
-from init_db import init_db
 import httpx
 import logging
 import json
