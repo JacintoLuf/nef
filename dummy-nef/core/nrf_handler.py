@@ -23,7 +23,7 @@ async def nrf_discovery():
             headers={'Accept': 'application/json,application/problem+json'},
             params = {'requester-nf-type': 'NEF'} #'target-nf-type': 'NSSF',  
         )
-        print(response.txt)
+        print(response.text)
     
     print("---------------------------------------")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
