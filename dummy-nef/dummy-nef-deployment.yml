@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nef-deployment
+  name: nef
   labels:
     app: nef
 spec:
@@ -14,6 +14,7 @@ spec:
       labels:
         app: nef
     spec:
+      ServiceAccountName: nef-account
       containers:
         - name: nef
           image: jacintoluf/nef:v1
@@ -68,3 +69,35 @@ spec:
     path: /mnt/nef/mongodb
     type: ''
   volumeMode: Filesystem
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nef-account
+#automountServiceAccountToken: false
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: open5gs
+  name: nef-services-read
+rules:
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nef-services-read-rb
+subjects:
+- kind: ServiceAccount
+  name: nef-account
+  namespace: open5gs
+roleRef:
+  kind: Role
+  name: nef-services-read
+  apiGroup: ""
