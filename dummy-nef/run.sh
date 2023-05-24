@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Delete previous existing deployment and service
-kubectl delete deployment -n open5gs nef-deployment
+kubectl delete deployment -n open5gs nef
 kubectl delete service -n open5gs nef
 
 # Find and delete the Docker image by name
