@@ -1,0 +1,59 @@
+import httpx
+import json
+import uuid
+from api.config import conf
+from session import async_client
+from models import nf_profile
+from crud import nf_profiles
+
+
+async def nrf_discovery():
+    db = async_client
+    collection = db["nf_instances"]
+    uuids = []
+    instances = []
+
+    print("discover NF profiles")
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.get(
+            "http://"+conf.NRF_IP+"/nnrf-disc/v1/nf-instances",
+            headers={'Accept': 'application/json,application/problem+json'},
+            params = {'requester-nf-type': 'NEF'} #'target-nf-type': 'PCF', 
+        )
+    print("---------------------------------------")
+    print("management get NF instances")
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.get(
+            "http://"+conf.NRF_IP+"/nnrf-nfm/v1/nf-instances",
+            headers={'Accept': 'application/json,application/problem+json'},
+        )
+        j = json.loads(response.text)
+        uuids = [i["href"].split('/')[-1] for i in j["_links"]["items"]]
+    print("---------------------------------------")
+    print("UUIDS")
+    print(uuids)
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        for id in uuids:
+            response = await client.get(
+                "http://"+conf.NRF_IP+"/nnrf-nfm/v1/nf-instances/"+id,
+                headers={'Accept': 'application/json'}
+            )
+            instances.append(json.loads(response.text))
+            #instances.append(response.json())
+            print(response.text)
+            #result = collection.insert_one(json.loads(response.text))
+    return None
+
+async def nf_register():
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.options(
+            "http://"+conf.NRF_IP+"/nnrf-nfm/v1/nf-instances",
+        )
+        print(f"NRF nf-instances OPTIONS: {response.text}")
+
+
+    return None
+
+def nf_deregister():
+
+    return None
