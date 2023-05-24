@@ -21,7 +21,7 @@ async def nrf_discovery():
         response = await client.get(
             "http://"+conf.NRF_IP+"/nnrf-disc/v1/nf-instances",
             headers={'Accept': 'application/json,application/problem+json'},
-            params = {'target-nf-type': 'NSSF', 'requester-nf-type': 'NEF'} 
+            params = {'target-nf-type': 'PCF', 'requester-nf-type': 'NEF'} 
         )
         print(response.text)
     
