@@ -2,13 +2,12 @@ import httpx
 import json
 import uuid
 from api.config import conf
-from session import async_client
+from session import async_db as db
 from models import nf_profile
 from crud import nf_profiles
 
 
 async def nrf_discovery():
-    db = async_client
     collection = db["nf_instances"]
     uuids = []
     instances = []
