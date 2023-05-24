@@ -5,7 +5,7 @@ metadata:
   labels:
     app: nef
 spec:
-  ServiceAccountName: nef-account
+  ServiceName: nef-account
   selector:
     matchLabels:
       app: nef
