@@ -95,6 +95,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: nef-account
+  namespace: open5gs
 roleRef:
   kind: ClusterRole
   name: nef-services-read
