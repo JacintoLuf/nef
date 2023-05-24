@@ -22,7 +22,7 @@ docker tag nef:latest jacintoluf/nef:v1
 docker push jacintoluf/nef:v1
 
 # Deploy the app to Kubernetes
-kubectl apply -n open5gs -f dummy-nef-deployment.yml
+kubectl apply -n open5gs -f nef-deployment.yml
 
 # Port forward to service
 #kubectl port-forward -n open5gs svc/nef 9000:80

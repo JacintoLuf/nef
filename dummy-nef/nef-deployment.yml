@@ -5,6 +5,7 @@ metadata:
   labels:
     app: nef
 spec:
+  ServiceAccountName: nef-account
   selector:
     matchLabels:
       app: nef
@@ -14,7 +15,6 @@ spec:
       labels:
         app: nef
     spec:
-      ServiceAccountName: nef-account
       containers:
         - name: nef
           image: jacintoluf/nef:v1
