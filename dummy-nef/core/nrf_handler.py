@@ -2,7 +2,7 @@ import httpx
 import json
 import uuid
 from api.config import conf
-from session import async_db as db
+from session import db
 from models import nf_profile
 from crud import nf_profiles
 
