@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Response
-from session import async_client, close
+from session import async_db, close
 import httpx
 import logging
 import json
@@ -69,14 +69,13 @@ async def shutdown():
 async def read_root():
     return {"Hello": "World"}
 
-@app.get("/users")
-async def get_users():
-
-    collection = async_client["users"]
-    users = []
+@app.get("/core")
+async def get_core_nf():
+    collection = async_db["nf_instances"]
+    insts = []
     async for user in collection.find({}):
-        users.append(user)
-    return str(user)
+        insts.append(user)
+    return str(insts)
 
 @app.get("amf-status")
 async def amf_comm():
@@ -84,7 +83,7 @@ async def amf_comm():
     print(json.dumps(sub))
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.post(
-            "http://"+config.AMF_IP+"/namf-comm/v1/subscriptions",
+            "http://"+conf.AMF_IP+"/namf-comm/v1/subscriptions",
             headers={
                 'Accept': 'application/json,application/problem+json',
                 'Content-Type': 'application/json'
@@ -110,10 +109,10 @@ async def amf_status_callback(data: dict):
 
 @app.get("nrf-register")
 async def nrf_register():
-    nef_profile = config.nef_profile
+    nef_profile = conf.nef_profile
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
-            "http://"+nrf+"/nnrf-nfm/v1/nf-instances/"+config.API_UUID,
+            "http://"+nrf+"/nnrf-nfm/v1/nf-instances/"+conf.API_UUID,
             headers={
                 'Accept': 'application/json,application/problem+json',
                 'Content-Type': 'application/json'
@@ -159,7 +158,7 @@ async def test_amf():
     print(json.dumps(create_event))
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.post(
-            "http://"+config.AMF_IP+"/namf-comm/v1/subscriptions",
+            "http://"+conf.AMF_IP+"/namf-comm/v1/subscriptions",
             headers={
                 'Accept': 'application/json,application/problem+json',
                 'Content-Type': 'application/json'
@@ -173,7 +172,7 @@ async def test_amf():
 async def register_nf():
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
-            "http://"+nrf+"/nnrf-nfm/v1/nf-instances/"+nef_profile.nf_instance_id,
+            "http://"+nrf+"/nnrf-nfm/v1/nf-instances/"+conf.nef_profile.nf_instance_id,
             headers={'Accept': 'application/json,application/problem+json'}
         )
         print(response.text)

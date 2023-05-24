@@ -5,7 +5,7 @@ from kubernetes import client, config
 
 class Settings():
     def __init__(self):
-        nfs = ['nef', 'nrf', 'pcf', 'udm', 'udr', 'bsf']
+        nfs = ['nrf', 'pcf', 'udm', 'udr', 'bsf']
         try:
             config.load_incluster_config()
             v1 = client.CoreV1Api()
