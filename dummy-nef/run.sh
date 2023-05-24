@@ -3,8 +3,8 @@
 # Delete previous existing deployment and service
 kubectl delete deployment -n open5gs nef
 kubectl delete service -n open5gs nef
-kubectl delete role -n open5gs nef-services-read
-kubectl delete rolebinding -n open5gs nef-services-read-rb
+kubectl delete clusterrole -n open5gs nef-services-read
+kubectl delete clusterrolebinding -n open5gs nef-services-read-rb
 kubectl delete serviceaccount -n open5gs nef-account
 
 # Find and delete the Docker image by name
