@@ -85,7 +85,7 @@ metadata:
   name: pods-list
 rules:
 - apiGroups: [""]
-  resources: ["pods"]
+  resources: ["pods", "services"]
   verbs: ["get", "watch", "list"]
 
 ---
