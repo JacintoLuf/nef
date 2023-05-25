@@ -30,7 +30,7 @@ async def nrf_discovery():
             profiles.append(NFProfile.from_dict(response.json()))
             print("deserialized")
             instances.append(response.json())
-    nfProfile.insert_many(instances)
+    #await nfProfile.insert_many(instances)
     conf.set_nf_endpoints(profiles)
     result = collection.insert_many(instances)
     result.inserted_ids
@@ -44,7 +44,13 @@ async def nf_register():
         )
         print(f"NRF nf-instances OPTIONS: {response.text}")
 
-
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.put(
+            "http://"+conf.NF_IP["NRF"]+"7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
+            headers={'Accept': 'application/json,application/problem+json'}
+        )
+        print(response.text)
+        
     return None
 
 def nf_deregister():

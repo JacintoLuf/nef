@@ -26,41 +26,8 @@ self_uuid = ""
 async def startup():
     print("starting up")
     await nrf_handler.nrf_discovery()
+    await nrf_handler.nf_deregister()
     print("started")
-    # try:
-    #     db = async_client
-    #     collection = db["nf_instances"]
-    #     init_db(db)
-    #     uuids = []
-    #     instances = []
-    #     async with httpx.AsyncClient(http1=False, http2=True) as client:
-    #         response = await client.get(
-    #             "http://"+conf.NRF_IP+"/nnrf-nfm/v1/nf-instances",
-    #             headers={'Accept': 'application/json'}
-    #         )
-    #         logger.debug("resonse code: %s", response.status_code)
-    #         j = json.loads(response.text)
-    #         uuids = [i["href"].split('/')[-1] for i in j["_links"]["items"]]
-
-    #         while True:
-    #             self_uuid = str(uuid.uuid4())
-    #             if self_uuid not in uuids:
-    #                 break
-
-    #     async with httpx.AsyncClient(http1=False, http2=True) as client:
-    #         for id in uuids:
-    #             response = await client.get(
-    #                 "http://"+conf.NRF_IP+"/nnrf-nfm/v1/nf-instances/"+id,
-    #                 headers={'Accept': 'application/json'}
-    #             )
-    #             instances.append(json.loads(response.text))
-    #             #instances.append(response.json())
-    #             print(response.text)
-    #             result = collection.insert_one(json.loads(response.text))
-    # except Exception as e:
-    #     logger.error(e)
-    #     print(e)
-    #     raise e
     
 @app.on_event("shutdown")
 async def shutdown():
