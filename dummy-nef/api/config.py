@@ -16,6 +16,7 @@ class Settings():
             
             namespace = "open5gs"
             mongodb_svc_name = "nef-mongodb"
+            #mongodb_svc_name = "open5gs-mongodb"
             nef_svc_name = "nef"
             nrf_svc_name = "open5gs-nrf-sbi"
 
@@ -54,6 +55,7 @@ class Settings():
 
 
         #MONGO_URI = "mongodb://root:pass@nef-mongodb.open5gs.svc.cluster.local:27017/admin?authSource=admin"
+        #self.MONGO_URI = "mongodb://"+self.MONGO_IP+"/nef"
         self.FIRST_SUPERUSER = "admin@it.av.pt"
         self.FIRST_SUPERUSER_PASSWORD = "1234"    
 

@@ -28,7 +28,6 @@ async def nrf_discovery():
                 headers={'Accept': 'application/json,application/problem+json'}
             )
             profiles.append(NFProfile.from_dict(response.json()))
-            print("deserialized")
             instances.append(response.json())
     #await nfProfile.insert_many(instances)
     conf.set_nf_endpoints(profiles)
@@ -50,7 +49,7 @@ async def nf_register():
             headers={'Accept': 'application/json,application/problem+json'}
         )
         print(response.text)
-        
+
     return None
 
 def nf_deregister():
