@@ -33,7 +33,7 @@ async def nrf_discovery():
     conf.set_nf_endpoints(profiles)
     result = collection.insert_many(instances)
     result.inserted_ids
-    print(collection.count_documents())
+    #print(collection.count_documents())
     return None
 
 async def nf_register():
