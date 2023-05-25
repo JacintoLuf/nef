@@ -94,7 +94,7 @@ metadata:
   name: nef-pods-list
 subjects:
 - kind: ServiceAccount
-  name: system:serviceaccount:open5gs:nef-account
+  name: nef-account
   namespace: open5gs
 roleRef:
   kind: ClusterRole
