@@ -8,6 +8,8 @@ class Settings():
     def __init__(self):
         self.NF_IP = {}
         self.MONGO_IP = ""
+        self.API_UUID = str(uuid.uuid4())
+        
         try:
             config.load_incluster_config()
             v1 = client.CoreV1Api()
@@ -51,11 +53,8 @@ class Settings():
         #MONGO_URI = "mongodb://root:pass@nef-mongodb.open5gs.svc.cluster.local:27017/admin?authSource=admin"
         self.MONGO_URI = "mongodb://"+self.MONGO_IP+"/nef"    
         self.FIRST_SUPERUSER = "admin@it.av.pt"
-        self.FIRST_SUPERUSER_PASSWORD = "1234"
+        self.FIRST_SUPERUSER_PASSWORD = "1234"    
 
-        #self.API_UUID = str(uuid.uuid4())
-        
-        
         self.NEF_PROFILE = NFProfile(
             self.API_UUID, nf_type="NEF",
             nf_status="REGISTERED",
