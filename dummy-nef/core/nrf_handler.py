@@ -27,12 +27,10 @@ async def nrf_discovery():
                 "http://"+conf.NF_IP["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances/"+id,
                 headers={'Accept': 'application/json,application/problem+json'}
             )
-            print(response.text)
-            # profile = response.json()["nfInstances"]
-            # profiles.append(NFProfile.from_dict(profile))
-            # print("deserialized")
-            # instances.append(profile)
-    #nfProfile.insert_many(instances)
+            profiles.append(NFProfile.from_dict(response.json()))
+            print("deserialized")
+            instances.append(response.json())
+    nfProfile.insert_many(instances)
     conf.set_nf_endpoints(profiles)
     result = collection.insert_many(instances)
     result.inserted_ids
