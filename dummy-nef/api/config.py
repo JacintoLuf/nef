@@ -7,6 +7,7 @@ from kubernetes import client, config
 class Settings():
     def __init__(self):
         self.NF_IP = {}
+        self.MONGO_IP = ""
         try:
             config.load_incluster_config()
             v1 = client.CoreV1Api()
@@ -19,6 +20,7 @@ class Settings():
             # Get mongodb service ip
             svc = v1.read_namespaced_service(mongodb_svc_name, namespace)
             self.NF_IP["mongodb"] = [svc.spec.cluster_ip]
+            self.MONGO_IP = svc.spec.cluster_ip
             print(f"MONGODB service IP: {svc.spec.cluster_ip}")
             # Get nef service ip
             svc = v1.read_namespaced_service(nef_svc_name, namespace)
