@@ -4,7 +4,7 @@ import uuid
 from api.config import conf
 from session import db
 from models import nf_profile
-from crud import nf_profiles
+from crud import nfProfile
 
 
 async def nrf_discovery():
