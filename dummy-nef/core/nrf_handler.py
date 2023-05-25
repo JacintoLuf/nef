@@ -12,16 +12,13 @@ async def nrf_discovery():
     uuids = []
     instances = []
 
-    x = collection.delete_many({})
-    print(x.deleted_count, " documents deleted.")
-
     print("---------------------------------------")
     print("discover NF profiles")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
             "http://"+conf.NRF_IP+"/nnrf-disc/v1/nf-instances",
             headers={'Accept': 'application/json,application/problem+json'},
-            params = {'target-nf-type': 'PCF', 'requester-nf-type': 'NEF'} 
+            params = {'target-nf-type': 'NRF', 'requester-nf-type': 'NEF'} 
         )
         print(response.text)
     
@@ -42,11 +39,9 @@ async def nrf_discovery():
             )
             instances.append(json.loads(response.text))
             #result = collection.insert_one(json.loads(response.text))
+    #nfProfile.insert_many(instances)
     result = collection.insert_many(instances)
     result.inserted_ids
-    print("after")
-    for inst in collection.find():
-        print(inst)
     return None
 
 async def nf_register():
