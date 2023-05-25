@@ -26,7 +26,7 @@ async def nrf_discovery():
     # print("---------------------------------------")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
-            "http://"+conf.NRF_IP+"/nnrf-nfm/v1/nf-instances",
+            "http://"+conf.NF_IP["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances",
             headers={'Accept': 'application/json,application/problem+json'},
         )
         j = json.loads(response.text)
@@ -35,7 +35,7 @@ async def nrf_discovery():
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         for id in uuids:
             response = await client.get(
-                "http://"+conf.NRF_IP+"/nnrf-nfm/v1/nf-instances/"+id,
+                "http://"+conf.NF_IP["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances/"+id,
                 headers={'Accept': 'application/json,application/problem+json'}
             )
             profile = response.json()["nfInstances"]

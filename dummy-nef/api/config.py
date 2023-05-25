@@ -22,16 +22,16 @@ class Settings():
 
             # Get mongodb service ip
             svc = v1.read_namespaced_service(mongodb_svc_name, namespace)
-            self.NF_IP["mongodb"] = [svc.spec.cluster_ip]
+            self.NF_IP["MONGODB"] = [svc.spec.cluster_ip]
             self.MONGO_IP = svc.spec.cluster_ip
             print(f"MONGODB service IP: {svc.spec.cluster_ip}")
             # Get nef service ip
             svc = v1.read_namespaced_service(nef_svc_name, namespace)
-            self.NF_IP["nef"] = [svc.spec.cluster_ip]
+            self.NF_IP["NEF"] = [svc.spec.cluster_ip]
             print(f"NEF service IP: {svc.spec.cluster_ip}")
             # Get nef service ip
             svc = v1.read_namespaced_service(nrf_svc_name, namespace)
-            self.NF_IP["nrf"] = [svc.spec.cluster_ip]
+            self.NF_IP["NRF"] = [svc.spec.cluster_ip]
             self.MONGO_IP = svc.spec.cluster_ip+":7777"
             print(f"NRF service IP: {svc.spec.cluster_ip}")
         except client.ApiException as e:
@@ -61,15 +61,15 @@ class Settings():
             self.API_UUID, nf_type="NEF",
             nf_status="REGISTERED",
             heart_beat_timer=10,
-            ipv4_addresses=self.NF_IP["nef"],
+            ipv4_addresses=self.NF_IP["NEF"],
             nf_service_list=[],
             nf_profile_changes_support_ind=True
         )
 
-    def set_api_uuid(self, uuid):
-        self.API_UUID = uuid
+    def set_new_api_uuid(self):
+        self.API_UUID = str(uuid.uuid4())
        
-        return 1
+        return self.API_UUID
     
     def set_nf_endpoints(self, profiles: List[NFProfile]):
         for profile in profiles:
