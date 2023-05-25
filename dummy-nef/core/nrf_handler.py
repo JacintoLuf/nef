@@ -34,7 +34,7 @@ async def nrf_discovery():
     result = collection.insert_many(instances)
     result.inserted_ids
     #print(collection.count_documents())
-    return None
+    return 1
 
 async def nf_register():
     async with httpx.AsyncClient(http1=False, http2=True) as client:
@@ -46,11 +46,12 @@ async def nf_register():
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
             "http://"+conf.NF_IP["NRF"]+"7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
-            headers={'Accept': 'application/json,application/problem+json'}
+            headers={'Accept': 'application/json,application/problem+json'},
+            data = conf.NEF_PROFILE.to_dict()
         )
         print(response.text)
 
-    return None
+    return 1
 
 def nf_deregister():
 

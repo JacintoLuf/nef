@@ -26,7 +26,7 @@ self_uuid = ""
 async def startup():
     print("starting up")
     await nrf_handler.nrf_discovery()
-    await nrf_handler.nf_deregister()
+    await nrf_handler.nf_register()
     print("started")
     
 @app.on_event("shutdown")
