@@ -21,7 +21,7 @@ class Settings():
             svc = v1.read_namespaced_service(bsf_svc_name, namespace)
             svc_ip = svc.spec.cluster_ip
             print(f"BSF service IP: {svc_ip}")
-        except client.rest.ApiException as e:
+        except client.ApiException as e:
             print(e)
         except Exception as e:
             print(e)
