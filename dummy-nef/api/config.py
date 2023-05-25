@@ -8,6 +8,7 @@ class Settings():
     def __init__(self):
         self.NF_IP = {}
         self.MONGO_IP = ""
+        self.MONGO_URI = ""
         self.NRF_IP = ""
         self.API_UUID = str(uuid.uuid4())
 
@@ -24,6 +25,7 @@ class Settings():
             svc = v1.read_namespaced_service(mongodb_svc_name, namespace)
             self.NF_IP["MONGODB"] = [svc.spec.cluster_ip]
             self.MONGO_IP = svc.spec.cluster_ip
+            self.MONGO_URI = "mongodb://"+svc.spec.cluster_ip+"/nef"    
             print(f"MONGODB service IP: {svc.spec.cluster_ip}")
             # Get nef service ip
             svc = v1.read_namespaced_service(nef_svc_name, namespace)
@@ -38,6 +40,7 @@ class Settings():
             print(e)
             if os.getenv('MONGO_IP') is not None:
                 self.MONGO_IP = os.getenv('MONGO_IP')
+                self.MONGO_URI = "mongodb://"+self.MONGO_IP+"/nef" 
                 print(f"Mongo DNS resolve docker-compose: {self.MONGO_IP}")
             else:
                 self.MONGO_IP = "10.109.39.130"
@@ -53,7 +56,7 @@ class Settings():
 
 
         #MONGO_URI = "mongodb://root:pass@nef-mongodb.open5gs.svc.cluster.local:27017/admin?authSource=admin"
-        self.MONGO_URI = "mongodb://"+self.MONGO_IP+"/nef"    
+        self.MONGO_URI = "mongodb://"+self.MONGO_IP+"/nef"
         self.FIRST_SUPERUSER = "admin@it.av.pt"
         self.FIRST_SUPERUSER_PASSWORD = "1234"    
 
