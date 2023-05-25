@@ -23,3 +23,15 @@ async def insert_many(profiles):
         return 0
     
     return 1
+
+async def update(profile):
+
+    return 1
+
+async def delete_one(profile):
+
+    return 1
+
+async def delete_many(profiles):
+
+    return 1

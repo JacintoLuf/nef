@@ -3,7 +3,7 @@ import json
 import uuid
 from api.config import conf
 from session import db
-from models import nf_profile
+from models.nf_profile import NFProfile
 from crud import nfProfile
 
 
@@ -11,18 +11,19 @@ async def nrf_discovery():
     collection = db["nf_instances"]
     uuids = []
     instances = []
+    profiles = []
 
-    print("---------------------------------------")
-    print("discover NF profiles")
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-        response = await client.get(
-            "http://"+conf.NRF_IP+"/nnrf-disc/v1/nf-instances",
-            headers={'Accept': 'application/json,application/problem+json'},
-            params = {'target-nf-type': 'NRF', 'requester-nf-type': 'NEF'} 
-        )
-        print(response.text)
+    # print("---------------------------------------")
+    # print("discover NF profiles")
+    # async with httpx.AsyncClient(http1=False, http2=True) as client:
+    #     response = await client.get(
+    #         "http://"+conf.NRF_IP+"/nnrf-disc/v1/nf-instances",
+    #         headers={'Accept': 'application/json,application/problem+json'},
+    #         params = {'target-nf-type': 'NRF', 'requester-nf-type': 'NEF'} 
+    #     )
+    #     print(response.text)
     
-    print("---------------------------------------")
+    # print("---------------------------------------")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
             "http://"+conf.NRF_IP+"/nnrf-nfm/v1/nf-instances",
@@ -37,11 +38,15 @@ async def nrf_discovery():
                 "http://"+conf.NRF_IP+"/nnrf-nfm/v1/nf-instances/"+id,
                 headers={'Accept': 'application/json,application/problem+json'}
             )
-            instances.append(json.loads(response.text))
-            #result = collection.insert_one(json.loads(response.text))
+            profile = response.json()["nfInstances"]
+            profiles.append(NFProfile.from_dict(profile))
+            print("deserialized")
+            instances.append(profile)
     #nfProfile.insert_many(instances)
+    conf.set_nf_endpoints(profiles)
     result = collection.insert_many(instances)
     result.inserted_ids
+    print(collection.count_documents())
     return None
 
 async def nf_register():

@@ -77,7 +77,7 @@ async def get_core_nf():
     insts = []
     async for user in collection.find({}):
         insts.append(user)
-    return str(insts)
+    return {'nfs instances': str(insts)}
 
 @app.get("amf-status")
 async def amf_comm():
@@ -111,7 +111,7 @@ async def amf_status_callback(data: dict):
 
 @app.get("nrf-register")
 async def nrf_register():
-    nef_profile = conf.nef_profile
+    nef_profile = conf.NEF_PROFILE
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
             "http://"+nrf+"/nnrf-nfm/v1/nf-instances/"+conf.API_UUID,
