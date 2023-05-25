@@ -8,6 +8,7 @@ class Settings():
     def __init__(self):
         self.NF_IP = {}
         self.MONGO_IP = ""
+        self.NRF_IP = ""
         self.API_UUID = str(uuid.uuid4())
 
         try:
@@ -31,6 +32,7 @@ class Settings():
             # Get nef service ip
             svc = v1.read_namespaced_service(nrf_svc_name, namespace)
             self.NF_IP["nrf"] = [svc.spec.cluster_ip]
+            self.MONGO_IP = svc.spec.cluster_ip+":7777"
             print(f"NRF service IP: {svc.spec.cluster_ip}")
         except client.ApiException as e:
             print(e)
