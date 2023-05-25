@@ -14,6 +14,7 @@ spec:
       labels:
         app: nef
     spec:
+      ServiceAccount: default
       serviceAccountName: default
       containers:
         - name: nef
@@ -81,7 +82,7 @@ spec:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: nef-pods-list
+  name: pods-list
 rules:
 - apiGroups: [""]
   resources: ["pods"]
@@ -91,12 +92,12 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: nef-pods-list
+  name: pods-list
 subjects:
 - kind: ServiceAccount
   name: default
-  namespace: open5gs
+  namespace: default
 roleRef:
   kind: ClusterRole
-  name: nef-pods-list
+  name: pods-list
   apiGroup: rbac.authorization.k8s.io
