@@ -39,13 +39,13 @@ async def nrf_discovery():
 async def nf_register():
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.options(
-            "http://"+conf.NF_IP["NRF"][0]+"7777/nnrf-nfm/v1/nf-instances",
+            "http://"+conf.NF_IP["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances",
         )
         print(f"NRF nf-instances OPTIONS: {response.text}")
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
-            "http://"+conf.NF_IP["NRF"][0]+"7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
+            "http://"+conf.NF_IP["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
             headers={'Accept': 'application/json,application/problem+json'},
             data = conf.NEF_PROFILE.to_dict()
         )
