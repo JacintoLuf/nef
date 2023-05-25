@@ -84,7 +84,7 @@ metadata:
 rules:
 - apiGroups: [""]
   resources: ["pods"]
-  verbs: ["list"]
+  verbs: ["get", "list"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -94,7 +94,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: default
-  namespace: open5gs
+  namespace: default
 roleRef:
   kind: ClusterRole
   name: pods-list
