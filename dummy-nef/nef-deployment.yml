@@ -94,7 +94,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: default
-  namespace: default
+  namespace: open5gs
 roleRef:
   kind: ClusterRole
   name: pods-list
