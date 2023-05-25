@@ -14,7 +14,7 @@ spec:
       labels:
         app: nef
     spec:
-      ServiceAccount: default
+      serviceAccount: default
       serviceAccountName: default
       containers:
         - name: nef
