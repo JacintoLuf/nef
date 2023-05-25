@@ -14,8 +14,6 @@ spec:
       labels:
         app: nef
     spec:
-      serviceAccount: default
-      serviceAccountName: default
       containers:
         - name: nef
           image: jacintoluf/nef:v1
