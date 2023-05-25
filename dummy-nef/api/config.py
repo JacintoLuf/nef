@@ -15,8 +15,8 @@ class Settings():
             v1 = client.CoreV1Api()
             
             namespace = "open5gs"
-            mongodb_svc_name = "nef-mongodb"
-            #mongodb_svc_name = "open5gs-mongodb"
+            #mongodb_svc_name = "nef-mongodb"
+            mongodb_svc_name = "open5gs-mongodb"
             nef_svc_name = "nef"
             nrf_svc_name = "open5gs-nrf-sbi"
 
