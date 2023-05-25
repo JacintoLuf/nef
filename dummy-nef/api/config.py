@@ -9,7 +9,7 @@ class Settings():
         self.NF_IP = {}
         self.MONGO_IP = ""
         self.API_UUID = str(uuid.uuid4())
-        
+
         try:
             config.load_incluster_config()
             v1 = client.CoreV1Api()
@@ -59,7 +59,7 @@ class Settings():
             self.API_UUID, nf_type="NEF",
             nf_status="REGISTERED",
             heart_beat_timer=10,
-            ipv4_addresses=self.NF_IP["NEF"],
+            ipv4_addresses=self.NF_IP["nef"],
             nf_service_list=[],
             nf_profile_changes_support_ind=True
         )
