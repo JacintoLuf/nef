@@ -12,15 +12,11 @@ class Settings():
             
             namespace = "open5gs"
             nef_svc_name = "nef"
-            nrf_svc_name = "open5gs-nrf"
-            pcf_svc_name = "open5gs-pcf"
-            udm_svc_name = "open5gs-udm"
-            udr_svc_name = "open5gs-udr"
-            bsf_svc_name = "open5gs-bsf"
+            nrf_svc_name = "open5gs-nrf-sbi"
 
-            svc = v1.read_namespaced_service(bsf_svc_name, namespace)
+            svc = v1.read_namespaced_service(nef_svc_name, namespace)
             svc_ip = svc.spec.cluster_ip
-            print(f"BSF service IP: {svc_ip}")
+            print(f"NEF service IP: {svc_ip}")
         except client.ApiException as e:
             print(e)
         except Exception as e:
