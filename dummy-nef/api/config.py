@@ -7,9 +7,7 @@ from kubernetes import client, config
 class Settings():
     def __init__(self):
         self.NF_IP = {}
-        self.MONGO_IP = ""
         self.MONGO_URI = ""
-        self.NRF_IP = ""
         self.API_UUID = str(uuid.uuid4())
 
         try:
@@ -23,7 +21,7 @@ class Settings():
 
             # Get mongodb service ip
             svc = v1.read_namespaced_service(mongodb_svc_name, namespace)
-            self.NF_IP["MONGODB"] = [svc.spec.cluster_ip]
+            self.NF_IP["MONGODB"] = svc.spec.cluster_ip
             self.MONGO_IP = svc.spec.cluster_ip
             self.MONGO_URI = "mongodb://"+svc.spec.cluster_ip+"/nef"    
             print(f"MONGODB service IP: {svc.spec.cluster_ip}")
@@ -39,24 +37,23 @@ class Settings():
         except client.ApiException as e:
             print(e)
             if os.getenv('MONGO_IP') is not None:
-                self.MONGO_IP = os.getenv('MONGO_IP')
-                self.MONGO_URI = "mongodb://"+self.MONGO_IP+"/nef" 
-                print(f"Mongo DNS resolve docker-compose: {self.MONGO_IP}")
+                self.NF_IP["MONGODB"] = os.getenv('MONGO_IP')
+                self.MONGO_URI = "mongodb://"+self.NF_IP["MONGODB"]+"/nef" 
+                print("Mongo DNS resolve docker-compose: "+self.NF_IP["MONGODB"])
             else:
-                self.MONGO_IP = "10.109.39.130"
-                print(f"Mongodb manually resolved: {self.MONGO_IP}")
+                self.NF_IP["MONGODB"] = "10.109.39.130"
+                print("Mongodb manually resolved: "+self.NF_IP["MONGODB"])
 
             if os.getenv('NRF_IP') is not None:
-                self.NRF_IP = os.getenv('NRF_IP')+":7777"
-                print(f"NFs DNS resolve docker-compose: {self.NRF_IP}")
+                self.NF_IP["NRF"] = os.getenv('NRF_IP')
+                print("NFs DNS resolve docker-compose: "+self.NF_IP["NRF"])
             else:
-                self.NRF_IP = "10.102.176.115:7777"
-                print(f"NRFs manually resolved: {self.NRF_IP}")
+                self.NF_IP["NRF"] = "10.102.176.115:7777"
+                print("NRFs manually resolved: "+self.NF_IP["NRF"])
 
 
 
         #MONGO_URI = "mongodb://root:pass@nef-mongodb.open5gs.svc.cluster.local:27017/admin?authSource=admin"
-        self.MONGO_URI = "mongodb://"+self.MONGO_IP+"/nef"
         self.FIRST_SUPERUSER = "admin@it.av.pt"
         self.FIRST_SUPERUSER_PASSWORD = "1234"    
 

@@ -13,17 +13,6 @@ async def nrf_discovery():
     instances = []
     profiles = []
 
-    # print("---------------------------------------")
-    # print("discover NF profiles")
-    # async with httpx.AsyncClient(http1=False, http2=True) as client:
-    #     response = await client.get(
-    #         "http://"+conf.NRF_IP+"/nnrf-disc/v1/nf-instances",
-    #         headers={'Accept': 'application/json,application/problem+json'},
-    #         params = {'target-nf-type': 'NRF', 'requester-nf-type': 'NEF'} 
-    #     )
-    #     print(response.text)
-    
-    # print("---------------------------------------")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
             "http://"+conf.NF_IP["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances",
@@ -52,7 +41,7 @@ async def nrf_discovery():
 async def nf_register():
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.options(
-            "http://"+conf.NRF_IP+"/nnrf-nfm/v1/nf-instances",
+            "http://"+conf.NF_IP["NRF"]+"7777/nnrf-nfm/v1/nf-instances",
         )
         print(f"NRF nf-instances OPTIONS: {response.text}")
 
