@@ -2,9 +2,9 @@ from pymongo import MongoClient
 from motor.motor_asyncio import AsyncIOMotorClient
 from api.config import conf
 
-#client = MongoClient(conf.NF_IP["MONGODB"], username='root', password='lKiOIOTwtJ')
+#client = MongoClient(conf.HOSTS["MONGODB"], username='root', password='lKiOIOTwtJ')
 #async_client = AsyncIOMotorClient(conf.MONGO_URI,username='root',password='lKiOIOTwtJ')
-client = MongoClient(conf.NF_IP["MONGODB"])
+client = MongoClient(conf.HOSTS["MONGODB"])
 async_client = AsyncIOMotorClient(conf.MONGO_URI)
 async_db = async_client["nef"]
 db = client["nef"]

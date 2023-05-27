@@ -17,7 +17,7 @@ async def nrf_discovery():
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
-            "http://"+conf.NF_IP["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances",
+            "http://"+conf.HOSTS["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances",
             headers={'Accept': 'application/json,application/problem+json'},
         )
         j = json.loads(response.text)
@@ -26,7 +26,7 @@ async def nrf_discovery():
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         for id in uuids:
             response = await client.get(
-                "http://"+conf.NF_IP["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances/"+id,
+                "http://"+conf.HOSTS["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances/"+id,
                 headers={'Accept': 'application/json,application/problem+json'}
             )
             profiles.append(NFProfile.from_dict(response.json()))
@@ -39,13 +39,10 @@ async def nrf_discovery():
     return 1
 
 async def nf_register():
-    nef = conf.NEF_PROFILE
-    print(conf.NEF_PROFILE.to_dict())
-    print(json.dumps(conf.NEF_PROFILE.to_dict()))
-    print(json.dumps(nef))
+
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
-            "http://"+conf.NF_IP["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
+            "http://"+conf.HOSTS["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
             headers={'Accept': 'application/json,application/problem+json'},
             data = {'NFProfile': json.dumps(conf.NEF_PROFILE.to_dict())}
         )

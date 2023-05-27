@@ -6,7 +6,7 @@ from kubernetes import client, config
 
 class Settings():
     def __init__(self):
-        self.NF_IP = {}
+        self.HOSTS = {}
         self.MONGO_URI = ""
         self.API_UUID = str(uuid.uuid4())
 
@@ -22,35 +22,35 @@ class Settings():
 
             # Get mongodb service ip
             svc = v1.read_namespaced_service(mongodb_svc_name, namespace)
-            self.NF_IP["MONGODB"] = svc.spec.cluster_ip
+            self.HOSTS["MONGODB"] = svc.spec.cluster_ip
             self.MONGO_IP = svc.spec.cluster_ip
             self.MONGO_URI = "mongodb://"+svc.spec.cluster_ip+"/nef"    
             print(f"MONGODB service IP: {svc.spec.cluster_ip}")
             # Get nef service ip
             svc = v1.read_namespaced_service(nef_svc_name, namespace)
-            self.NF_IP["NEF"] = [svc.spec.cluster_ip]
+            self.HOSTS["NEF"] = [svc.spec.cluster_ip]
             print(f"NEF service IP: {svc.spec.cluster_ip}")
             # Get nef service ip
             svc = v1.read_namespaced_service(nrf_svc_name, namespace)
-            self.NF_IP["NRF"] = [svc.spec.cluster_ip]
+            self.HOSTS["NRF"] = [svc.spec.cluster_ip]
             self.MONGO_IP = svc.spec.cluster_ip+":7777"
             print(f"NRF service IP: {svc.spec.cluster_ip}")
         except client.ApiException as e:
             print(e)
             if os.getenv('MONGO_IP') is not None:
-                self.NF_IP["MONGODB"] = os.getenv('MONGO_IP')
-                self.MONGO_URI = "mongodb://"+self.NF_IP["MONGODB"]+"/nef" 
-                print("Mongo DNS resolve docker-compose: "+self.NF_IP["MONGODB"])
+                self.HOSTS["MONGODB"] = os.getenv('MONGO_IP')
+                self.MONGO_URI = "mongodb://"+self.HOSTS["MONGODB"]+"/nef" 
+                print("Mongo DNS resolve docker-compose: "+self.HOSTS["MONGODB"])
             else:
-                self.NF_IP["MONGODB"] = "10.109.39.130"
-                print("Mongodb manually resolved: "+self.NF_IP["MONGODB"])
+                self.HOSTS["MONGODB"] = "10.109.39.130"
+                print("Mongodb manually resolved: "+self.HOSTS["MONGODB"])
 
             if os.getenv('NRF_IP') is not None:
-                self.NF_IP["NRF"] = os.getenv('NRF_IP')
-                print("NFs DNS resolve docker-compose: "+self.NF_IP["NRF"])
+                self.HOSTS["NRF"] = os.getenv('NRF_IP')
+                print("NFs DNS resolve docker-compose: "+self.HOSTS["NRF"])
             else:
-                self.NF_IP["NRF"] = "10.102.176.115:7777"
-                print("NRFs manually resolved: "+self.NF_IP["NRF"])
+                self.HOSTS["NRF"] = "10.102.176.115:7777"
+                print("NRFs manually resolved: "+self.HOSTS["NRF"])
 
 
 
@@ -63,7 +63,7 @@ class Settings():
             self.API_UUID, nf_type="NEF",
             nf_status="REGISTERED",
             heart_beat_timer=10,
-            ipv4_addresses=self.NF_IP["NEF"],
+            ipv4_addresses=self.HOSTS["NEF"],
             nf_service_list=[],
             nf_profile_changes_support_ind=True
         )
@@ -75,7 +75,7 @@ class Settings():
     
     def set_nf_endpoints(self, profiles: List[NFProfile]):
         for profile in profiles:
-            self.NF_IP[profile.nf_type] = profile.ipv4_addresses
+            self.HOSTS[profile.nf_type] = profile.ipv4_addresses
 
         return 1
 
