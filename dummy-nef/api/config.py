@@ -25,16 +25,16 @@ class Settings():
             self.HOSTS["MONGODB"] = svc.spec.cluster_ip
             self.MONGO_IP = svc.spec.cluster_ip
             self.MONGO_URI = "mongodb://"+svc.spec.cluster_ip+"/nef"    
-            print(f"MONGODB service IP: {svc.spec.cluster_ip}")
+            #print(f"MONGODB service IP: {svc.spec.cluster_ip}")
             # Get nef service ip
             svc = v1.read_namespaced_service(nef_svc_name, namespace)
             self.HOSTS["NEF"] = [svc.spec.cluster_ip]
-            print(f"NEF service IP: {svc.spec.cluster_ip}")
+            #print(f"NEF service IP: {svc.spec.cluster_ip}")
             # Get nef service ip
             svc = v1.read_namespaced_service(nrf_svc_name, namespace)
             self.HOSTS["NRF"] = [svc.spec.cluster_ip]
             self.MONGO_IP = svc.spec.cluster_ip+":7777"
-            print(f"NRF service IP: {svc.spec.cluster_ip}")
+            #print(f"NRF service IP: {svc.spec.cluster_ip}")
         except client.ApiException as e:
             print(e)
             if os.getenv('MONGO_IP') is not None:
