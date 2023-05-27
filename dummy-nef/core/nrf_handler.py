@@ -7,7 +7,7 @@ from models.nf_profile import NFProfile
 from crud import nfProfile
 
 
-async def nrf_discovery():
+async def nrf_discovery() -> str:
     collection = db["nf_instances"]
     uuids = []
     instances = []
@@ -36,9 +36,11 @@ async def nrf_discovery():
     result = collection.insert_many(instances)
     result.inserted_ids
     #print(collection.count_documents())
-    return 1
+    return "NF profiles loaded"
 
-async def nf_register():
+async def nf_register() -> str:
+
+    print({'NFProfile': json.dumps(conf.NEF_PROFILE.to_dict())})
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
@@ -48,7 +50,7 @@ async def nf_register():
         )
         print(response.text)
 
-    return 1
+    return response.text
 
 def nf_deregister():
 
