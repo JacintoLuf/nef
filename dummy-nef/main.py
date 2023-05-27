@@ -15,18 +15,19 @@ import core.nrf_handler as nrf_handler
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
-tmp = {}
-nrf = "10.103.218.237:7777"
-amf = "10.102.17.49:7777"
-smf = "10.111.153.168:80"
-self_uuid = ""
 
 
 @app.on_event("startup")
 async def startup():
     print("starting up")
-    await nrf_handler.nrf_discovery()
-    await nrf_handler.nf_register()
+    
+    res = await nrf_handler.nrf_discovery()
+    if res == 1:
+        print("NF instances discovered")
+    res = await nrf_handler.nf_register()
+    if res == 1:
+        print("NF registered")
+        
     print("started")
     
 @app.on_event("shutdown")
