@@ -227,12 +227,12 @@
         "nfStatus": "REGISTERED",
         "heartBeatTimer": 10,
         "ipv4Addresses": ["10.102.141.12"],
-        "nfServicePersistence": false,
-        "nfServiceList": [],
+        -"nfServicePersistence": false,
+        -"nfServiceList": [],
         "nfProfileChangesSupportInd": true,
-        "nfProfileChangesInd": false,
-        "lcHSupportInd": false,
-        "olcHSupportInd": false
+        -"nfProfileChangesInd": false,
+        -"lcHSupportInd": false,
+        -"olcHSupportInd": false
             
 }
       
