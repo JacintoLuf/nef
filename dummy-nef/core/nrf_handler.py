@@ -35,12 +35,14 @@ async def nrf_discovery() -> str:
     conf.set_nf_endpoints(profiles)
     result = collection.insert_many(instances)
     result.inserted_ids
+    print(instances[0])
     #print(collection.count_documents())
     return "NF profiles loaded"
 
 async def nf_register() -> str:
 
-    print({'NFProfile': json.dumps(conf.NEF_PROFILE.to_dict())})
+    print(type(conf.NEF_PROFILE.to_dict()))
+    print(json.dumps(conf.NEF_PROFILE.to_dict()))
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(

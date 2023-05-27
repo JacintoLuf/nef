@@ -221,70 +221,18 @@
             }],
     "nfProfileChangesSupportInd":   true,
 
-        "nfInstanceId": "123e4567-e89b-12d3-a456-426655440000",
+        
+        "nfInstanceId": "8bef85c5-731d-4179-a3d0-b9ec38fc01bb",
         "nfType": "NEF",
         "nfStatus": "REGISTERED",
         "heartBeatTimer": 10,
-        "ipv4Addresses": ["192.168.1.1"],
-        "nfServices": [{
-                        "serviceInstanceId": "123e4567-e89b-12d3-a456-426655440001",
-                        "serviceName": "nnef-nsmf",
-                        "versions": [{
-                                "apiVersionInUri": "v1",
-                                "apiFullVersion": "1.0.0"
-                        }],
-                        "scheme": "http",
-                        "nfServiceStatus": "REGISTERED",
-                        "ipEndPoints": [{
-                                "ipv4Address": "192.168.1.1"
-                        }]
-                }],
+        "ipv4Addresses": ["10.102.141.12"],
+        "nfServicePersistence": false,
+        "nfServiceList": [],
         "nfProfileChangesSupportInd": true,
-
-        
-        "nfInstanceId": "1234-5678-9012",
-        "nfType": "NEF",
-        "nfStatus": "REGISTERED",
-        "ipv4Addresses": ["192.168.1.1"],
-        "nfServices": [
-                {
-                "serviceInstanceId": "1",
-                "serviceName": "nudm_ue_authentication",
-                "versions": [
-                        {
-                        "apiVersionInUri": "v1",
-                        "apiFullVersion": "1.0.0"
-                        }
-                ],
-                "scheme": "http",
-                "nfServiceStatus": "REGISTERED",
-                "ipEndPoints": [
-                        {
-                        "ipv4Address": "192.168.1.1",
-                        "port": 443
-                        }
-                ]
-                },
-                {
-                "serviceInstanceId": "2",
-                "serviceName": "nudm_ue_context",
-                "versions": [
-                        {
-                        "apiVersionInUri": "v1",
-                        "apiFullVersion": "1.0.0"
-                        }
-                ],
-                "scheme": "http",
-                "nfServiceStatus": "REGISTERED",
-                "ipEndPoints": [
-                        {
-                        "ipv4Address": "192.168.1.1",
-                        "port": 443
-                        }
-                ]
-                }
-        ],
-        "nfProfileChangesSupportInd": true
+        "nfProfileChangesInd": false,
+        "lcHSupportInd": false,
+        "olcHSupportInd": false
             
 }
       

@@ -64,6 +64,7 @@ class Settings():
             nf_status="REGISTERED",
             heart_beat_timer=10,
             ipv4_addresses=self.HOSTS["NEF"],
+            nf_services=[],
             nf_service_list=[],
             nf_profile_changes_support_ind=True
         )
