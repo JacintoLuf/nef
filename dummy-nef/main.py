@@ -24,7 +24,7 @@ async def startup():
     res = await nrf_handler.nrf_discovery()
     print(res)
     res = await nrf_handler.nf_register()
-    print(res.text)
+    print(res)
         
     print("started")
     
