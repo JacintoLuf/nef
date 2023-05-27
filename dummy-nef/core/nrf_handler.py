@@ -40,15 +40,13 @@ async def nrf_discovery() -> str:
     return "NF profiles loaded"
 
 async def nf_register() -> str:
-
-    print(type(conf.NEF_PROFILE.to_dict()))
     print(json.dumps(conf.NEF_PROFILE.to_dict()))
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
             "http://"+conf.HOSTS["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
             headers={'Accept': 'application/json,application/problem+json'},
-            data = {'NFProfile': json.dumps(conf.NEF_PROFILE.to_dict())}
+            data = json.dumps(conf.NEF_PROFILE.to_dict())
         )
         print(response.text)
 
