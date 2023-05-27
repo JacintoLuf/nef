@@ -22,11 +22,9 @@ async def startup():
     print("starting up")
     
     res = await nrf_handler.nrf_discovery()
-    if res == 1:
-        print("NF instances discovered")
+    print(res)
     res = await nrf_handler.nf_register()
-    if res == 1:
-        print("NF registered")
+    print(res.text)
         
     print("started")
     
