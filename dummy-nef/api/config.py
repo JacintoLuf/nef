@@ -2,6 +2,7 @@ import os
 import uuid
 from typing import List
 from models.nf_profile import NFProfile
+from models.nef_info import NefInfo
 from kubernetes import client, config
 
 class Settings():
@@ -63,7 +64,8 @@ class Settings():
             self.API_UUID, nf_type="NEF",
             nf_status="REGISTERED",
             heart_beat_timer=10,
-            ipv4_addresses=self.HOSTS["NEF"]
+            ipv4_addresses=self.HOSTS["NEF"],
+            nef_info=NefInfo()
         )
 
     def set_new_api_uuid(self):
