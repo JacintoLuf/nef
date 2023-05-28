@@ -46,7 +46,7 @@ async def nf_register() -> str:
         response = await client.put(
             "http://"+conf.HOSTS["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
             headers={
-                'Accept': 'application/json,application/problem+json'
+                'Accept': 'application/json,application/problem+json',
                 'Content-Type': 'application/json-patch+json'
                 },
             data = json.dumps(conf.NEF_PROFILE.to_dict())
