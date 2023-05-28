@@ -42,11 +42,11 @@ async def nrf_discovery() -> str:
 async def nf_register() -> str:
     print(json.dumps(conf.NEF_PROFILE.to_dict()))
     nef_profile = conf.NEF_PROFILE.to_dict()
-    nef_profile.pop('nf_service_persistence')
-    nef_profile.pop('nf_profile_changes_support_ind')
-    nef_profile.pop('nf_profile_changes_ind')
-    nef_profile.pop('lc_h_support_ind')
-    nef_profile.pop('olc_h_support_ind')
+    nef_profile.pop('nfServicePersistence')
+    nef_profile.pop('nfProfileChangesSupportInd')
+    nef_profile.pop('nfProfileChangesInd')
+    nef_profile.pop('lcHSupportInd')
+    nef_profile.pop('olcHSupportInd')
     print(nef_profile)
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
