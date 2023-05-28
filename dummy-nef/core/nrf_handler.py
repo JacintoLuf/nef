@@ -54,7 +54,7 @@ async def nf_register() -> str:
             "http://"+conf.HOSTS["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
             headers={
                 'Accept': 'application/json,application/problem+json',
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
                 },
             data = nef_profile
         )
