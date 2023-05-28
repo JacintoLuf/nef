@@ -47,6 +47,7 @@ async def nf_register() -> str:
     nef_profile.pop('nf_profile_changes_ind')
     nef_profile.pop('lc_h_support_ind')
     nef_profile.pop('olc_h_support_ind')
+    print(nef_profile)
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
@@ -55,7 +56,7 @@ async def nf_register() -> str:
                 'Accept': 'application/json,application/problem+json',
                 'Content-Type': 'application/json-patch+json'
                 },
-            data = json.dumps(conf.NEF_PROFILE.to_dict())
+            data = nef_profile
         )
         print(response.text)
 
