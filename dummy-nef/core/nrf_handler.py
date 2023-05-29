@@ -57,7 +57,7 @@ async def nf_register() -> str:
                 'Content-Encoding': 'string',
                 'Content-Type': 'application/json'
                 },
-            data = json.loads(nef_profile)
+            data = json.dumps(nef_profile)
         )
         print(response.text)
 
