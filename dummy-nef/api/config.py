@@ -61,10 +61,11 @@ class Settings():
         self.FIRST_SUPERUSER_PASSWORD = "1234"    
 
         self.NEF_PROFILE = NFProfile(
-            self.API_UUID, nf_type="NEF",
+            nf_instance_id=self.API_UUID,
+            nf_type="NEF",
             nf_status="REGISTERED",
-            heart_beat_timer=10,
-            ipv4_addresses=self.HOSTS["NEF"]
+            # heart_beat_timer=10,
+            # ipv4_addresses=self.HOSTS["NEF"]
         )
 
     def set_new_api_uuid(self):
