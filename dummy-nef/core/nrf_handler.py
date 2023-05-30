@@ -5,14 +5,13 @@ from session import db
 from models.nf_profile import NFProfile
 from crud import nfProfile
 
-
 async def nrf_discovery() -> int:
     collection = db["nf_instances"]
     uuids = []
     instances = []
     profiles = []
 
-    #collection.delete_many({})
+    collection.delete_many({})
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
@@ -21,9 +20,6 @@ async def nrf_discovery() -> int:
         )
         j = json.loads(response.text)
         uuids = [i["href"].split('/')[-1] for i in j["_links"]["items"]]
-
-        if response.status_code is not httpx.codes.OK:
-            return response.status_code
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         for id in uuids:
@@ -76,7 +72,8 @@ async def nf_deregister():
     return response.status_code
 
 async def nf_register_heart_beat():
-
+    conf.count += 1
+    print(f"heart beat count: {conf.count}")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.patch(
             "http://"+conf.HOSTS["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,

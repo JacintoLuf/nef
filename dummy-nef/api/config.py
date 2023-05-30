@@ -68,6 +68,8 @@ class Settings():
             ipv4_addresses=self.HOSTS["NEF"]
         )
 
+        self.count = 0
+
     def set_new_api_uuid(self):
         self.API_UUID = str(uuid.uuid4())
        
