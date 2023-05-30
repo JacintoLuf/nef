@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 async def startup():
     print("starting up")
     res = await nrf_handler.nrf_discovery()
-    print(res)
     res = await nrf_handler.nf_register()
     if res == httpx.codes.CREATED:
         nrf_heartbeat()  
@@ -22,7 +21,7 @@ async def startup():
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 5)
 async def nrf_heartbeat():
-    nrf_handler.nf_register_heart_beat()
+    await nrf_handler.nf_register_heart_beat()
     
 @app.on_event("shutdown")
 async def shutdown():

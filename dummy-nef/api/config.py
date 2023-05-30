@@ -64,7 +64,7 @@ class Settings():
             nf_instance_id=self.API_UUID,
             nf_type="NEF",
             nf_status="REGISTERED",
-            heart_beat_timer=10,
+            heart_beat_timer=60,
             ipv4_addresses=self.HOSTS["NEF"]
         )
 

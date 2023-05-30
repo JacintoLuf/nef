@@ -12,7 +12,7 @@ async def nrf_discovery() -> int:
     instances = []
     profiles = []
 
-    collection.delete_many({})
+    #collection.delete_many({})
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
@@ -36,14 +36,13 @@ async def nrf_discovery() -> int:
     #await nfProfile.insert_many(instances)
     conf.set_nf_endpoints(profiles)
     result = collection.insert_many(instances)
+    #result = collection.update_many(instances)
     result.inserted_ids
-    print(instances[0])
+    print("Core NF instances saved")
 
     return response.status_code
 
 async def nf_register() -> int:
-    nef_profile = conf.NEF_PROFILE.to_dict()
-    print(nef_profile)
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
@@ -56,6 +55,8 @@ async def nf_register() -> int:
         )
         print(response.status_code)
         print(response.text)
+        if response.status_code == httpx.codes.CREATED:
+            print("NEF Registerd")
 
     return response.status_code
 
