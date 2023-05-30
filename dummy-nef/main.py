@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 @app.on_event("startup")
 async def startup():
     print("starting up")
+    print(f"api uuid: {conf.NEF_PROFILE.nf_instance_id}")
     res = await nrf_handler.nrf_discovery()
     res = await nrf_handler.nf_register()
     if res == httpx.codes.CREATED:
