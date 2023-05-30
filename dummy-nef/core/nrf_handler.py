@@ -56,7 +56,11 @@ async def nf_register() -> int:
 
     return response.status_code
 
-async def nf_deregister():
+async def nf_upfate() -> int:
+
+    return 1
+
+async def nf_deregister() -> int:
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.delete(
             "http://"+conf.HOSTS["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
@@ -71,7 +75,7 @@ async def nf_deregister():
 
     return response.status_code
 
-async def nf_register_heart_beat():
+async def nf_register_heart_beat() -> int:
     conf.count += 1
     print(f"heart beat count: {conf.count}")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
@@ -83,8 +87,6 @@ async def nf_register_heart_beat():
                 },
             data = json.dumps([{ "op": "replace", "path": "/nfStatus", "value": "REGISTERED" }])
         )
-        print(response.status_code)
-        print(response.text)
         if response.status_code == httpx.codes.OK:
             new_nef_profile = NFProfile.from_dict(response.json())
             print(f"new profile {json.dumps(new_nef_profile)}")
@@ -92,4 +94,17 @@ async def nf_register_heart_beat():
             print("NRF Heart-Beat!")
         elif response.status_code == httpx.codes.NOT_FOUND:
             print("NEF instance not registered")
-    return 
+
+    return response.status_code
+
+async def nf_status_subscribe() -> int:
+
+    return 1
+
+async def nf_status_notify() -> int:
+
+    return 1
+
+async def nf_status_unsubscribe() -> int:
+
+    return 1

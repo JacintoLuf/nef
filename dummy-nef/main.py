@@ -35,8 +35,6 @@ async def read_root():
     insts = []
     async for user in collection.find({}):
         insts.append(user)
-    print("---------------------------")
-    print(insts)
     return {'nfs instances': str(insts)}
 
 
