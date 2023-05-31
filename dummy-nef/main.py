@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi_utils.tasks import repeat_every
 from session import async_db
 import httpx
@@ -37,4 +37,26 @@ async def read_root():
         insts.append(user)
     return {'nfs instances': str(insts)}
 
+@app.post("/ti_create")
+async def ti_create():
+    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions
+    #res code: 201 
+    return 201
 
+@app.put("/ti_update")
+async def ti_put():
+    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
+    #res code: 200 
+    return 200
+
+@app.patch("/ti_update")
+async def ti_patch():
+    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
+    #res code: 200 
+    return 200
+
+@app.post("/ti_delete")
+async def ti_delete():
+    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
+    #res code: 204 
+    return 204
