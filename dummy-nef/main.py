@@ -20,7 +20,7 @@ async def startup():
         await nrf_heartbeat()  
     print("started")
 
-@repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 5)
+@repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
 async def nrf_heartbeat():
     await nrf_handler.nf_register_heart_beat()
     
