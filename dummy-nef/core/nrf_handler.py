@@ -52,7 +52,7 @@ async def nf_register() -> int:
         print(response.status_code)
         print(response.text)
         if response.status_code == httpx.codes.CREATED:
-            print("NEF Registerd")
+            print(f"[{conf.NEF_PROFILE.nf_instance_id}] NF registerd [Heartbeat: {conf.NEF_PROFILE.heart_beat_timer}]")
 
     return response.status_code
 
@@ -69,7 +69,7 @@ async def nf_deregister() -> int:
         print(response.status_code)
         print(response.text)
         if response.status_code == httpx.codes.NO_CONTENT:
-            print("Deregistered!")
+            print(f"[{conf.NEF_PROFILE.nf_instance_id}] NF de-registered")
         if response.status_code == httpx.codes.NOT_FOUND:
             print("NEF instance not registered")
 
@@ -90,8 +90,8 @@ async def nf_register_heart_beat() -> int:
         if response.status_code == httpx.codes.OK:
             new_nef_profile = NFProfile.from_dict(response.json())
             print(f"new profile {json.dumps(new_nef_profile)}")
-        elif response.status_code == httpx.codes.NO_CONTENT:
-            print("NRF Heart-Beat!")
+        # elif response.status_code == httpx.codes.NO_CONTENT:
+        #     print("NRF Heart-Beat!")
         elif response.status_code == httpx.codes.NOT_FOUND:
             print("NEF instance not registered")
 
