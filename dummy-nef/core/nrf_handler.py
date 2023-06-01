@@ -76,8 +76,6 @@ async def nf_deregister() -> int:
     return response.status_code
 
 async def nf_register_heart_beat() -> int:
-    conf.count += 1
-    print(f"heart beat count: {conf.count}")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.patch(
             "http://"+conf.HOSTS["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
