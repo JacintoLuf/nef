@@ -4,6 +4,7 @@ from session import async_db
 import httpx
 import logging
 from api.config import conf
+from models.traffic_influ_sub import TrafficInfluSub 
 import core.nrf_handler as nrf_handler
 
 app = FastAPI()
@@ -38,9 +39,9 @@ async def read_root():
     return {'nfs instances': str(insts)}
 
 @app.post("/ti_create")
-async def ti_create():
+async def ti_create(sub: TrafficInfluSub):
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions
-    #res code: 201 
+    #res code: 201
     return 201
 
 @app.put("/ti_update")
