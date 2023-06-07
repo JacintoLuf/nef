@@ -1,11 +1,16 @@
+import json
 from fastapi import FastAPI, Request, Response
 from fastapi_utils.tasks import repeat_every
 from session import async_db
 import httpx
 import logging
 from api.config import conf
-from models.traffic_influ_sub import TrafficInfluSub 
+from models.traffic_influ_sub import TrafficInfluSub
 import core.nrf_handler as nrf_handler
+import core.bsf_handler as bsf_handler
+import core.pcf_handler as pcf_handler
+import core.udm_handler as udm_handler
+import crud.trafficInfluSub
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
@@ -39,9 +44,15 @@ async def read_root():
     return {'nfs instances': str(insts)}
 
 @app.post("/ti_create")
-async def ti_create(sub: TrafficInfluSub):
+async def ti_create(data):
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions
     #res code: 201
+    #map ipv6 addr to ipv6 prefix
+    traffic_sub = TrafficInfluSub.from_dict(json.loads(data))
+    if not traffic_sub.gpsi and not traffic_sub.any_ue_ind and not traffic_sub.external_group_id:
+        res = bsf_handler.bsf_management_discovery(traffic_sub)
+    else:
+        res = udm_handler
     return 201
 
 @app.put("/ti_update")

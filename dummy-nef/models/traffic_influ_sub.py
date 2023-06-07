@@ -5,31 +5,31 @@ from datetime import date, datetime  # noqa: F401
 
 from typing import List, Dict  # noqa: F401
 
-from swagger_server.models.base_model_ import Model
-from swagger_server.models.event_notification import EventNotification  # noqa: F401,E501
-from swagger_server.models.subscribed_event import SubscribedEvent  # noqa: F401,E501
-from swagger_server.models.traffic_correlation_info import TrafficCorrelationInfo  # noqa: F401,E501
-from swagger_server.models.external_group_id import ExternalGroupId  # noqa: F401,E501
-from swagger_server.models.flow_info import FlowInfo  # noqa: F401,E501
-from swagger_server.models.ipv4_addr import Ipv4Addr  # noqa: F401,E501
-from swagger_server.models.ipv6_addr import Ipv6Addr  # noqa: F401,E501
-from swagger_server.models.link import Link  # noqa: F401,E501
-from swagger_server.models.websock_notif_config import WebsockNotifConfig  # noqa: F401,E501
-from swagger_server.models.eth_flow_description import EthFlowDescription  # noqa: F401,E501
-from swagger_server.models.temporal_validity import TemporalValidity  # noqa: F401,E501
-from swagger_server.models.geographical_area import GeographicalArea  # noqa: F401,E501
-from swagger_server.models.reporting_information import ReportingInformation  # noqa: F401,E501
-from swagger_server.models.dnai_change_type import DnaiChangeType  # noqa: F401,E501
-from swagger_server.models.dnn import Dnn  # noqa: F401,E501
-from swagger_server.models.duration_sec import DurationSec  # noqa: F401,E501
-from swagger_server.models.eas_ip_replacement_info import EasIpReplacementInfo  # noqa: F401,E501
-from swagger_server.models.gpsi import Gpsi  # noqa: F401,E501
-from swagger_server.models.mac_addr48 import MacAddr48  # noqa: F401,E501
-from swagger_server.models.metadata import Metadata  # noqa: F401,E501
-from swagger_server.models.route_to_location import RouteToLocation  # noqa: F401,E501
-from swagger_server.models.snssai import Snssai  # noqa: F401,E501
-from swagger_server.models.supported_features import SupportedFeatures  # noqa: F401,E501
-from swagger_server.models.uinteger import Uinteger  # noqa: F401,E501
+from models.base_model_ import Model
+from models.event_notification import EventNotification  # noqa: F401,E501
+from models.subscribed_event import SubscribedEvent  # noqa: F401,E501
+from models.traffic_correlation_info import TrafficCorrelationInfo  # noqa: F401,E501
+from models.external_group_id import ExternalGroupId  # noqa: F401,E501
+from models.flow_info import FlowInfo  # noqa: F401,E501
+from models.ipv4_addr import Ipv4Addr  # noqa: F401,E501
+from models.ipv6_addr import Ipv6Addr  # noqa: F401,E501
+from models.link import Link  # noqa: F401,E501
+from models.websock_notif_config import WebsockNotifConfig  # noqa: F401,E501
+from models.eth_flow_description import EthFlowDescription  # noqa: F401,E501
+from models.temporal_validity import TemporalValidity  # noqa: F401,E501
+from models.geographical_area import GeographicalArea  # noqa: F401,E501
+from models.reporting_information import ReportingInformation  # noqa: F401,E501
+from models.dnai_change_type import DnaiChangeType  # noqa: F401,E501
+from models.dnn import Dnn  # noqa: F401,E501
+from models.duration_sec import DurationSec  # noqa: F401,E501
+from models.eas_ip_replacement_info import EasIpReplacementInfo  # noqa: F401,E501
+from models.gpsi import Gpsi  # noqa: F401,E501
+from models.mac_addr48 import MacAddr48  # noqa: F401,E501
+from models.metadata import Metadata  # noqa: F401,E501
+from models.route_to_location import RouteToLocation  # noqa: F401,E501
+from models.snssai import Snssai  # noqa: F401,E501
+from models.supported_features import SupportedFeatures  # noqa: F401,E501
+from models.uinteger import Uinteger  # noqa: F401,E501
 from swagger_server import util
 
 
