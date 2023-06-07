@@ -16,7 +16,7 @@ async def udm_sdm(sub: TrafficInfluSub) -> tuple(int, PcfBinding):
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(
-                "http://"+conf.HOSTS["UDM"][0]+":7777/nbsf-management/v1/pcfBindings",
+                "http://"+conf.HOSTS["UDM"][0]+":7777/nudm_sdm/v2/",
                 headers={'Accept': 'application/json,application/problem+json'},
                 params=params
             )
@@ -27,3 +27,15 @@ async def udm_sdm(sub: TrafficInfluSub) -> tuple(int, PcfBinding):
 
 
     return (response.status_code, pcf_binding)
+
+async def udm_uecm_get_registration():
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+            response = await client.get(
+                "http://"+conf.HOSTS["UDM"][0]+":7777/nudm_uecm/v1/group-data/group-identifiers",
+                headers={'Accept': 'application/json,application/problem+json'}
+            )
+            print("-----------------------ids-----------------------")
+            print(response.text)
+            print("-------------------------------------------------")
+
+    return response.status_code
