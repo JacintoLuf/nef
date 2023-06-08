@@ -5,7 +5,7 @@ from session import db
 from models.traffic_influ_sub import TrafficInfluSub
 from models.pcf_binding import PcfBinding
 
-async def bsf_management_discovery(sub: TrafficInfluSub) -> tuple[int, PcfBinding]:
+async def bsf_management_discovery(sub: TrafficInfluSub):
 
     params = {'ipv4Addr': sub.ipv4_addr,
               'ipv6Addr': sub.ipv6_addr,
@@ -26,4 +26,4 @@ async def bsf_management_discovery(sub: TrafficInfluSub) -> tuple[int, PcfBindin
             pcf_binding = PcfBinding.from_dict(response.json())
 
 
-    return (response.status_code, pcf_binding)
+    return response.status_code, pcf_binding

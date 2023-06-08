@@ -51,7 +51,7 @@ async def ti_create(data):
     #map ipv6 addr to ipv6 prefix
     traffic_sub = TrafficInfluSub.from_dict(json.loads(data))
     if not traffic_sub.gpsi and not traffic_sub.any_ue_ind and not traffic_sub.external_group_id:
-        res = bsf_handler.bsf_management_discovery(traffic_sub)
+        status_code, res = bsf_handler.bsf_management_discovery(traffic_sub)
     else:
         res = udm_handler
     return 201
