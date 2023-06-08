@@ -5,12 +5,12 @@ from session import db
 from models.traffic_influ_sub import TrafficInfluSub
 from models.pcf_binding import PcfBinding
 
-async def bsf_management_discovery(sub: TrafficInfluSub) -> tuple[int, PcfBinding]:
+async def bsf_management_discovery(sub: TrafficInfluSub=None) -> tuple[int, PcfBinding]:
 
     if sub:
         params = {'ipv4Addr': sub.ipv4_addr,
-                'ipv6Addr': sub.ipv6_addr,
-                'macAddr': sub.mac_addr,
+                'ipv6Prefix': sub.ipv6_addr,
+                'macAddr48': sub.mac_addr,
                 'gpsi': sub.gpsi,
                 'dnn': sub.dnn,
                 'snssai': sub.snssai}
