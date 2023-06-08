@@ -5,7 +5,7 @@ from session import db
 from models.traffic_influ_sub import TrafficInfluSub
 from models.pcf_binding import PcfBinding
 
-async def udm_sdm(sub: TrafficInfluSub) -> tuple(int, PcfBinding):
+async def udm_sdm(sub: TrafficInfluSub) -> tuple[int, PcfBinding]:
 
     params = {'ipv4Addr': sub.ipv4_addr,
               'ipv6Addr': sub.ipv6_addr,
