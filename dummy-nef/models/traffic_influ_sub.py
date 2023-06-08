@@ -17,7 +17,7 @@ from models.link import Link  # noqa: F401,E501
 from models.websock_notif_config import WebsockNotifConfig  # noqa: F401,E501
 from models.eth_flow_description import EthFlowDescription  # noqa: F401,E501
 from models.temporal_validity import TemporalValidity  # noqa: F401,E501
-from models.reporting_information import ReportingInformation  # noqa: F401,E501
+#from models.reporting_information import ReportingInformation  # noqa: F401,E501
 from models.dnai_change_type import DnaiChangeType  # noqa: F401,E501
 from models.dnn import Dnn  # noqa: F401,E501
 from models.duration_sec import DurationSec  # noqa: F401,E501
@@ -36,7 +36,7 @@ class TrafficInfluSub(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, af_service_id: str=None, af_app_id: str=None, af_trans_id: str=None, app_relo_ind: bool=None, dnn: Dnn=None, snssai: Snssai=None, external_group_id: ExternalGroupId=None, external_group_ids: List[ExternalGroupId]=None, ext_subsc_cats: List[str]=None, any_ue_ind: bool=None, subscribed_events: List[SubscribedEvent]=None, gpsi: Gpsi=None, ipv4_addr: Ipv4Addr=None, ip_domain: str=None, ipv6_addr: Ipv6Addr=None, mac_addr: MacAddr48=None, dnai_chg_type: DnaiChangeType=None, notification_destination: Link=None, request_test_notification: bool=None, websock_notif_config: WebsockNotifConfig=None, _self: Link=None, traffic_filters: List[FlowInfo]=None, eth_traffic_filters: List[EthFlowDescription]=None, traffic_routes: List[RouteToLocation]=None, sfc_id_dl: str=None, sfc_id_ul: str=None, tfc_corr_ind: bool=None, temp_validities: List[TemporalValidity]=None, valid_geo_zone_ids: List[str]=None, af_ack_ind: bool=None, addr_preser_ind: bool=None, sim_conn_ind: bool=None, sim_conn_term: DurationSec=None, max_allowed_up_lat: Uinteger=None, eas_ip_replace_infos: List[EasIpReplacementInfo]=None, eas_redis_ind: bool=None, event_req: ReportingInformation=None, event_reports: List[EventNotification]=None, cand_dnai_ind: bool=None, tfc_corre_info: TrafficCorrelationInfo=None, supp_feat: SupportedFeatures=None):  # noqa: E501
+    def __init__(self, af_service_id: str=None, af_app_id: str=None, af_trans_id: str=None, app_relo_ind: bool=None, dnn: Dnn=None, snssai: Snssai=None, external_group_id: ExternalGroupId=None, external_group_ids: List[ExternalGroupId]=None, ext_subsc_cats: List[str]=None, any_ue_ind: bool=None, subscribed_events: List[SubscribedEvent]=None, gpsi: Gpsi=None, ipv4_addr: Ipv4Addr=None, ip_domain: str=None, ipv6_addr: Ipv6Addr=None, mac_addr: MacAddr48=None, dnai_chg_type: DnaiChangeType=None, notification_destination: Link=None, request_test_notification: bool=None, websock_notif_config: WebsockNotifConfig=None, _self: Link=None, traffic_filters: List[FlowInfo]=None, eth_traffic_filters: List[EthFlowDescription]=None, traffic_routes: List[RouteToLocation]=None, sfc_id_dl: str=None, sfc_id_ul: str=None, tfc_corr_ind: bool=None, temp_validities: List[TemporalValidity]=None, valid_geo_zone_ids: List[str]=None, af_ack_ind: bool=None, addr_preser_ind: bool=None, sim_conn_ind: bool=None, sim_conn_term: DurationSec=None, max_allowed_up_lat: Uinteger=None, eas_ip_replace_infos: List[EasIpReplacementInfo]=None, eas_redis_ind: bool=None, event_reports: List[EventNotification]=None, cand_dnai_ind: bool=None, tfc_corre_info: TrafficCorrelationInfo=None, supp_feat: SupportedFeatures=None):  # noqa: E501
         """TrafficInfluSub - a model defined in Swagger
 
         :param af_service_id: The af_service_id of this TrafficInfluSub.  # noqa: E501
@@ -163,7 +163,7 @@ class TrafficInfluSub(Model):
             'max_allowed_up_lat': Uinteger,
             'eas_ip_replace_infos': List[EasIpReplacementInfo],
             'eas_redis_ind': bool,
-            'event_req': ReportingInformation,
+            #'event_req': ReportingInformation,
             'event_reports': List[EventNotification],
             'cand_dnai_ind': bool,
             'tfc_corre_info': TrafficCorrelationInfo,
@@ -249,7 +249,7 @@ class TrafficInfluSub(Model):
         self._max_allowed_up_lat = max_allowed_up_lat
         self._eas_ip_replace_infos = eas_ip_replace_infos
         self._eas_redis_ind = eas_redis_ind
-        self._event_req = event_req
+        #self._event_req = event_req
         self._event_reports = event_reports
         self._cand_dnai_ind = cand_dnai_ind
         self._tfc_corre_info = tfc_corre_info
@@ -1055,27 +1055,6 @@ class TrafficInfluSub(Model):
         """
 
         self._eas_redis_ind = eas_redis_ind
-
-    @property
-    def event_req(self) -> ReportingInformation:
-        """Gets the event_req of this TrafficInfluSub.
-
-
-        :return: The event_req of this TrafficInfluSub.
-        :rtype: TS29523NpcfEventExposureYamlcomponentsschemasReportingInformation
-        """
-        return self._event_req
-
-    @event_req.setter
-    def event_req(self, event_req: ReportingInformation):
-        """Sets the event_req of this TrafficInfluSub.
-
-
-        :param event_req: The event_req of this TrafficInfluSub.
-        :type event_req: TS29523NpcfEventExposureYamlcomponentsschemasReportingInformation
-        """
-
-        self._event_req = event_req
 
     @property
     def event_reports(self) -> List[EventNotification]:
