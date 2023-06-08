@@ -6,8 +6,8 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from models.base_model_ import Model
-from models.flow_description import FlowDescription
-from models.flow_direction import FlowDirection
+#from models.flow_description import FlowDescription
+#from models.flow_direction import FlowDirection
 from models.mac_addr48 import MacAddr48  # noqa: F401,E501
 import util
 
@@ -17,14 +17,14 @@ class EthFlowDescription(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, dest_mac_addr: MacAddr48=None, eth_type: str=None, f_desc: FlowDescription=None, f_dir: FlowDirection=None, source_mac_addr: MacAddr48=None, vlan_tags: List[str]=None, src_mac_addr_end: MacAddr48=None, dest_mac_addr_end: MacAddr48=None):  # noqa: E501
+    def __init__(self, dest_mac_addr: MacAddr48=None, eth_type: str=None, f_desc: str=None, f_dir: str=None, source_mac_addr: MacAddr48=None, vlan_tags: List[str]=None, src_mac_addr_end: MacAddr48=None, dest_mac_addr_end: MacAddr48=None):  # noqa: E501
         """EventNotification - a model defined in Swagger
         """
         self.swagger_types = {
             'dest_mac_addr': MacAddr48,
             'eth_type': str,
-            'f_desc': FlowDescription,
-            'f_dir': FlowDirection,
+            'f_desc': str,
+            'f_dir': str,
             'source_mac_addr': MacAddr48,
             'vlan_tags': List[str],
             'src_mac_addr_end': MacAddr48,
