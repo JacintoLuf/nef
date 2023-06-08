@@ -62,31 +62,31 @@ class TrafficInfluSub(Model):
         :param subscribed_events: The subscribed_events of this TrafficInfluSub.  # noqa: E501
         :type subscribed_events: List[SubscribedEvent]
         :param gpsi: The gpsi of this TrafficInfluSub.  # noqa: E501
-        :type gpsi: TS29571CommonDataYamlcomponentsschemasGpsi
+        :type gpsi: Gpsi
         :param ipv4_addr: The ipv4_addr of this TrafficInfluSub.  # noqa: E501
-        :type ipv4_addr: TS29122CommonDataYamlcomponentsschemasIpv4Addr
+        :type ipv4_addr: Ipv4Addr
         :param ip_domain: The ip_domain of this TrafficInfluSub.  # noqa: E501
         :type ip_domain: str
         :param ipv6_addr: The ipv6_addr of this TrafficInfluSub.  # noqa: E501
         :type ipv6_addr: TS29122CommonDataYamlcomponentsschemasIpv6Addr
         :param mac_addr: The mac_addr of this TrafficInfluSub.  # noqa: E501
-        :type mac_addr: TS29571CommonDataYamlcomponentsschemasMacAddr48
+        :type mac_addr: MacAddr48
         :param dnai_chg_type: The dnai_chg_type of this TrafficInfluSub.  # noqa: E501
-        :type dnai_chg_type: TS29571CommonDataYamlcomponentsschemasDnaiChangeType
+        :type dnai_chg_type: DnaiChangeType
         :param notification_destination: The notification_destination of this TrafficInfluSub.  # noqa: E501
-        :type notification_destination: TS29122CommonDataYamlcomponentsschemasLink
+        :type notification_destination: Link
         :param request_test_notification: The request_test_notification of this TrafficInfluSub.  # noqa: E501
         :type request_test_notification: bool
         :param websock_notif_config: The websock_notif_config of this TrafficInfluSub.  # noqa: E501
         :type websock_notif_config: TS29122CommonDataYamlcomponentsschemasWebsockNotifConfig
         :param _self: The _self of this TrafficInfluSub.  # noqa: E501
-        :type _self: TS29122CommonDataYamlcomponentsschemasLink
+        :type _self: Link
         :param traffic_filters: The traffic_filters of this TrafficInfluSub.  # noqa: E501
         :type traffic_filters: List[TS29122CommonDataYamlcomponentsschemasFlowInfo]
         :param eth_traffic_filters: The eth_traffic_filters of this TrafficInfluSub.  # noqa: E501
         :type eth_traffic_filters: List[TS29514NpcfPolicyAuthorizationYamlcomponentsschemasEthFlowDescription]
         :param traffic_routes: The traffic_routes of this TrafficInfluSub.  # noqa: E501
-        :type traffic_routes: List[TS29571CommonDataYamlcomponentsschemasRouteToLocation]
+        :type traffic_routes: List[RouteToLocation]
         :param sfc_id_dl: The sfc_id_dl of this TrafficInfluSub.  # noqa: E501
         :type sfc_id_dl: str
         :param sfc_id_ul: The sfc_id_ul of this TrafficInfluSub.  # noqa: E501
@@ -517,7 +517,7 @@ class TrafficInfluSub(Model):
 
 
         :return: The gpsi of this TrafficInfluSub.
-        :rtype: TS29571CommonDataYamlcomponentsschemasGpsi
+        :rtype: Gpsi
         """
         return self._gpsi
 
@@ -527,7 +527,7 @@ class TrafficInfluSub(Model):
 
 
         :param gpsi: The gpsi of this TrafficInfluSub.
-        :type gpsi: TS29571CommonDataYamlcomponentsschemasGpsi
+        :type gpsi: Gpsi
         """
 
         self._gpsi = gpsi
@@ -538,7 +538,7 @@ class TrafficInfluSub(Model):
 
 
         :return: The ipv4_addr of this TrafficInfluSub.
-        :rtype: TS29122CommonDataYamlcomponentsschemasIpv4Addr
+        :rtype: Ipv4Addr
         """
         return self._ipv4_addr
 
@@ -548,7 +548,7 @@ class TrafficInfluSub(Model):
 
 
         :param ipv4_addr: The ipv4_addr of this TrafficInfluSub.
-        :type ipv4_addr: TS29122CommonDataYamlcomponentsschemasIpv4Addr
+        :type ipv4_addr: Ipv4Addr
         """
 
         self._ipv4_addr = ipv4_addr
@@ -601,7 +601,7 @@ class TrafficInfluSub(Model):
 
 
         :return: The mac_addr of this TrafficInfluSub.
-        :rtype: TS29571CommonDataYamlcomponentsschemasMacAddr48
+        :rtype: MacAddr48
         """
         return self._mac_addr
 
@@ -611,7 +611,7 @@ class TrafficInfluSub(Model):
 
 
         :param mac_addr: The mac_addr of this TrafficInfluSub.
-        :type mac_addr: TS29571CommonDataYamlcomponentsschemasMacAddr48
+        :type mac_addr: MacAddr48
         """
 
         self._mac_addr = mac_addr
@@ -622,7 +622,7 @@ class TrafficInfluSub(Model):
 
 
         :return: The dnai_chg_type of this TrafficInfluSub.
-        :rtype: TS29571CommonDataYamlcomponentsschemasDnaiChangeType
+        :rtype: DnaiChangeType
         """
         return self._dnai_chg_type
 
@@ -632,7 +632,7 @@ class TrafficInfluSub(Model):
 
 
         :param dnai_chg_type: The dnai_chg_type of this TrafficInfluSub.
-        :type dnai_chg_type: TS29571CommonDataYamlcomponentsschemasDnaiChangeType
+        :type dnai_chg_type: DnaiChangeType
         """
 
         self._dnai_chg_type = dnai_chg_type
@@ -643,7 +643,7 @@ class TrafficInfluSub(Model):
 
 
         :return: The notification_destination of this TrafficInfluSub.
-        :rtype: TS29122CommonDataYamlcomponentsschemasLink
+        :rtype: Link
         """
         return self._notification_destination
 
@@ -653,7 +653,7 @@ class TrafficInfluSub(Model):
 
 
         :param notification_destination: The notification_destination of this TrafficInfluSub.
-        :type notification_destination: TS29122CommonDataYamlcomponentsschemasLink
+        :type notification_destination: Link
         """
 
         self._notification_destination = notification_destination
@@ -708,7 +708,7 @@ class TrafficInfluSub(Model):
 
 
         :return: The _self of this TrafficInfluSub.
-        :rtype: TS29122CommonDataYamlcomponentsschemasLink
+        :rtype: Link
         """
         return self.__self
 
@@ -718,7 +718,7 @@ class TrafficInfluSub(Model):
 
 
         :param _self: The _self of this TrafficInfluSub.
-        :type _self: TS29122CommonDataYamlcomponentsschemasLink
+        :type _self: Link
         """
 
         self.__self = _self
@@ -776,7 +776,7 @@ class TrafficInfluSub(Model):
         Identifies the N6 traffic routing requirement.  # noqa: E501
 
         :return: The traffic_routes of this TrafficInfluSub.
-        :rtype: List[TS29571CommonDataYamlcomponentsschemasRouteToLocation]
+        :rtype: List[RouteToLocation]
         """
         return self._traffic_routes
 
@@ -787,7 +787,7 @@ class TrafficInfluSub(Model):
         Identifies the N6 traffic routing requirement.  # noqa: E501
 
         :param traffic_routes: The traffic_routes of this TrafficInfluSub.
-        :type traffic_routes: List[TS29571CommonDataYamlcomponentsschemasRouteToLocation]
+        :type traffic_routes: List[RouteToLocation]
         """
 
         self._traffic_routes = traffic_routes

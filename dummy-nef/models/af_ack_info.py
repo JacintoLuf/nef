@@ -24,7 +24,7 @@ class AfAckInfo(Model):
         :param ack_result: The ack_result of this AfAckInfo.  # noqa: E501
         :type ack_result: AfResultInfo
         :param gpsi: The gpsi of this AfAckInfo.  # noqa: E501
-        :type gpsi: TS29571CommonDataYamlcomponentsschemasGpsi
+        :type gpsi: Gpsi
         """
         self.swagger_types = {
             'af_trans_id': str,
@@ -102,7 +102,7 @@ class AfAckInfo(Model):
 
 
         :return: The gpsi of this AfAckInfo.
-        :rtype: TS29571CommonDataYamlcomponentsschemasGpsi
+        :rtype: Gpsi
         """
         return self._gpsi
 
@@ -112,7 +112,7 @@ class AfAckInfo(Model):
 
 
         :param gpsi: The gpsi of this AfAckInfo.
-        :type gpsi: TS29571CommonDataYamlcomponentsschemasGpsi
+        :type gpsi: Gpsi
         """
 
         self._gpsi = gpsi

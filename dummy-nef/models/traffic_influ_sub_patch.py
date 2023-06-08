@@ -36,7 +36,7 @@ class TrafficInfluSubPatch(Model):
         :param eth_traffic_filters: The eth_traffic_filters of this TrafficInfluSubPatch.  # noqa: E501
         :type eth_traffic_filters: List[TS29514NpcfPolicyAuthorizationYamlcomponentsschemasEthFlowDescription]
         :param traffic_routes: The traffic_routes of this TrafficInfluSubPatch.  # noqa: E501
-        :type traffic_routes: List[TS29571CommonDataYamlcomponentsschemasRouteToLocation]
+        :type traffic_routes: List[RouteToLocation]
         :param sfc_id_dl: The sfc_id_dl of this TrafficInfluSubPatch.  # noqa: E501
         :type sfc_id_dl: str
         :param sfc_id_ul: The sfc_id_ul of this TrafficInfluSubPatch.  # noqa: E501
@@ -66,7 +66,7 @@ class TrafficInfluSubPatch(Model):
         :param eas_redis_ind: The eas_redis_ind of this TrafficInfluSubPatch.  # noqa: E501
         :type eas_redis_ind: bool
         :param notification_destination: The notification_destination of this TrafficInfluSubPatch.  # noqa: E501
-        :type notification_destination: TS29122CommonDataYamlcomponentsschemasLink
+        :type notification_destination: Link
         :param event_req: The event_req of this TrafficInfluSubPatch.  # noqa: E501
         :type event_req: TS29523NpcfEventExposureYamlcomponentsschemasReportingInformation
         :param tfc_corre_info: The tfc_corre_info of this TrafficInfluSubPatch.  # noqa: E501
@@ -228,7 +228,7 @@ class TrafficInfluSubPatch(Model):
         Identifies the N6 traffic routing requirement.  # noqa: E501
 
         :return: The traffic_routes of this TrafficInfluSubPatch.
-        :rtype: List[TS29571CommonDataYamlcomponentsschemasRouteToLocation]
+        :rtype: List[RouteToLocation]
         """
         return self._traffic_routes
 
@@ -239,7 +239,7 @@ class TrafficInfluSubPatch(Model):
         Identifies the N6 traffic routing requirement.  # noqa: E501
 
         :param traffic_routes: The traffic_routes of this TrafficInfluSubPatch.
-        :type traffic_routes: List[TS29571CommonDataYamlcomponentsschemasRouteToLocation]
+        :type traffic_routes: List[RouteToLocation]
         """
 
         self._traffic_routes = traffic_routes
@@ -514,7 +514,7 @@ class TrafficInfluSubPatch(Model):
 
 
         :return: The notification_destination of this TrafficInfluSubPatch.
-        :rtype: TS29122CommonDataYamlcomponentsschemasLink
+        :rtype: Link
         """
         return self._notification_destination
 
@@ -524,7 +524,7 @@ class TrafficInfluSubPatch(Model):
 
 
         :param notification_destination: The notification_destination of this TrafficInfluSubPatch.
-        :type notification_destination: TS29122CommonDataYamlcomponentsschemasLink
+        :type notification_destination: Link
         """
 
         self._notification_destination = notification_destination

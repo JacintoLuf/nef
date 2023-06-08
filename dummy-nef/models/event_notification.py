@@ -23,39 +23,39 @@ class EventNotification(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, af_trans_id: str=None, dnai_chg_type: DnaiChangeType=None, source_traffic_route: RouteToLocation=None, subscribed_event: SubscribedEvent=None, target_traffic_route: TS29571CommonDataYamlcomponentsschemasRouteToLocation=None, source_dnai: TS29571CommonDataYamlcomponentsschemasDnai=None, target_dnai: TS29571CommonDataYamlcomponentsschemasDnai=None, candidate_dnais: List[TS29571CommonDataYamlcomponentsschemasDnai]=None, gpsi: TS29571CommonDataYamlcomponentsschemasGpsi=None, src_ue_ipv4_addr: TS29122CommonDataYamlcomponentsschemasIpv4Addr=None, src_ue_ipv6_prefix: TS29571CommonDataYamlcomponentsschemasIpv6Prefix=None, tgt_ue_ipv4_addr: TS29122CommonDataYamlcomponentsschemasIpv4Addr=None, tgt_ue_ipv6_prefix: TS29571CommonDataYamlcomponentsschemasIpv6Prefix=None, ue_mac: TS29571CommonDataYamlcomponentsschemasMacAddr48=None, af_ack_uri: TS29122CommonDataYamlcomponentsschemasLink=None):  # noqa: E501
+    def __init__(self, af_trans_id: str=None, dnai_chg_type: DnaiChangeType=None, source_traffic_route: RouteToLocation=None, subscribed_event: SubscribedEvent=None, target_traffic_route: RouteToLocation=None, source_dnai: Dnai=None, target_dnai: Dnai=None, candidate_dnais: List[Dnai]=None, gpsi: Gpsi=None, src_ue_ipv4_addr: Ipv4Addr=None, src_ue_ipv6_prefix: Ipv6Prefix=None, tgt_ue_ipv4_addr: Ipv4Addr=None, tgt_ue_ipv6_prefix: Ipv6Prefix=None, ue_mac: MacAddr48=None, af_ack_uri: Link=None):  # noqa: E501
         """EventNotification - a model defined in Swagger
 
         :param af_trans_id: The af_trans_id of this EventNotification.  # noqa: E501
         :type af_trans_id: str
         :param dnai_chg_type: The dnai_chg_type of this EventNotification.  # noqa: E501
-        :type dnai_chg_type: TS29571CommonDataYamlcomponentsschemasDnaiChangeType
+        :type dnai_chg_type: DnaiChangeType
         :param source_traffic_route: The source_traffic_route of this EventNotification.  # noqa: E501
-        :type source_traffic_route: TS29571CommonDataYamlcomponentsschemasRouteToLocation
+        :type source_traffic_route: RouteToLocation
         :param subscribed_event: The subscribed_event of this EventNotification.  # noqa: E501
         :type subscribed_event: SubscribedEvent
         :param target_traffic_route: The target_traffic_route of this EventNotification.  # noqa: E501
-        :type target_traffic_route: TS29571CommonDataYamlcomponentsschemasRouteToLocation
+        :type target_traffic_route: RouteToLocation
         :param source_dnai: The source_dnai of this EventNotification.  # noqa: E501
-        :type source_dnai: TS29571CommonDataYamlcomponentsschemasDnai
+        :type source_dnai: Dnai
         :param target_dnai: The target_dnai of this EventNotification.  # noqa: E501
-        :type target_dnai: TS29571CommonDataYamlcomponentsschemasDnai
+        :type target_dnai: Dnai
         :param candidate_dnais: The candidate_dnais of this EventNotification.  # noqa: E501
-        :type candidate_dnais: List[TS29571CommonDataYamlcomponentsschemasDnai]
+        :type candidate_dnais: List[Dnai]
         :param gpsi: The gpsi of this EventNotification.  # noqa: E501
-        :type gpsi: TS29571CommonDataYamlcomponentsschemasGpsi
+        :type gpsi: Gpsi
         :param src_ue_ipv4_addr: The src_ue_ipv4_addr of this EventNotification.  # noqa: E501
-        :type src_ue_ipv4_addr: TS29122CommonDataYamlcomponentsschemasIpv4Addr
+        :type src_ue_ipv4_addr: Ipv4Addr
         :param src_ue_ipv6_prefix: The src_ue_ipv6_prefix of this EventNotification.  # noqa: E501
-        :type src_ue_ipv6_prefix: TS29571CommonDataYamlcomponentsschemasIpv6Prefix
+        :type src_ue_ipv6_prefix: Ipv6Prefix
         :param tgt_ue_ipv4_addr: The tgt_ue_ipv4_addr of this EventNotification.  # noqa: E501
-        :type tgt_ue_ipv4_addr: TS29122CommonDataYamlcomponentsschemasIpv4Addr
+        :type tgt_ue_ipv4_addr: Ipv4Addr
         :param tgt_ue_ipv6_prefix: The tgt_ue_ipv6_prefix of this EventNotification.  # noqa: E501
-        :type tgt_ue_ipv6_prefix: TS29571CommonDataYamlcomponentsschemasIpv6Prefix
+        :type tgt_ue_ipv6_prefix: Ipv6Prefix
         :param ue_mac: The ue_mac of this EventNotification.  # noqa: E501
-        :type ue_mac: TS29571CommonDataYamlcomponentsschemasMacAddr48
+        :type ue_mac: MacAddr48
         :param af_ack_uri: The af_ack_uri of this EventNotification.  # noqa: E501
-        :type af_ack_uri: TS29122CommonDataYamlcomponentsschemasLink
+        :type af_ack_uri: Link
         """
         self.swagger_types = {
             'af_trans_id': str,
@@ -148,7 +148,7 @@ class EventNotification(Model):
 
 
         :return: The dnai_chg_type of this EventNotification.
-        :rtype: TS29571CommonDataYamlcomponentsschemasDnaiChangeType
+        :rtype: DnaiChangeType
         """
         return self._dnai_chg_type
 
@@ -158,7 +158,7 @@ class EventNotification(Model):
 
 
         :param dnai_chg_type: The dnai_chg_type of this EventNotification.
-        :type dnai_chg_type: TS29571CommonDataYamlcomponentsschemasDnaiChangeType
+        :type dnai_chg_type: DnaiChangeType
         """
         if dnai_chg_type is None:
             raise ValueError("Invalid value for `dnai_chg_type`, must not be `None`")  # noqa: E501
@@ -171,7 +171,7 @@ class EventNotification(Model):
 
 
         :return: The source_traffic_route of this EventNotification.
-        :rtype: TS29571CommonDataYamlcomponentsschemasRouteToLocation
+        :rtype: RouteToLocation
         """
         return self._source_traffic_route
 
@@ -181,7 +181,7 @@ class EventNotification(Model):
 
 
         :param source_traffic_route: The source_traffic_route of this EventNotification.
-        :type source_traffic_route: TS29571CommonDataYamlcomponentsschemasRouteToLocation
+        :type source_traffic_route: RouteToLocation
         """
 
         self._source_traffic_route = source_traffic_route
@@ -215,7 +215,7 @@ class EventNotification(Model):
 
 
         :return: The target_traffic_route of this EventNotification.
-        :rtype: TS29571CommonDataYamlcomponentsschemasRouteToLocation
+        :rtype: RouteToLocation
         """
         return self._target_traffic_route
 
@@ -225,7 +225,7 @@ class EventNotification(Model):
 
 
         :param target_traffic_route: The target_traffic_route of this EventNotification.
-        :type target_traffic_route: TS29571CommonDataYamlcomponentsschemasRouteToLocation
+        :type target_traffic_route: RouteToLocation
         """
 
         self._target_traffic_route = target_traffic_route
@@ -236,7 +236,7 @@ class EventNotification(Model):
 
 
         :return: The source_dnai of this EventNotification.
-        :rtype: TS29571CommonDataYamlcomponentsschemasDnai
+        :rtype: Dnai
         """
         return self._source_dnai
 
@@ -246,7 +246,7 @@ class EventNotification(Model):
 
 
         :param source_dnai: The source_dnai of this EventNotification.
-        :type source_dnai: TS29571CommonDataYamlcomponentsschemasDnai
+        :type source_dnai: Dnai
         """
 
         self._source_dnai = source_dnai
@@ -257,7 +257,7 @@ class EventNotification(Model):
 
 
         :return: The target_dnai of this EventNotification.
-        :rtype: TS29571CommonDataYamlcomponentsschemasDnai
+        :rtype: Dnai
         """
         return self._target_dnai
 
@@ -267,7 +267,7 @@ class EventNotification(Model):
 
 
         :param target_dnai: The target_dnai of this EventNotification.
-        :type target_dnai: TS29571CommonDataYamlcomponentsschemasDnai
+        :type target_dnai: Dnai
         """
 
         self._target_dnai = target_dnai
@@ -279,7 +279,7 @@ class EventNotification(Model):
         The candidate DNAI(s) for the PDU Session.  # noqa: E501
 
         :return: The candidate_dnais of this EventNotification.
-        :rtype: List[TS29571CommonDataYamlcomponentsschemasDnai]
+        :rtype: List[Dnai]
         """
         return self._candidate_dnais
 
@@ -290,7 +290,7 @@ class EventNotification(Model):
         The candidate DNAI(s) for the PDU Session.  # noqa: E501
 
         :param candidate_dnais: The candidate_dnais of this EventNotification.
-        :type candidate_dnais: List[TS29571CommonDataYamlcomponentsschemasDnai]
+        :type candidate_dnais: List[Dnai]
         """
 
         self._candidate_dnais = candidate_dnais
@@ -301,7 +301,7 @@ class EventNotification(Model):
 
 
         :return: The gpsi of this EventNotification.
-        :rtype: TS29571CommonDataYamlcomponentsschemasGpsi
+        :rtype: Gpsi
         """
         return self._gpsi
 
@@ -311,7 +311,7 @@ class EventNotification(Model):
 
 
         :param gpsi: The gpsi of this EventNotification.
-        :type gpsi: TS29571CommonDataYamlcomponentsschemasGpsi
+        :type gpsi: Gpsi
         """
 
         self._gpsi = gpsi
@@ -322,7 +322,7 @@ class EventNotification(Model):
 
 
         :return: The src_ue_ipv4_addr of this EventNotification.
-        :rtype: TS29122CommonDataYamlcomponentsschemasIpv4Addr
+        :rtype: Ipv4Addr
         """
         return self._src_ue_ipv4_addr
 
@@ -332,7 +332,7 @@ class EventNotification(Model):
 
 
         :param src_ue_ipv4_addr: The src_ue_ipv4_addr of this EventNotification.
-        :type src_ue_ipv4_addr: TS29122CommonDataYamlcomponentsschemasIpv4Addr
+        :type src_ue_ipv4_addr: Ipv4Addr
         """
 
         self._src_ue_ipv4_addr = src_ue_ipv4_addr
@@ -343,7 +343,7 @@ class EventNotification(Model):
 
 
         :return: The src_ue_ipv6_prefix of this EventNotification.
-        :rtype: TS29571CommonDataYamlcomponentsschemasIpv6Prefix
+        :rtype: Ipv6Prefix
         """
         return self._src_ue_ipv6_prefix
 
@@ -353,7 +353,7 @@ class EventNotification(Model):
 
 
         :param src_ue_ipv6_prefix: The src_ue_ipv6_prefix of this EventNotification.
-        :type src_ue_ipv6_prefix: TS29571CommonDataYamlcomponentsschemasIpv6Prefix
+        :type src_ue_ipv6_prefix: Ipv6Prefix
         """
 
         self._src_ue_ipv6_prefix = src_ue_ipv6_prefix
@@ -364,7 +364,7 @@ class EventNotification(Model):
 
 
         :return: The tgt_ue_ipv4_addr of this EventNotification.
-        :rtype: TS29122CommonDataYamlcomponentsschemasIpv4Addr
+        :rtype: Ipv4Addr
         """
         return self._tgt_ue_ipv4_addr
 
@@ -374,7 +374,7 @@ class EventNotification(Model):
 
 
         :param tgt_ue_ipv4_addr: The tgt_ue_ipv4_addr of this EventNotification.
-        :type tgt_ue_ipv4_addr: TS29122CommonDataYamlcomponentsschemasIpv4Addr
+        :type tgt_ue_ipv4_addr: Ipv4Addr
         """
 
         self._tgt_ue_ipv4_addr = tgt_ue_ipv4_addr
@@ -385,7 +385,7 @@ class EventNotification(Model):
 
 
         :return: The tgt_ue_ipv6_prefix of this EventNotification.
-        :rtype: TS29571CommonDataYamlcomponentsschemasIpv6Prefix
+        :rtype: Ipv6Prefix
         """
         return self._tgt_ue_ipv6_prefix
 
@@ -395,7 +395,7 @@ class EventNotification(Model):
 
 
         :param tgt_ue_ipv6_prefix: The tgt_ue_ipv6_prefix of this EventNotification.
-        :type tgt_ue_ipv6_prefix: TS29571CommonDataYamlcomponentsschemasIpv6Prefix
+        :type tgt_ue_ipv6_prefix: Ipv6Prefix
         """
 
         self._tgt_ue_ipv6_prefix = tgt_ue_ipv6_prefix
@@ -406,7 +406,7 @@ class EventNotification(Model):
 
 
         :return: The ue_mac of this EventNotification.
-        :rtype: TS29571CommonDataYamlcomponentsschemasMacAddr48
+        :rtype: MacAddr48
         """
         return self._ue_mac
 
@@ -416,7 +416,7 @@ class EventNotification(Model):
 
 
         :param ue_mac: The ue_mac of this EventNotification.
-        :type ue_mac: TS29571CommonDataYamlcomponentsschemasMacAddr48
+        :type ue_mac: MacAddr48
         """
 
         self._ue_mac = ue_mac
@@ -427,7 +427,7 @@ class EventNotification(Model):
 
 
         :return: The af_ack_uri of this EventNotification.
-        :rtype: TS29122CommonDataYamlcomponentsschemasLink
+        :rtype: Link
         """
         return self._af_ack_uri
 
@@ -437,7 +437,7 @@ class EventNotification(Model):
 
 
         :param af_ack_uri: The af_ack_uri of this EventNotification.
-        :type af_ack_uri: TS29122CommonDataYamlcomponentsschemasLink
+        :type af_ack_uri: Link
         """
 
         self._af_ack_uri = af_ack_uri

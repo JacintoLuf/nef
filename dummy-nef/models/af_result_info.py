@@ -23,7 +23,7 @@ class AfResultInfo(Model):
         :param af_status: The af_status of this AfResultInfo.  # noqa: E501
         :type af_status: AfResultStatus
         :param traffic_route: The traffic_route of this AfResultInfo.  # noqa: E501
-        :type traffic_route: TS29571CommonDataYamlcomponentsschemasRouteToLocation
+        :type traffic_route: RouteToLocation
         :param up_buff_ind: The up_buff_ind of this AfResultInfo.  # noqa: E501
         :type up_buff_ind: bool
         :param eas_ip_replace_infos: The eas_ip_replace_infos of this AfResultInfo.  # noqa: E501
@@ -87,7 +87,7 @@ class AfResultInfo(Model):
 
 
         :return: The traffic_route of this AfResultInfo.
-        :rtype: TS29571CommonDataYamlcomponentsschemasRouteToLocation
+        :rtype: RouteToLocation
         """
         return self._traffic_route
 
@@ -97,7 +97,7 @@ class AfResultInfo(Model):
 
 
         :param traffic_route: The traffic_route of this AfResultInfo.
-        :type traffic_route: TS29571CommonDataYamlcomponentsschemasRouteToLocation
+        :type traffic_route: RouteToLocation
         """
 
         self._traffic_route = traffic_route
