@@ -1,11 +1,11 @@
 import httpx
-from typing import Tuple
+import json
 from api.config import conf
 from session import db
 from models.traffic_influ_sub import TrafficInfluSub
 from models.pcf_binding import PcfBinding
 
-async def bsf_management_discovery(sub: TrafficInfluSub) -> Tuple(int, PcfBinding):
+async def bsf_management_discovery(sub: TrafficInfluSub) -> tuple[int, PcfBinding]:
 
     params = {'ipv4Addr': sub.ipv4_addr,
               'ipv6Addr': sub.ipv6_addr,
