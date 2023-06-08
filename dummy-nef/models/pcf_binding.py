@@ -7,7 +7,7 @@ from typing import List, Dict  # noqa: F401
 
 from models.base_model_ import Model
 #from models.binding_level import BindingLevel  # noqa: F401,E501
-from models.parameter_combination import ParameterCombination  # noqa: F401,E501
+#from models.parameter_combination import ParameterCombination  # noqa: F401,E501
 from models.ip_end_point import IpEndPoint  # noqa: F401,E501
 #from models.date_time import DateTime  # noqa: F401,E501
 #from models.diameter_identity import DiameterIdentity  # noqa: F401,E501
@@ -15,13 +15,13 @@ from models.dnn import Dnn  # noqa: F401,E501
 from models.fqdn import Fqdn  # noqa: F401,E501
 from models.gpsi import Gpsi  # noqa: F401,E501
 from models.ipv4_addr import Ipv4Addr  # noqa: F401,E501
-from models.ipv4_addr_mask import Ipv4AddrMask  # noqa: F401,E501
+#from models.ipv4_addr_mask import Ipv4AddrMask  # noqa: F401,E501
 from models.ipv6_prefix import Ipv6Prefix  # noqa: F401,E501
 from models.mac_addr48 import MacAddr48  # noqa: F401,E501
 #from models.nf_instance_id import NfInstanceId  # noqa: F401,E501
-from models.nf_set_id import NfSetId  # noqa: F401,E501
+#from models.nf_set_id import NfSetId  # noqa: F401,E501
 from models.snssai import Snssai  # noqa: F401,E501
-from models.supi import Supi  # noqa: F401,E501
+#from models.supi import Supi  # noqa: F401,E501
 from models.supported_features import SupportedFeatures  # noqa: F401,E501
 import util
 
@@ -31,7 +31,7 @@ class PcfBinding(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, supi: Supi=None, gpsi: Gpsi=None, ipv4_addr: Ipv4Addr=None, ipv6_prefix: Ipv6Prefix=None, add_ipv6_prefixes: List[Ipv6Prefix]=None, ip_domain: str=None, mac_addr48: MacAddr48=None, add_mac_addrs: List[MacAddr48]=None, dnn: Dnn=None, pcf_fqdn: Fqdn=None, pcf_ip_end_points: List[IpEndPoint]=None, pcf_diam_host: str=None, pcf_diam_realm: str=None, pcf_sm_fqdn: Fqdn=None, pcf_sm_ip_end_points: List[IpEndPoint]=None, snssai: Snssai=None, supp_feat: SupportedFeatures=None, pcf_id: str=None, pcf_set_id: NfSetId=None, recovery_time: datetime=None, para_com: ParameterCombination=None, bind_level: str=None, ipv4_frame_route_list: List[Ipv4AddrMask]=None, ipv6_frame_route_list: List[Ipv6Prefix]=None):  # noqa: E501
+    def __init__(self, supi: str=None, gpsi: Gpsi=None, ipv4_addr: Ipv4Addr=None, ipv6_prefix: Ipv6Prefix=None, add_ipv6_prefixes: List[Ipv6Prefix]=None, ip_domain: str=None, mac_addr48: MacAddr48=None, add_mac_addrs: List[MacAddr48]=None, dnn: Dnn=None, pcf_fqdn: Fqdn=None, pcf_ip_end_points: List[IpEndPoint]=None, pcf_diam_host: str=None, pcf_diam_realm: str=None, pcf_sm_fqdn: Fqdn=None, pcf_sm_ip_end_points: List[IpEndPoint]=None, snssai: Snssai=None, supp_feat: SupportedFeatures=None, pcf_id: str=None, pcf_set_id: str=None, recovery_time: datetime=None, para_com: str=None, bind_level: str=None, ipv4_frame_route_list: List[str]=None, ipv6_frame_route_list: List[Ipv6Prefix]=None):  # noqa: E501
         """PcfBinding - a model defined in Swagger
 
         :param supi: The supi of this PcfBinding.  # noqa: E501
@@ -84,7 +84,7 @@ class PcfBinding(Model):
         :type ipv6_frame_route_list: List[Ipv6Prefix]
         """
         self.swagger_types = {
-            'supi': Supi,
+            'supi': str,
             'gpsi': Gpsi,
             'ipv4_addr': Ipv4Addr,
             'ipv6_prefix': Ipv6Prefix,
@@ -102,11 +102,11 @@ class PcfBinding(Model):
             'snssai': Snssai,
             'supp_feat': SupportedFeatures,
             'pcf_id': str,
-            'pcf_set_id': NfSetId,
+            'pcf_set_id': str,
             'recovery_time': datetime,
-            'para_com': ParameterCombination,
+            'para_com': str,
             'bind_level': str,
-            'ipv4_frame_route_list': List[Ipv4AddrMask],
+            'ipv4_frame_route_list': List[str],
             'ipv6_frame_route_list': List[Ipv6Prefix]
         }
 
@@ -173,7 +173,7 @@ class PcfBinding(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def supi(self) -> Supi:
+    def supi(self) -> str:
         """Gets the supi of this PcfBinding.
 
 
@@ -183,7 +183,7 @@ class PcfBinding(Model):
         return self._supi
 
     @supi.setter
-    def supi(self, supi: Supi):
+    def supi(self, supi: str):
         """Sets the supi of this PcfBinding.
 
 
@@ -563,7 +563,7 @@ class PcfBinding(Model):
         self._pcf_id = pcf_id
 
     @property
-    def pcf_set_id(self) -> NfSetId:
+    def pcf_set_id(self) -> str:
         """Gets the pcf_set_id of this PcfBinding.
 
 
@@ -573,7 +573,7 @@ class PcfBinding(Model):
         return self._pcf_set_id
 
     @pcf_set_id.setter
-    def pcf_set_id(self, pcf_set_id: NfSetId):
+    def pcf_set_id(self, pcf_set_id: str):
         """Sets the pcf_set_id of this PcfBinding.
 
 
@@ -605,7 +605,7 @@ class PcfBinding(Model):
         self._recovery_time = recovery_time
 
     @property
-    def para_com(self) -> ParameterCombination:
+    def para_com(self) -> str:
         """Gets the para_com of this PcfBinding.
 
 
@@ -615,7 +615,7 @@ class PcfBinding(Model):
         return self._para_com
 
     @para_com.setter
-    def para_com(self, para_com: ParameterCombination):
+    def para_com(self, para_com: str):
         """Sets the para_com of this PcfBinding.
 
 
@@ -647,7 +647,7 @@ class PcfBinding(Model):
         self._bind_level = bind_level
 
     @property
-    def ipv4_frame_route_list(self) -> List[Ipv4AddrMask]:
+    def ipv4_frame_route_list(self) -> List[str]:
         """Gets the ipv4_frame_route_list of this PcfBinding.
 
 
@@ -657,7 +657,7 @@ class PcfBinding(Model):
         return self._ipv4_frame_route_list
 
     @ipv4_frame_route_list.setter
-    def ipv4_frame_route_list(self, ipv4_frame_route_list: List[Ipv4AddrMask]):
+    def ipv4_frame_route_list(self, ipv4_frame_route_list: List[str]):
         """Sets the ipv4_frame_route_list of this PcfBinding.
 
 
