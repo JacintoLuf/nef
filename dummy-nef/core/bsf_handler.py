@@ -6,7 +6,7 @@ from models.traffic_influ_sub import TrafficInfluSub
 from models.pcf_binding import PcfBinding
 
 async def bsf_management_discovery(sub: TrafficInfluSub=None) -> tuple[int, PcfBinding]:
-
+    print("--------------------bsf discovery--------------------")
     if sub:
         params = {'ipv4Addr': sub.ipv4_addr,
                 'ipv6Prefix': sub.ipv6_addr,

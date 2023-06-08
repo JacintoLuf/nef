@@ -10,6 +10,7 @@ import core.nrf_handler as nrf_handler
 import core.bsf_handler as bsf_handler
 import core.pcf_handler as pcf_handler
 import core.udm_handler as udm_handler
+import core.udr_handler as udr_handler
 import crud.trafficInfluSub
 
 app = FastAPI()
@@ -25,6 +26,7 @@ async def startup():
     if res == httpx.codes.CREATED:
         await nrf_heartbeat()
     await bsf_handler.bsf_management_discovery()
+    await udr_handler.udr_data_retrieval()
     print("started")
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
