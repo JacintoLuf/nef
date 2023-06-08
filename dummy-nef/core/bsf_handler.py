@@ -7,12 +7,15 @@ from models.pcf_binding import PcfBinding
 
 async def bsf_management_discovery(sub: TrafficInfluSub) -> tuple[int, PcfBinding]:
 
-    params = {'ipv4Addr': sub.ipv4_addr,
-              'ipv6Addr': sub.ipv6_addr,
-              'macAddr': sub.mac_addr,
-              'gpsi': sub.gpsi,
-              'dnn': sub.dnn,
-              'snssai': sub.snssai}
+    if sub:
+        params = {'ipv4Addr': sub.ipv4_addr,
+                'ipv6Addr': sub.ipv6_addr,
+                'macAddr': sub.mac_addr,
+                'gpsi': sub.gpsi,
+                'dnn': sub.dnn,
+                'snssai': sub.snssai}
+    else: 
+          params = {}
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(

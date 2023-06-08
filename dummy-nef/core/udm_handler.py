@@ -27,15 +27,3 @@ async def udm_sdm(sub: TrafficInfluSub) -> tuple[int, PcfBinding]:
 
 
     return (response.status_code, pcf_binding)
-
-async def udm_uecm_get_group_identifiers():
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-            response = await client.get(
-                "http://"+conf.HOSTS["UDM"][0]+":7777/nudm_sdm/v1/group-data/group-identifiers",
-                headers={'Accept': 'application/json,application/problem+json'}
-            )
-            print("-----------------------ids-----------------------")
-            print(response.text)
-            print("-------------------------------------------------")
-
-    return response.status_code

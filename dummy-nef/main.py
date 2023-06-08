@@ -24,7 +24,7 @@ async def startup():
     res = await nrf_handler.nf_register()
     if res == httpx.codes.CREATED:
         await nrf_heartbeat()
-    res = await udm_handler.udm_uecm_get_group_identifiers()
+    await bsf_handler.bsf_management_discovery()
     print("started")
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
