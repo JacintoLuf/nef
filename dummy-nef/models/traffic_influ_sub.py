@@ -17,7 +17,6 @@ from models.link import Link  # noqa: F401,E501
 from models.websock_notif_config import WebsockNotifConfig  # noqa: F401,E501
 from models.eth_flow_description import EthFlowDescription  # noqa: F401,E501
 from models.temporal_validity import TemporalValidity  # noqa: F401,E501
-from models.geographical_area import GeographicalArea  # noqa: F401,E501
 from models.reporting_information import ReportingInformation  # noqa: F401,E501
 from models.dnai_change_type import DnaiChangeType  # noqa: F401,E501
 from models.dnn import Dnn  # noqa: F401,E501
@@ -25,12 +24,11 @@ from models.duration_sec import DurationSec  # noqa: F401,E501
 from models.eas_ip_replacement_info import EasIpReplacementInfo  # noqa: F401,E501
 from models.gpsi import Gpsi  # noqa: F401,E501
 from models.mac_addr48 import MacAddr48  # noqa: F401,E501
-from models.metadata import Metadata  # noqa: F401,E501
 from models.route_to_location import RouteToLocation  # noqa: F401,E501
 from models.snssai import Snssai  # noqa: F401,E501
 from models.supported_features import SupportedFeatures  # noqa: F401,E501
 from models.uinteger import Uinteger  # noqa: F401,E501
-from swagger_server import util
+import util
 
 
 class TrafficInfluSub(Model):
@@ -38,7 +36,7 @@ class TrafficInfluSub(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, af_service_id: str=None, af_app_id: str=None, af_trans_id: str=None, app_relo_ind: bool=None, dnn: Dnn=None, snssai: Snssai=None, external_group_id: ExternalGroupId=None, external_group_ids: List[ExternalGroupId]=None, ext_subsc_cats: List[str]=None, any_ue_ind: bool=None, subscribed_events: List[SubscribedEvent]=None, gpsi: Gpsi=None, ipv4_addr: Ipv4Addr=None, ip_domain: str=None, ipv6_addr: Ipv6Addr=None, mac_addr: MacAddr48=None, dnai_chg_type: DnaiChangeType=None, notification_destination: Link=None, request_test_notification: bool=None, websock_notif_config: WebsockNotifConfig=None, _self: Link=None, traffic_filters: List[FlowInfo]=None, eth_traffic_filters: List[EthFlowDescription]=None, traffic_routes: List[RouteToLocation]=None, sfc_id_dl: str=None, sfc_id_ul: str=None, metadata: Metadata=None, tfc_corr_ind: bool=None, temp_validities: List[TemporalValidity]=None, valid_geo_zone_ids: List[str]=None, geo_areas: List[GeographicalArea]=None, af_ack_ind: bool=None, addr_preser_ind: bool=None, sim_conn_ind: bool=None, sim_conn_term: DurationSec=None, max_allowed_up_lat: Uinteger=None, eas_ip_replace_infos: List[EasIpReplacementInfo]=None, eas_redis_ind: bool=None, event_req: ReportingInformation=None, event_reports: List[EventNotification]=None, cand_dnai_ind: bool=None, tfc_corre_info: TrafficCorrelationInfo=None, supp_feat: SupportedFeatures=None):  # noqa: E501
+    def __init__(self, af_service_id: str=None, af_app_id: str=None, af_trans_id: str=None, app_relo_ind: bool=None, dnn: Dnn=None, snssai: Snssai=None, external_group_id: ExternalGroupId=None, external_group_ids: List[ExternalGroupId]=None, ext_subsc_cats: List[str]=None, any_ue_ind: bool=None, subscribed_events: List[SubscribedEvent]=None, gpsi: Gpsi=None, ipv4_addr: Ipv4Addr=None, ip_domain: str=None, ipv6_addr: Ipv6Addr=None, mac_addr: MacAddr48=None, dnai_chg_type: DnaiChangeType=None, notification_destination: Link=None, request_test_notification: bool=None, websock_notif_config: WebsockNotifConfig=None, _self: Link=None, traffic_filters: List[FlowInfo]=None, eth_traffic_filters: List[EthFlowDescription]=None, traffic_routes: List[RouteToLocation]=None, sfc_id_dl: str=None, sfc_id_ul: str=None, tfc_corr_ind: bool=None, temp_validities: List[TemporalValidity]=None, valid_geo_zone_ids: List[str]=None, af_ack_ind: bool=None, addr_preser_ind: bool=None, sim_conn_ind: bool=None, sim_conn_term: DurationSec=None, max_allowed_up_lat: Uinteger=None, eas_ip_replace_infos: List[EasIpReplacementInfo]=None, eas_redis_ind: bool=None, event_req: ReportingInformation=None, event_reports: List[EventNotification]=None, cand_dnai_ind: bool=None, tfc_corre_info: TrafficCorrelationInfo=None, supp_feat: SupportedFeatures=None):  # noqa: E501
         """TrafficInfluSub - a model defined in Swagger
 
         :param af_service_id: The af_service_id of this TrafficInfluSub.  # noqa: E501
@@ -110,9 +108,9 @@ class TrafficInfluSub(Model):
         :param sim_conn_ind: The sim_conn_ind of this TrafficInfluSub.  # noqa: E501
         :type sim_conn_ind: bool
         :param sim_conn_term: The sim_conn_term of this TrafficInfluSub.  # noqa: E501
-        :type sim_conn_term: TS29571CommonDataYamlcomponentsschemasDurationSec
+        :type sim_conn_term: DurationSec
         :param max_allowed_up_lat: The max_allowed_up_lat of this TrafficInfluSub.  # noqa: E501
-        :type max_allowed_up_lat: TS29571CommonDataYamlcomponentsschemasUinteger
+        :type max_allowed_up_lat: Uinteger
         :param eas_ip_replace_infos: The eas_ip_replace_infos of this TrafficInfluSub.  # noqa: E501
         :type eas_ip_replace_infos: List[TS29571CommonDataYamlcomponentsschemasEasIpReplacementInfo]
         :param eas_redis_ind: The eas_redis_ind of this TrafficInfluSub.  # noqa: E501
@@ -155,11 +153,9 @@ class TrafficInfluSub(Model):
             'traffic_routes': List[RouteToLocation],
             'sfc_id_dl': str,
             'sfc_id_ul': str,
-            'metadata': Metadata,
             'tfc_corr_ind': bool,
             'temp_validities': List[TemporalValidity],
             'valid_geo_zone_ids': List[str],
-            'geo_areas': List[GeographicalArea],
             'af_ack_ind': bool,
             'addr_preser_ind': bool,
             'sim_conn_ind': bool,
@@ -201,11 +197,9 @@ class TrafficInfluSub(Model):
             'traffic_routes': 'trafficRoutes',
             'sfc_id_dl': 'sfcIdDl',
             'sfc_id_ul': 'sfcIdUl',
-            'metadata': 'metadata',
             'tfc_corr_ind': 'tfcCorrInd',
             'temp_validities': 'tempValidities',
             'valid_geo_zone_ids': 'validGeoZoneIds',
-            'geo_areas': 'geoAreas',
             'af_ack_ind': 'afAckInd',
             'addr_preser_ind': 'addrPreserInd',
             'sim_conn_ind': 'simConnInd',
@@ -245,11 +239,9 @@ class TrafficInfluSub(Model):
         self._traffic_routes = traffic_routes
         self._sfc_id_dl = sfc_id_dl
         self._sfc_id_ul = sfc_id_ul
-        self._metadata = metadata
         self._tfc_corr_ind = tfc_corr_ind
         self._temp_validities = temp_validities
         self._valid_geo_zone_ids = valid_geo_zone_ids
-        self._geo_areas = geo_areas
         self._af_ack_ind = af_ack_ind
         self._addr_preser_ind = addr_preser_ind
         self._sim_conn_ind = sim_conn_ind
@@ -847,27 +839,6 @@ class TrafficInfluSub(Model):
         self._sfc_id_ul = sfc_id_ul
 
     @property
-    def metadata(self) -> Metadata:
-        """Gets the metadata of this TrafficInfluSub.
-
-
-        :return: The metadata of this TrafficInfluSub.
-        :rtype: TS29571CommonDataYamlcomponentsschemasMetadata
-        """
-        return self._metadata
-
-    @metadata.setter
-    def metadata(self, metadata: Metadata):
-        """Sets the metadata of this TrafficInfluSub.
-
-
-        :param metadata: The metadata of this TrafficInfluSub.
-        :type metadata: TS29571CommonDataYamlcomponentsschemasMetadata
-        """
-
-        self._metadata = metadata
-
-    @property
     def tfc_corr_ind(self) -> bool:
         """Gets the tfc_corr_ind of this TrafficInfluSub.
 
@@ -931,29 +902,6 @@ class TrafficInfluSub(Model):
         """
 
         self._valid_geo_zone_ids = valid_geo_zone_ids
-
-    @property
-    def geo_areas(self) -> List[GeographicalArea]:
-        """Gets the geo_areas of this TrafficInfluSub.
-
-        Identifies geographical areas within which the AF request applies.  # noqa: E501
-
-        :return: The geo_areas of this TrafficInfluSub.
-        :rtype: List[TS29522AMPolicyAuthorizationYamlcomponentsschemasGeographicalArea]
-        """
-        return self._geo_areas
-
-    @geo_areas.setter
-    def geo_areas(self, geo_areas: List[GeographicalArea]):
-        """Sets the geo_areas of this TrafficInfluSub.
-
-        Identifies geographical areas within which the AF request applies.  # noqa: E501
-
-        :param geo_areas: The geo_areas of this TrafficInfluSub.
-        :type geo_areas: List[TS29522AMPolicyAuthorizationYamlcomponentsschemasGeographicalArea]
-        """
-
-        self._geo_areas = geo_areas
 
     @property
     def af_ack_ind(self) -> bool:
@@ -1026,7 +974,7 @@ class TrafficInfluSub(Model):
 
 
         :return: The sim_conn_term of this TrafficInfluSub.
-        :rtype: TS29571CommonDataYamlcomponentsschemasDurationSec
+        :rtype: DurationSec
         """
         return self._sim_conn_term
 
@@ -1036,7 +984,7 @@ class TrafficInfluSub(Model):
 
 
         :param sim_conn_term: The sim_conn_term of this TrafficInfluSub.
-        :type sim_conn_term: TS29571CommonDataYamlcomponentsschemasDurationSec
+        :type sim_conn_term: DurationSec
         """
 
         self._sim_conn_term = sim_conn_term
@@ -1047,7 +995,7 @@ class TrafficInfluSub(Model):
 
 
         :return: The max_allowed_up_lat of this TrafficInfluSub.
-        :rtype: TS29571CommonDataYamlcomponentsschemasUinteger
+        :rtype: Uinteger
         """
         return self._max_allowed_up_lat
 
@@ -1057,7 +1005,7 @@ class TrafficInfluSub(Model):
 
 
         :param max_allowed_up_lat: The max_allowed_up_lat of this TrafficInfluSub.
-        :type max_allowed_up_lat: TS29571CommonDataYamlcomponentsschemasUinteger
+        :type max_allowed_up_lat: Uinteger
         """
 
         self._max_allowed_up_lat = max_allowed_up_lat
