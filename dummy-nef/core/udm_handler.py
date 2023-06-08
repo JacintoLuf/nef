@@ -21,7 +21,7 @@ async def udm_sdm(sub: TrafficInfluSub) -> tuple[int, PcfBinding]:
                 params=params
             )
             print(response.text)
-            if response.status_code is 204:
+            if response.status_code == 204:
                   return (response.status_code, None)
             pcf_binding = PcfBinding.from_dict(response.json())
 
@@ -31,7 +31,7 @@ async def udm_sdm(sub: TrafficInfluSub) -> tuple[int, PcfBinding]:
 async def udm_uecm_get_group_identifiers():
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(
-                "http://"+conf.HOSTS["UDM"][0]+":7777/nudm_uecm/v1/group-data/group-identifiers",
+                "http://"+conf.HOSTS["UDM"][0]+":7777/nudm_sdm/v2/group-data/group-identifiers",
                 headers={'Accept': 'application/json,application/problem+json'}
             )
             print("-----------------------ids-----------------------")
