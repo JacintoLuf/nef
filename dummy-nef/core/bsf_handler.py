@@ -26,4 +26,4 @@ async def bsf_management_discovery(sub: TrafficInfluSub) -> tuple[int, PcfBindin
             pcf_binding = PcfBinding.from_dict(response.json())
 
 
-    return response.status_code, pcf_binding
+    return (response.status_code, pcf_binding)
