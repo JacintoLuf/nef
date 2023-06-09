@@ -17,7 +17,7 @@ async def udr_data_retrieval() -> int:
     print("------------------------------policy data------------------------------")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(
-                "http://"+conf.HOSTS["UDR"][0]+":7777/nudr-dr/v1/policy-data",
+                "http://"+conf.HOSTS["UDR"][0]+":7777/nudr-dr/v1/policy-data/bdt-data",
                 headers={'Accept': 'application/json,application/problem+json'},
                 params=params
             )
