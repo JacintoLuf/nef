@@ -5,6 +5,18 @@ from session import db
 from models.traffic_influ_sub import TrafficInfluSub
 from models.pcf_binding import PcfBinding
 
+
+async def udm_sdm_id_trans(gpsi: str=None) -> str:
+      
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+            response = await client.get(
+                "http://"+conf.HOSTS["UDM"][0]+":7777/nudm_sdm/v1/"+gpsi+"/id-translation-result",
+                headers={'Accept': 'application/json,application/problem+json'}
+            )
+            print(response.text)
+
+    return response.text
+
 async def udm_sdm(sub: TrafficInfluSub) -> tuple[int, PcfBinding]:
 
     params = {'ipv4Addr': sub.ipv4_addr,
@@ -24,6 +36,5 @@ async def udm_sdm(sub: TrafficInfluSub) -> tuple[int, PcfBinding]:
             if response.status_code == 204:
                   return (response.status_code, None)
             pcf_binding = PcfBinding.from_dict(response.json())
-
 
     return (response.status_code, pcf_binding)

@@ -26,7 +26,6 @@ async def startup():
     if res == httpx.codes.CREATED:
         await nrf_heartbeat()
     await bsf_handler.bsf_management_discovery()
-    await udr_handler.udr_data_retrieval()
     print("started")
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
@@ -52,11 +51,8 @@ async def ti_create(data):
     #res code: 201
     #map ipv6 addr to ipv6 prefix
     traffic_sub = TrafficInfluSub.from_dict(json.loads(data))
-    if not traffic_sub.gpsi and not traffic_sub.any_ue_ind and not traffic_sub.external_group_id:
-        status_code, res = bsf_handler.bsf_management_discovery(traffic_sub)
-    else:
-        res = udm_handler
-    return 201
+    status_code, res = bsf_handler.bsf_management_discovery(traffic_sub)
+    return {'res': res}
 
 @app.put("/ti_update")
 async def ti_put():
