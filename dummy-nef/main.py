@@ -46,10 +46,11 @@ async def read_root():
     return {'nfs instances': str(insts)}
 
 @app.post("/ti_create")
-async def ti_create(data):
+async def ti_create(ipv4: str=None):
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions
     #res code: 201
     #map ipv6 addr to ipv6 prefix
+    data = TrafficInfluSub(ipv4_addr=ipv4)
     traffic_sub = TrafficInfluSub.from_dict(json.loads(data))
     status_code, res = bsf_handler.bsf_management_discovery(traffic_sub)
     return {'res': res}
