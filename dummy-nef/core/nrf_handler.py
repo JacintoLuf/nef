@@ -49,10 +49,10 @@ async def nf_register() -> int:
                 },
             data = json.dumps(conf.NEF_PROFILE.to_dict())
         )
-        print(response.status_code)
-        print(response.text)
         if response.status_code == httpx.codes.CREATED:
             print(f"[{conf.NEF_PROFILE.nf_instance_id}] NF registerd [Heartbeat: {conf.NEF_PROFILE.heart_beat_timer}]")
+        else:
+            print(response.text)
 
     return response.status_code
 
