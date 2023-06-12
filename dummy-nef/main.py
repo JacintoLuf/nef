@@ -45,7 +45,7 @@ async def read_root():
         insts.append(user)
     return {'nfs instances': str(insts)}
 
-@app.post("/ti_create")
+@app.get("/ti_create")
 async def ti_create(ipv4: str=None):
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions
     #res code: 201
