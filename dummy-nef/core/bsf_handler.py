@@ -6,7 +6,7 @@ import core.udm_handler as udm_handler
 from models.traffic_influ_sub import TrafficInfluSub
 from models.pcf_binding import PcfBinding
 
-async def bsf_management_discovery(sub: TrafficInfluSub=None) -> tuple[int, PcfBinding]:
+async def bsf_management_discovery(sub: TrafficInfluSub=None):
     if not sub:
         return (400, None)
     elif sub.ipv4_addr:
@@ -32,5 +32,4 @@ async def bsf_management_discovery(sub: TrafficInfluSub=None) -> tuple[int, PcfB
                   return (response.status_code, None)
             pcf_binding = PcfBinding.from_dict(response.json())
 
-
-    return (response.status_code, pcf_binding)
+    return response.text

@@ -52,7 +52,7 @@ async def ti_create(ipv4: str=None):
     #map ipv6 addr to ipv6 prefix
     data = TrafficInfluSub(ipv4_addr=ipv4)
     #traffic_sub = TrafficInfluSub.from_dict(json.loads(data))
-    status_code, res = bsf_handler.bsf_management_discovery(data)
+    res = await bsf_handler.bsf_management_discovery(data)
     return {'res': res}
 
 @app.put("/ti_update")
