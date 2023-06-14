@@ -28,7 +28,7 @@ async def pcf_policy_authorization_create(pcf_addr: List[str]=None, traffic_infl
         if hasattr(req_data, attr_name) and (attr_name != 'swagger_types' and attr_name != 'attribute_map'):
             print(f"name: {attr_name}, type: {type(attr_val)}")
             setattr(req_data, attr_name, attr_val)
-    
+    return None
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
