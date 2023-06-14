@@ -62,9 +62,9 @@ async def ti_create(ipv4: str=None):
     pcf_binding = PcfBinding.from_dict(response.json())
     
     req_data = AppSessionContextReqData()
-    print(dir(TrafficInfluSub()))
+    traffic_influ_sub_attr = vars(data)
     print("----------------------matching attr-----------------------")
-    for attr_name in dir(TrafficInfluSub()):
+    for attr_name, attr_val in traffic_influ_sub_attr.items():
         if hasattr(req_data, attr_name):
             print(f"name: {attr_name}")
     print("----------------------------------------------------------")

@@ -70,3 +70,11 @@ class Model(object):
     def __ne__(self, other):
         """Returns true if both objects are not equal"""
         return not self == other
+    
+    def __dict__(self):
+        # Return class attributes as a dictionary
+        return {
+            attr: getattr(self, attr)
+            for attr in dir(self)
+            if not callable(getattr(self, attr)) and not attr.startswith("__") and not "attribute_map" and not "openapi_types" and not "swagger_types"
+        }
