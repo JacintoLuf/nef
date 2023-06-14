@@ -25,7 +25,7 @@ async def pcf_policy_authorization_create(pcf_addr: List[str]=None, traffic_infl
     req_data = AppSessionContextReqData()
     for attr_name, attr_val in traffic_influ_sub_attr.items():
         print("checkpoint")
-        if hasattr(req_data, attr_name) and attr_name != 'swagger_types':
+        if hasattr(req_data, attr_name) and (attr_name != 'swagger_types' and attr_name != 'attribute_map'):
             print(f"name: {attr_name}, type: {type(attr_val)}")
             setattr(req_data, attr_name, attr_val)
     
