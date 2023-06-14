@@ -9,13 +9,13 @@ T = typing.TypeVar('T')
 
 
 class Model(object):
-    # openapiTypes: The key is attribute name and the
+    # swaggerTypes: The key is attribute name and the
     # value is attribute type.
-    openapi_types: typing.Dict[str, type] = {}
+    swagger_types = {}
 
     # attributeMap: The key is attribute name and the
     # value is json key in definition.
-    attribute_map: typing.Dict[str, str] = {}
+    attribute_map = {}
 
     @classmethod
     def from_dict(cls: typing.Type[T], dikt) -> T:
@@ -29,23 +29,26 @@ class Model(object):
         """
         result = {}
 
-        for attr, _ in six.iteritems(self.openapi_types):
+        for attr, _ in six.iteritems(self.swagger_types):
             value = getattr(self, attr)
             if isinstance(value, list):
-                result[attr] = list(map(
+                #self.attribute_map[attr]
+                result[self.attribute_map[attr]] = list(map(
                     lambda x: x.to_dict() if hasattr(x, "to_dict") else x,
                     value
                 ))
             elif hasattr(value, "to_dict"):
-                result[attr] = value.to_dict()
+                result[self.attribute_map[attr]] = value.to_dict()
             elif isinstance(value, dict):
-                result[attr] = dict(map(
+                result[self.attribute_map[attr]] = dict(map(
                     lambda item: (item[0], item[1].to_dict())
                     if hasattr(item[1], "to_dict") else item,
                     value.items()
                 ))
+            elif value is None:
+                pass
             else:
-                result[attr] = value
+                result[self.attribute_map[attr]] = value
 
         return result
 
