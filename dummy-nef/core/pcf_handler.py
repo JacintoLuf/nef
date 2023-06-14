@@ -21,11 +21,11 @@ async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_inf
 
     req_data = AppSessionContextReqData()
     for attr_name in traffic_influ_sub.attribute_map.keys():
-        print("checkpoint")
-        if hasattr(req_data, attr_name):
+        attr_val = getattr(traffic_influ_sub, attr_name)
+        if hasattr(req_data, attr_name) and attr_val:
             print(f"name: {attr_name}, type: {type(getattr(traffic_influ_sub, attr_name))}")
-            #setattr(req_data, attr_name, getattr(traffic_influ_sub, attr_name))
-    return None
+            setattr(req_data, attr_name, getattr(traffic_influ_sub, attr_name))
+            
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:

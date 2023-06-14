@@ -46,15 +46,26 @@ async def read_root():
     return {'nfs instances': str(insts)}
 
 @app.get("/ti_create")
-async def ti_create(ipv4: str=None):
+async def ti_create(afId: str=None, ipv4: str=None):
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions
     #res code: 201
     #map ipv6 addr to ipv6 prefix
     data = TrafficInfluSub(ipv4_addr=ipv4)
     # try:
     #     traffic_sub = TrafficInfluSub.from_dict(json.loads(data))
+    #     if traffic_sub.any_ue_ind:
+    #         if traffic_sub.external_group_id or traffic_sub.ipv4_addr or traffic_sub.ipv6_addr or traffic_sub.mac_addr:
+    #             return 400
+    #     elif traffic_sub.external_group_id:
+    #         if traffic_sub.any_ue_ind or traffic_sub.ipv4_addr or traffic_sub.ipv6_addr or traffic_sub.mac_addr:
+    #             return 400
+    #     elif traffic_sub.ipv4_addr or traffic_sub.ipv6_addr or traffic_sub.mac_addr:
+    #         if traffic_sub.any_ue_ind or traffic_sub.external_group_id:
+    #             return 400
+    #         return 400
     # except Exception as e:
     #     raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
+    
     response: httpx.Response = await bsf_handler.bsf_management_discovery(data)
     if response.status_code != httpx.codes.OK:
             return response
@@ -62,9 +73,18 @@ async def ti_create(ipv4: str=None):
     pcf_binding = PcfBinding.from_dict(response.json())
     
     response = await pcf_handler.pcf_policy_authorization_create([ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points], data)
+
+    sub_id = "1"
+    data.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{afId}/subscriptions/{sub_id}"
     # if response:
     #     appSessionContext.insert_one(response)
     return 201
+
+@app.get("/ti_get")
+async def ti_get():
+    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
+    #res code: 200 
+    return 200
 
 @app.put("/ti_update")
 async def ti_put():
