@@ -58,16 +58,18 @@ async def ti_create(ipv4: str=None):
     response: httpx.Response = await bsf_handler.bsf_management_discovery(data)
     if response.status_code != httpx.codes.OK:
             return response
+    
     pcf_binding = PcfBinding.from_dict(response.json())
-    # traffic_influ_sub_attr = vars(TrafficInfluSub())
-    # req_data = AppSessionContextReqData()
-    #print(traffic_influ_sub_attr.items())
-    # print("----------------------matching attr-----------------------")
-    # for attr_name in traffic_influ_sub_attr.items():
-    #     if hasattr(req_data, attr_name):
-    #         print(attr_name)
-    # print("----------------------------------------------------------")
-    response = await pcf_handler.pcf_policy_authorization_create([ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points])
+    
+    req_data = AppSessionContextReqData()
+    print(dir(TrafficInfluSub()))
+    print("----------------------matching attr-----------------------")
+    for attr_name in dir(TrafficInfluSub()):
+        if hasattr(req_data, attr_name):
+            print(f"name: {attr_name}")
+    print("----------------------------------------------------------")
+    
+    #response = await pcf_handler.pcf_policy_authorization_create([ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points])
     # if response:
     #     appSessionContext.insert_one(response)
     return 201
