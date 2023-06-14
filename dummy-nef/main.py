@@ -61,17 +61,16 @@ async def ti_create(ipv4: str=None):
     
     pcf_binding = PcfBinding.from_dict(response.json())
     
-    req_data = AppSessionContextReqData()
-    print(vars(data))
-    traffic_influ_sub_attr = vars(data)
-    print(traffic_influ_sub_attr)
+    print(f"vars: {vars(TrafficInfluSub())}")
+    print(f"dict: {TrafficInfluSub().__dict__}")
+    print(f"dir: {[i for i in dir(TrafficInfluSub())]}")
     # print("----------------------matching attr-----------------------")
     # for attr_name, attr_val in traffic_influ_sub_attr.items():
     #     if hasattr(req_data, attr_name):
     #         print(f"name: {attr_name}")
-    # print("----------------------------------------------------------")
+    print("----------------------------------------------------------")
     
-    #response = await pcf_handler.pcf_policy_authorization_create([ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points])
+    response = await pcf_handler.pcf_policy_authorization_create([ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points])
     # if response:
     #     appSessionContext.insert_one(response)
     return 201

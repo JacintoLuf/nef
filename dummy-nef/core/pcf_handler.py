@@ -18,14 +18,13 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
 
 async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_influ_sub: TrafficInfluSub=None) -> int:
     print(pcf_addrs)
-        
-    traffic_influ_sub_attr = vars(traffic_influ_sub)
+
     req_data = AppSessionContextReqData()
-    for attr_name, attr_val in traffic_influ_sub_attr.items():
+    for attr_name in traffic_influ_sub.attribute_map.keys():
         print("checkpoint")
-        if hasattr(req_data, attr_name) and (attr_name != 'swagger_types' and attr_name != 'attribute_map'):
-            print(f"name: {attr_name}, type: {type(attr_val)}")
-            setattr(req_data, attr_name, attr_val)
+        if hasattr(req_data, attr_name):
+            print(f"name: {attr_name}, type: {type(getattr(traffic_influ_sub, attr_name))}")
+            #setattr(req_data, attr_name, getattr(traffic_influ_sub, attr_name))
     return None
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
