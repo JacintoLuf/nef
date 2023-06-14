@@ -16,11 +16,9 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
             #app_session_context = AppSessionContext.from_dict(response.json())
         return None #app_session_context
 
-async def pcf_policy_authorization_create(pcf_addr: List[str]=None, traffic_influ_sub: TrafficInfluSub=None) -> int:
-    print(pcf_addr)
-    if not pcf_addr or not traffic_influ_sub:
-        return None
-    
+async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_influ_sub: TrafficInfluSub=None) -> int:
+    print(pcf_addrs)
+        
     traffic_influ_sub_attr = vars(traffic_influ_sub)
     req_data = AppSessionContextReqData()
     for attr_name, attr_val in traffic_influ_sub_attr.items():
@@ -33,7 +31,7 @@ async def pcf_policy_authorization_create(pcf_addr: List[str]=None, traffic_infl
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.post(
-                f"http://{pcf_addr or conf.HOSTS['PCF'][0]}:7777/npcf-policyauthorization/v1/app-sessions",
+                f"http://{pcf_addrs[0] or conf.HOSTS['PCF'][0]}:7777/npcf-policyauthorization/v1/app-sessions",
                 headers={'Accept': 'application/json,application/problem+json'},
                 data=app_session_context
             )
