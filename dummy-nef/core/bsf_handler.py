@@ -1,12 +1,8 @@
 import httpx
-import json
 from api.config import conf
-from session import db
-import core.udm_handler as udm_handler
 from models.traffic_influ_sub import TrafficInfluSub
-from models.pcf_binding import PcfBinding
 
-async def bsf_management_discovery(sub: TrafficInfluSub=None):
+async def bsf_management_discovery(sub: TrafficInfluSub=None) -> httpx.Response:
     if not sub:
         return (400, None)
     elif sub.ipv4_addr:
@@ -28,8 +24,5 @@ async def bsf_management_discovery(sub: TrafficInfluSub=None):
                 params=params
             )
             print(response.text)
-            if response.status_code != 200:
-                  return (response.status_code, None)
-            pcf_binding = PcfBinding.from_dict(response.json())
 
-    return response.text
+    return response

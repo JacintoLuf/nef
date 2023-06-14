@@ -1,17 +1,17 @@
 import json
-from fastapi import FastAPI, Request, Response
-from fastapi_utils.tasks import repeat_every
-from session import async_db
 import httpx
 import logging
+from fastapi import FastAPI, Request, Response, HTTPException
+from fastapi_utils.tasks import repeat_every
+from models.app_session_context_req_data import AppSessionContextReqData
+from session import async_db
 from api.config import conf
 from models.traffic_influ_sub import TrafficInfluSub
+from models.pcf_binding import PcfBinding
 import core.nrf_handler as nrf_handler
 import core.bsf_handler as bsf_handler
 import core.pcf_handler as pcf_handler
-import core.udm_handler as udm_handler
-import core.udr_handler as udr_handler
-import crud.trafficInfluSub
+import crud.appSessionContext as appSessionContext
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
@@ -51,9 +51,25 @@ async def ti_create(ipv4: str=None):
     #res code: 201
     #map ipv6 addr to ipv6 prefix
     data = TrafficInfluSub(ipv4_addr=ipv4)
-    #traffic_sub = TrafficInfluSub.from_dict(json.loads(data))
-    res = await bsf_handler.bsf_management_discovery(data)
-    return {'res': res}
+    # try:
+    #     traffic_sub = TrafficInfluSub.from_dict(json.loads(data))
+    # except Exception as e:
+    #     raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
+    response: httpx.Response = await bsf_handler.bsf_management_discovery(data)
+    if response.status_code != httpx.codes.OK:
+            return response
+    pcf_binding = PcfBinding.from_dict(response.json())
+    traffic_influ_sub_attr = vars(TrafficInfluSub())
+    req_data = AppSessionContextReqData()
+    print("----------------------matching attr-----------------------")
+    for attr_name, attr_val in traffic_influ_sub_attr.items():
+        if hasattr(req_data, attr_name):
+            print(attr_name)
+    print("----------------------------------------------------------")
+    #response = await pcf_handler.pcf_policy_authorization_create([ip.to_str() for ip in pcf_binding.pcf_ip_end_points])
+    # if response:
+    #     appSessionContext.insert_one(response)
+    return pcf_binding
 
 @app.put("/ti_update")
 async def ti_put():
