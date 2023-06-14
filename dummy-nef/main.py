@@ -67,12 +67,7 @@ async def ti_create(ipv4: str=None):
     #     if hasattr(req_data, attr_name):
     #         print(attr_name)
     # print("----------------------------------------------------------")
-    print(pcf_binding.pcf_ip_end_points)
-    print("--------------------------------------------------")
-    for i in pcf_binding.pcf_ip_end_points:
-        print(i)
-    print("----------------------------------------")
-    response = await pcf_handler.pcf_policy_authorization_create([ip.to_str() for ip in pcf_binding.pcf_ip_end_points])
+    response = await pcf_handler.pcf_policy_authorization_create([ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points])
     # if response:
     #     appSessionContext.insert_one(response)
     return 201
