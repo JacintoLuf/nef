@@ -7,11 +7,12 @@ from crud import nfProfile
 
 async def nrf_discovery() -> int:
     collection = db["nf_instances"]
+    collection.create_index({'nfInstanceId'})
     uuids = []
     instances = []
     profiles = []
 
-    collection.delete_many({})
+    #collection.delete_many({})
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
@@ -31,15 +32,13 @@ async def nrf_discovery() -> int:
             instances.append(response.json())
     #await nfProfile.insert_many(instances)
     conf.set_nf_endpoints(profiles)
-    # result = collection.insert_many(instances)
-    # #result = collection.update_many(instances)
-    # result.inserted_ids
-    # print("Core NF instances saved")
-
-    collection.update_many([{'nfInstanceId': i['nfInstanceId']} for i in instances], instances, upsert=True)
+    result = collection.insert_many(instances)
+    result.inserted_ids
     print("Core NF instances saved")
 
-    
+    # collection.update_many([{'nfInstanceId': i['nfInstanceId']} for i in instances], instances, upsert=True)
+    # print("Core NF instances saved")
+
     return 1
 
 async def nf_register() -> int:
