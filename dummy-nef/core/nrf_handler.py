@@ -36,12 +36,9 @@ async def nrf_discovery() -> int:
     # result.inserted_ids
     # print("Core NF instances saved")
 
-    try:
-        collection.update_many([{'nfInstanceId': i['nfInstanceID']} for i in instances], instances, True)
-        print("Core NF instances saved")
-    except Exception as e:
-        print(e)
-        return 0
+    collection.update_many([{'nfInstanceId': i['nfInstanceId']} for i in instances], instances, upsert=True)
+    print("Core NF instances saved")
+
     
     return 1
 
