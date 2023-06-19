@@ -11,7 +11,7 @@ async def nrf_discovery() -> int:
     instances = []
     profiles = []
 
-    #collection.delete_many({})
+    collection.delete_many({})
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
