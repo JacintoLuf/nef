@@ -7,7 +7,6 @@ from crud import nfProfile
 
 async def nrf_discovery() -> int:
     collection = db["nf_instances"]
-    collection.create_index({'nfInstanceId'})
     uuids = []
     instances = []
     profiles = []
@@ -30,10 +29,9 @@ async def nrf_discovery() -> int:
             )
             profiles.append(NFProfile.from_dict(response.json()))
             instances.append(response.json())
-    #await nfProfile.insert_many(instances)
     conf.set_nf_endpoints(profiles)
     result = collection.insert_many(instances)
-    result.inserted_ids
+    #result.inserted_ids
     print("Core NF instances saved")
 
     # collection.update_many([{'nfInstanceId': i['nfInstanceId']} for i in instances], instances, upsert=True)
