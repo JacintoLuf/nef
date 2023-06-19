@@ -3,6 +3,7 @@ import httpx
 from api.config import conf
 from models.app_session_context import AppSessionContext
 from models.app_session_context_req_data import AppSessionContextReqData
+from models.af_routing_requirement import AfRoutingRequirement
 from models.traffic_influ_sub import TrafficInfluSub
 
 async def pcf_policy_authorization_get(app_session_id: str=None):
@@ -16,16 +17,30 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
             #app_session_context = AppSessionContext.from_dict(response.json())
         return None #app_session_context
 
-async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_influ_sub: TrafficInfluSub=None) -> int:
+async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_influ_sub: TrafficInfluSub=None):
     print(pcf_addrs)
 
     req_data = AppSessionContextReqData()
     for attr_name in traffic_influ_sub.attribute_map.keys():
         attr_val = getattr(traffic_influ_sub, attr_name)
+        if attr_name == 'ipv4_addr':
+            setattr(req_data, 'ue_ipv4', attr_val)
+        if attr_name == 'ipv6_addr':
+            setattr(req_data, 'ue_ipv6', attr_val)
+        if attr_name == 'mac_addr':
+            setattr(req_data, 'ue_mac', attr_val)
         if hasattr(req_data, attr_name) and attr_val:
             print(f"name: {attr_name}, type: {type(getattr(traffic_influ_sub, attr_name))}")
             setattr(req_data, attr_name, getattr(traffic_influ_sub, attr_name))
-            
+
+    req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback"                
+    rout_req = AfRoutingRequirement(
+        app_reloc=traffic_influ_sub.app_relo_ind,
+        route_to_locs=traffic_influ_sub.traffic_routes,
+        temp_vals=traffic_influ_sub.temp_validities,
+        addr_preser_ind=traffic_influ_sub.addr_preser_ind,
+    )
+    req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
@@ -39,3 +54,14 @@ async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_inf
     #     print(response.text)
 
     return response.status_code
+
+async def pcf_policy_authorization_delete(afId: str=None, subId: str=None):
+
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+            response = await client.post(
+                f"http://{conf.HOSTS['PCF'][0]}:7777/npcf-policyauthorization/v1/app-sessions/{subId}/delete",
+                headers={'Accept': 'application/json,application/problem+json'},
+            )
+            print(response.text)
+
+    return response

@@ -1,11 +1,11 @@
 from models.nf_profile import NFProfile
 from session import async_db
 
-async def insert_one(profile):
+async def insert_one(profile: NFProfile=None):
     collection = async_db["nf_instances"]
-
+    criteria = {'nf_instance_id': profile.nf_instance_id}
     try:
-        result = collection.insert_one(profile)
+        result = collection.update_one(profile)
         print(result.inserted_id)
     except Exception as e:
         print(e)
