@@ -20,6 +20,10 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 80
+        - name: terminal
+          image: ubuntu:latest
+          imagePullPolicy: Always
+          command: ["sleep", "infinity"]
       imagePullSecrets:
         - name: dockerhub-secret
 
