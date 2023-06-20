@@ -26,7 +26,7 @@ docker tag nef:latest jacintoluf/nef:udp
 docker push jacintoluf/nef:udp
 
 # Deploy the app to Kubernetes
-kubectl apply -n open5gs -f udp-server-deployment.yml
+kubectl apply -n open5gs -f udp-server-deployment.yaml
 
 # Port forward to service
 #kubectl port-forward -n open5gs svc/nef 9000:80
