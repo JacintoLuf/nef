@@ -1,40 +1,36 @@
+from secrets import token_bytes
 from session import async_db as db
 from models.traffic_influ_sub import TrafficInfluSub
 
 
-async def traffic_influence_subscription_get(appId: str, subId: str=None):
+async def traffic_influence_subscription_get(afId: str, subId: str=None):
     collection = db["traffic_influ_sub"]
     if not subId:
-        docs = collection.find({'af_service_id': appId})
-        if not docs:
-            return 404
-        return docs
+        doc = await collection.find_one({'_id': subId, 'sub': {'af_service_id': afId}})
+        return doc
     else:
         docs = []
-        for doc in collection.find_one({'af_service_id': appId, '_id': subId}):
+        for doc in await collection.find({'af_service_id': afId}):
             docs.append(doc)
-        return docs
-    return 200
+        return docs or None
 
 async def traffic_influence_subscription_post(sub: TrafficInfluSub):
     collection = db["traffic_influ_sub"]
+    subId = '1' #token_bytes(16)
+    document = {'_id': subId, 'sub': sub.to_dict}
     try:
-        result = collection.insert_one(sub)
+        result = await collection.insert_one(document)
         print(result.inserted_id)
         return result.inserted_id
     except:
-        return 500
+        return None
 
-async def individual_traffic_influence_subscription_put():
+async def individual_traffic_influence_subscription_update():
     collection = db["traffic_influ_sub"]
     return 1
 
-async def individual_traffic_influence_subscription_patch():
+async def individual_traffic_influence_subscription_delete(afId: str, subId: str=None):
     collection = db["traffic_influ_sub"]
-    return 1
-
-async def individual_traffic_influence_subscription_delete(appId: str, subId: str=None):
-    collection = db["traffic_influ_sub"]
-    if appId and subId:
-        reuslt = collection.delete_one({'af_service_id': appId, '_id': subId})
-    return 1
+    if afId and subId:
+        result = collection.delete_one({'_id': subId, 'sub': {'af_service_id': afId}})
+    return result

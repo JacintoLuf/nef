@@ -55,7 +55,7 @@ async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_inf
 
     return response.status_code
 
-async def pcf_policy_authorization_delete(afId: str=None, subId: str=None):
+async def pcf_policy_authorization_delete(subId: str=None):
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.post(

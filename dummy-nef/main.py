@@ -50,9 +50,6 @@ async def read_root():
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions", responses={201: {"description": "Created"}})
 async def ti_create(afId, data: Request):
     #data = TrafficInfluSub(ipv4_addr=ipv4)
-    if not afId:
-        raise HTTPException(httpx.codes.BAD_REQUEST, detail="Invalid AF ID")
-
     try:
         traffic_sub = TrafficInfluSub.from_dict(data.json())
     except:
@@ -61,8 +58,15 @@ async def ti_create(afId, data: Request):
     if traffic_sub.notification_destination and not traffic_sub.subscribed_events:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
     
+    if traffic_sub.tfc_corr_ind and not traffic_sub.external_group_id:
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
+    # if traffic_sub.af_app_id:
+    # elif traffic_sub.traffic_filters:
+    # elif traffic_sub.eth_traffic_filters:
+    
     if traffic_sub.any_ue_ind:
         print("any UE")
+        return Response(status_code=500)
     elif traffic_sub.ipv4_addr or traffic_sub.ipv6_addr or traffic_sub.mac_addr:
         response: httpx.Response = await bsf_handler.bsf_management_discovery(data)
         if response.status_code != httpx.codes.OK:
@@ -81,11 +85,14 @@ async def ti_create(afId, data: Request):
     
     response = await pcf_handler.pcf_policy_authorization_create([ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points], data)
 
-    #sub_id = trafficInfluSub.traffic_influence_subscription_post(trafficInfluSub)
-    #data.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{afId}/subscriptions/{sub_id}"
-    # if response:
-    #     appSessionContext.insert_one(response)
-    return 201
+    sub_id = trafficInfluSub.traffic_influence_subscription_post(trafficInfluSub)
+    if sub_id:
+        traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{afId}/subscriptions/{sub_id}"
+    else:
+        return Response(status_code=500, content="Error creating resource")
+    
+    res_headers = conf.GLOBAL_HEADERS.update({'Location': traffic_sub.__self})
+    return Response(status_code=httpx.codes.CREATED, content="Resource created", headers=res_headers)
 
 @app.post("/pcf-policy-authorization-callback")
 async def pcf_callback(data):
@@ -114,5 +121,8 @@ async def ti_patch():
 async def ti_delete(afId: str, subId: str):
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
     #res code: 204
-    res = pcf_handler.pcf_policy_authorization_delete(afId, subId)
+    res = pcf_handler.pcf_policy_authorization_delete(subId)
+    print(res)
+    res = trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
+    print(res)
     return 204

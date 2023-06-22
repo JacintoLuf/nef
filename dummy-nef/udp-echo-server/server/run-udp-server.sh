@@ -3,6 +3,8 @@
 # Delete previous existing deployment and service
 kubectl delete deployment -n open5gs udp-echo-server
 kubectl delete service -n open5gs udp-echo-server
+kubectl delete deployment -n open5gs udp-echo-server2
+kubectl delete service -n open5gs udp-echo-server2
 
 # Find and delete the Docker image by name
 IMAGE_ID=$(docker images -q nef)
@@ -23,6 +25,7 @@ docker push jacintoluf/nef:udp
 
 # Deploy the app to Kubernetes
 kubectl apply -n open5gs -f udp-server-deployment.yaml
+kubectl apply -n open5gs -f udp-server2-deployment.yaml
 
 # Port forward to service
 #kubectl port-forward -n open5gs svc/nef 9000:80

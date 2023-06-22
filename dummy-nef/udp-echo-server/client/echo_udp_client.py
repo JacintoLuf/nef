@@ -10,10 +10,12 @@ import time
 
 data_payload = 2048 
  
-def echo_client(host, port, delay=5, repeat=5): 
+def echo_client(host, port, delay=5, repeat=5, tun=None): 
     """ A simple echo client """ 
     # Create a UDP socket 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+    if tun:
+        sock.bind(tun, 0)
  
     server_address = (host, port) 
     print("Connecting to %s port %s" % server_address) 
@@ -44,9 +46,12 @@ if __name__ == '__main__':
                         help="delay between each message")
     parser.add_argument('-r', action="store", dest="r", type=int, required=False,
                         help="send messege x times") 
+    parser.add_argument('-t', action="store", dest="t", type=int, required=False,
+                        help="tunnel interface") 
     given_args = parser.parse_args()  
     host = given_args.host
     port = given_args.p
     delay = given_args.d
     repeat = given_args.r
-    echo_client(host, port, delay, repeat)
+    tun = given_args.t
+    echo_client(host, port, delay, repeat, tun)

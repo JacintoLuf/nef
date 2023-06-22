@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: udp-echo-server
+  name: udp-echo-server2
   labels:
-    app: udp-echo-server
+    app: udp-echo-server2
 spec:
   selector:
     matchLabels:
-      app: udp-echo-server
+      app: udp-echo-server2
   replicas: 1
   template:
     metadata:
       labels:
-        app: udp-echo-server
+        app: udp-echo-server2
     spec:
       containers:
-        - name: udp-echo-server
+        - name: udp-echo-server2
           image: jacintoluf/nef:udp
           imagePullPolicy: Always
           ports:
@@ -31,13 +31,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: udp-echo-server
+  name: udp-echo-server2
   labels:
-    app: udp-echo-server
+    app: udp-echo-server2
 spec:
   type: NodePort
   ports:
   - port: 80
     protocol: UDP
   selector:
-    app: udp-echo-server
+    app: udp-echo-server2
