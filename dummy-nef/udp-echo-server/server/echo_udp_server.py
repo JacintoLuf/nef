@@ -7,7 +7,7 @@ import socket
 import sys
 import argparse
  
-host = 'localhost' 
+host = '0.0.0.0' 
 data_payload = 2048 
  
 def echo_server(port): 
@@ -16,7 +16,7 @@ def echo_server(port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
  
     # Bind the socket to the port 
-    server_address = (host, port) 
+    server_address = ('', port) 
     print("Starting up echo server on %s port %s" % server_address) 
  
     sock.bind(server_address) 
