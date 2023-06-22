@@ -3,7 +3,6 @@ import httpx
 import logging
 from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi_utils.tasks import repeat_every
-from models.app_session_context_req_data import AppSessionContextReqData
 from session import async_db
 from api.config import conf
 from models.traffic_influ_sub import TrafficInfluSub
@@ -13,7 +12,6 @@ import core.bsf_handler as bsf_handler
 import core.pcf_handler as pcf_handler
 import core.udm_handler as udm_handler
 import crud.trafficInfluSub as trafficInfluSub
-import crud.appSessionContext as appSessionContext
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
@@ -47,7 +45,14 @@ async def read_root():
         insts.append(user)
     return {'nfs instances': str(insts)}
 
-@app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions", responses={201: {"description": "Created"}})
+@app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
+async def ti_get(afId: str):
+    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions
+    #res code: 200
+    res = trafficInfluSub.traffic_influence_subscription_get(afId=afId)
+    return Response(status_code=httpx.codes.OK, content={'TrafficInfluSubs': res})
+
+@app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions", responses={201: {"description": "Created"}})
 async def ti_create(afId, data: Request):
     #data = TrafficInfluSub(ipv4_addr=ipv4)
     try:
@@ -100,24 +105,27 @@ async def pcf_callback(data):
     return 200
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
-async def ti_get():
-    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
-    #res code: 200 
-    return 200
-
-@app.put("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}", responses={200: {"description": "Updated"}})
-async def ti_put():
+async def ti_get(afId: str, subId: str):
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
     #res code: 200
-    return 200
+    res = trafficInfluSub.traffic_influence_subscription_get(afId=afId, subId=subId)
+    return Response(status_code=httpx.codes.OK, content={'TrafficInfluSubs': res})
 
-@app.patch("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}", responses={200: {"description": "Updated"}})
+@app.put("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
+async def ti_put(afId, subId, data: Request):
+    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
+    #res code: 200
+    res = trafficInfluSub.individual_traffic_influence_subscription_update()
+    return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
+
+@app.patch("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}",)
 async def ti_patch():
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
     #res code: 200 
-    return 200
+    res = trafficInfluSub.individual_traffic_influence_subscription_update()
+    return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
-@app.delete("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}", responses={204: {"description": "Deleted"}})
+@app.delete("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_delete(afId: str, subId: str):
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
     #res code: 204
@@ -125,4 +133,4 @@ async def ti_delete(afId: str, subId: str):
     print(res)
     res = trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
     print(res)
-    return 204
+    return Response(status_code=httpx.codes.NO_CONTENT, content="The subscription was terminated successfully.")

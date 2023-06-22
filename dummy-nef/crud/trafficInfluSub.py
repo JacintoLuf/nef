@@ -5,12 +5,12 @@ from models.traffic_influ_sub import TrafficInfluSub
 
 async def traffic_influence_subscription_get(afId: str, subId: str=None):
     collection = db["traffic_influ_sub"]
-    if not subId:
+    if subId:
         doc = await collection.find_one({'_id': subId, 'sub': {'af_service_id': afId}})
         return doc
     else:
         docs = []
-        for doc in await collection.find({'af_service_id': afId}):
+        for doc in await collection.find({'sub': {'af_service_id': afId}}):
             docs.append(doc)
         return docs or None
 
