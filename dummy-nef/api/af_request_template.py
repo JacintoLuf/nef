@@ -6,7 +6,7 @@ from models.route_information import RouteInformation
 route_info = RouteInformation(
     ipv4_addr="",
     ipv6_addr="",
-    port_number="7777"
+    port_number="80"
 )
 
 route_to_loc = RouteToLocation(
