@@ -33,6 +33,7 @@ def create_sub():
     traffic_influ.traffic_filters="",#-----------------------------------------
     traffic_influ.traffic_routes=[route_to_loc],
     #supp_feat=1 "InfluenceOnTrafficRouting"
+    print(f"influ sub: {traffic_influ}")
 
     return traffic_influ
 
