@@ -75,9 +75,10 @@ async def ti_create():
     # elif traffic_sub.traffic_filters:
     # elif traffic_sub.eth_traffic_filters:
     traffic_sub = sub_template
-    if traffic_sub.any_ue_ind:
+    print(traffic_sub.to_dict())
+    if traffic_sub.any_ue_ind == True:
         print("any UE")
-        return Response(status_code=500)
+        return Response(status_code=httpx.codes.BAD_REQUEST)
     elif traffic_sub.ipv4_addr or traffic_sub.ipv6_addr or traffic_sub.mac_addr:
         response: httpx.Response = await bsf_handler.bsf_management_discovery(traffic_sub)
         if response.status_code != httpx.codes.OK:

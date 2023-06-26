@@ -29,6 +29,7 @@ def create_sub():
     traffic_influ.notification_destination=f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback",
     traffic_influ.traffic_filters="",#-----------------------------------------
     traffic_influ.traffic_routes=[route_to_loc],
+    traffic_influ.any_ue_ind=False
     #supp_feat=1 "InfluenceOnTrafficRouting"
 
     return traffic_influ
