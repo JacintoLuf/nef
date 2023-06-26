@@ -83,26 +83,26 @@ async def ti_create():
         print("any UE")
         return Response(status_code=500)
     elif traffic_sub.ipv4_addr or traffic_sub.ipv6_addr or traffic_sub.mac_addr:
-        response: httpx.Response = await bsf_handler.bsf_management_discovery(data)
+        response: httpx.Response = await bsf_handler.bsf_management_discovery(traffic_sub)
         if response.status_code != httpx.codes.OK:
                 return response
-        response = await pcf_handler.pcf_policy_authorization_create([ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points], data)
+        response = await pcf_handler.pcf_policy_authorization_create([ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points], traffic_sub)
     elif traffic_sub.gpsi:
         translation_res = udm_handler.udm_sdm_id_translation(traffic_sub.gpsi)
     elif traffic_sub.external_group_id:
         translation_res = udm_handler.udm_sdm_group_identifiers_translation(traffic_sub.external_group_id)
 
-    response: httpx.Response = await bsf_handler.bsf_management_discovery(data)
+    response: httpx.Response = await bsf_handler.bsf_management_discovery(traffic_sub)
     if response.status_code != httpx.codes.OK:
             return response
     
     pcf_binding = PcfBinding.from_dict(response.json())
     
-    response = await pcf_handler.pcf_policy_authorization_create([ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points], data)
+    response = await pcf_handler.pcf_policy_authorization_create([ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points], traffic_sub)
 
-    sub_id = trafficInfluSub.traffic_influence_subscription_post(data, response.headers['Location'])
+    sub_id = trafficInfluSub.traffic_influence_subscription_post(traffic_sub, response.headers['Location'])
     if sub_id:
-        traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{afId}/subscriptions/{sub_id}"
+        traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{traffic_sub}/subscriptions/{sub_id}"
     else:
         return Response(status_code=500, content="Error creating resource")
     
