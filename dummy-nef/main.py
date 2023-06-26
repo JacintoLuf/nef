@@ -86,6 +86,7 @@ async def ti_create():
         response: httpx.Response = await bsf_handler.bsf_management_discovery(traffic_sub)
         if response.status_code != httpx.codes.OK:
                 return response
+        pcf_binding = PcfBinding.from_dict(response.json())
         response = await pcf_handler.pcf_policy_authorization_create([ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points], traffic_sub)
     elif traffic_sub.gpsi:
         translation_res = udm_handler.udm_sdm_id_translation(traffic_sub.gpsi)
