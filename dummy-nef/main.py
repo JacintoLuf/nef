@@ -11,7 +11,7 @@ import core.bsf_handler as bsf_handler
 import core.pcf_handler as pcf_handler
 import core.udm_handler as udm_handler
 import crud.trafficInfluSub as trafficInfluSub
-from api.af_request_template import create_sub
+from api.af_request_template import sub_template
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
@@ -74,7 +74,7 @@ async def ti_create():
     # if traffic_sub.af_app_id:
     # elif traffic_sub.traffic_filters:
     # elif traffic_sub.eth_traffic_filters:
-    traffic_sub = create_sub()
+    traffic_sub = sub_template
     if traffic_sub.any_ue_ind:
         print("any UE")
         return Response(status_code=500)
