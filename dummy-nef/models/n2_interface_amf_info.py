@@ -26,7 +26,7 @@ class N2InterfaceAmfInfo(Model):
         :param amf_name: The amf_name of this N2InterfaceAmfInfo.  # noqa: E501
         :type amf_name: str
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'ipv4_endpoint_address': List[str],
             'ipv6_endpoint_address': List[AllOfN2InterfaceAmfInfoIpv6EndpointAddressItems],
             'amf_name': str

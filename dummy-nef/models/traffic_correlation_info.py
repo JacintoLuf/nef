@@ -31,7 +31,7 @@ class TrafficCorrelationInfo(Model):
         :param fqdn_range: The fqdn_range of this TrafficCorrelationInfo.  # noqa: E501
         :type fqdn_range: List[TS29571CommonDataYamlcomponentsschemasFqdnPatternMatchingRule]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'corre_type': CorrelationType,
             'tfc_corr_id': str,
             'com_eas_ipv4_addr': Ipv4AddrRm,

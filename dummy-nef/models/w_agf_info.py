@@ -26,7 +26,7 @@ class WAgfInfo(Model):
         :param endpoint_fqdn: The endpoint_fqdn of this WAgfInfo.  # noqa: E501
         :type endpoint_fqdn: Fqdn
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'ipv4_endpoint_addresses': List[str],
             'ipv6_endpoint_addresses': List[AllOfWAgfInfoIpv6EndpointAddressesItems],
             'endpoint_fqdn': Fqdn

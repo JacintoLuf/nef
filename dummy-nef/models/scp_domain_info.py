@@ -28,7 +28,7 @@ class ScpDomainInfo(Model):
         :param scp_ports: The scp_ports of this ScpDomainInfo.  # noqa: E501
         :type scp_ports: Dict[str, int]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'scp_fqdn': Fqdn,
             'scp_ip_end_points': List[IpEndPoint],
             'scp_prefix': str,

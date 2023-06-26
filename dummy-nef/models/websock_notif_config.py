@@ -23,7 +23,7 @@ class WebsockNotifConfig(Model):
         :param request_websocket_uri: The request_websocket_uri of this WebsockNotifConfig.  # noqa: E501
         :type request_websocket_uri: bool
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'websocket_uri': Link,
             'request_websocket_uri': bool
         }

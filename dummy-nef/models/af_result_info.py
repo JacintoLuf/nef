@@ -29,7 +29,7 @@ class AfResultInfo(Model):
         :param eas_ip_replace_infos: The eas_ip_replace_infos of this AfResultInfo.  # noqa: E501
         :type eas_ip_replace_infos: List[TS29571CommonDataYamlcomponentsschemasEasIpReplacementInfo]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'af_status': AfResultStatus,
             'traffic_route': RouteToLocation,
             'up_buff_ind': bool,

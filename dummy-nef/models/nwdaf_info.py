@@ -30,7 +30,7 @@ class NwdafInfo(Model):
         :param tai_range_list: The tai_range_list of this NwdafInfo.  # noqa: E501
         :type tai_range_list: List[TaiRange]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'event_ids': List[AnyOfNwdafInfoEventIdsItems],
             'nwdaf_events': List[AnyOfNwdafInfoNwdafEventsItems],
             'tai_list': List[AmfInfoTaiList],

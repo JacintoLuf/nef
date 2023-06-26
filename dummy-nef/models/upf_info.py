@@ -58,7 +58,7 @@ class UpfInfo(Model):
         :param supported_pfcp_features: The supported_pfcp_features of this UpfInfo.  # noqa: E501
         :type supported_pfcp_features: str
         """
-        self.swagger_types = {
+        self.openapi_types = {
             's_nssai_upf_info_list': List[SnssaiUpfInfoItem],
             'smf_serving_area': List[str],
             'interface_upf_info_list': List[InterfaceUpfInfoItem],

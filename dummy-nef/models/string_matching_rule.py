@@ -21,7 +21,7 @@ class StringMatchingRule(Model):
         :param string_matching_conditions: The string_matching_conditions of this StringMatchingRule.  # noqa: E501
         :type string_matching_conditions: List[StringMatchingCondition]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'string_matching_conditions': List[StringMatchingCondition]
         }
 

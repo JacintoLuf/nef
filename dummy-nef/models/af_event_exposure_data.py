@@ -25,7 +25,7 @@ class AfEventExposureData(Model):
         :param app_ids: The app_ids of this AfEventExposureData.  # noqa: E501
         :type app_ids: List[str]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'af_events': List[AnyOfAfEventExposureDataAfEventsItems],
             'af_ids': List[str],
             'app_ids': List[str]

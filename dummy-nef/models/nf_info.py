@@ -21,7 +21,7 @@ class NfInfo(Model):
         :param nf_type: The nf_type of this NfInfo.  # noqa: E501
         :type nf_type: NFType
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'nf_type': NFType
         }
 

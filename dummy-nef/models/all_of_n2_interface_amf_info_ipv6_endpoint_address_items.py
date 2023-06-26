@@ -18,7 +18,7 @@ class AllOfN2InterfaceAmfInfoIpv6EndpointAddressItems(Model):
         """AllOfN2InterfaceAmfInfoIpv6EndpointAddressItems - a model defined in Swagger
 
         """
-        self.swagger_types = {
+        self.openapi_types = {
         }
 
         self.attribute_map = {

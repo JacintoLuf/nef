@@ -23,7 +23,7 @@ class FqdnPatternMatchingRule(Model):
         :param string_matching_rule: The string_matching_rule of this FqdnPatternMatchingRule.  # noqa: E501
         :type string_matching_rule: StringMatchingRule
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'regex': str,
             'string_matching_rule': StringMatchingRule
         }

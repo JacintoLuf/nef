@@ -25,7 +25,7 @@ class AusfInfo(Model):
         :param routing_indicators: The routing_indicators of this AusfInfo.  # noqa: E501
         :type routing_indicators: List[str]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'group_id': str,
             'supi_ranges': List[SupiRange],
             'routing_indicators': List[str]

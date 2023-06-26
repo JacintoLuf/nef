@@ -26,7 +26,7 @@ class SnssaiUpfInfoItem(Model):
         :param redundant_transport: The redundant_transport of this SnssaiUpfInfoItem.  # noqa: E501
         :type redundant_transport: bool
         """
-        self.swagger_types = {
+        self.openapi_types = {
             's_nssai': SubscriptionDataReqSnssais,
             'dnn_upf_info_list': List[DnnUpfInfoItem],
             'redundant_transport': bool

@@ -26,7 +26,7 @@ class TwifInfo(Model):
         :param endpoint_fqdn: The endpoint_fqdn of this TwifInfo.  # noqa: E501
         :type endpoint_fqdn: Fqdn
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'ipv4_endpoint_addresses': List[str],
             'ipv6_endpoint_addresses': List[AllOfTwifInfoIpv6EndpointAddressesItems],
             'endpoint_fqdn': Fqdn

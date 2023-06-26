@@ -57,7 +57,7 @@ class EventNotification(Model):
         :param af_ack_uri: The af_ack_uri of this EventNotification.  # noqa: E501
         :type af_ack_uri: Link
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'af_trans_id': str,
             'dnai_chg_type': DnaiChangeType,
             'source_traffic_route': RouteToLocation,

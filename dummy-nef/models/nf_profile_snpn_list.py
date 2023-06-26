@@ -25,7 +25,7 @@ class NFProfileSnpnList(Model):
         :param nid: The nid of this NFProfileSnpnList.  # noqa: E501
         :type nid: str
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'mcc': str,
             'mnc': str,
             'nid': str

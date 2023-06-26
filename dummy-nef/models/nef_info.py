@@ -34,7 +34,7 @@ class NefInfo(Model):
         :param served_fqdn_list: The served_fqdn_list of this NefInfo.  # noqa: E501
         :type served_fqdn_list: List[str]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'nef_id': NefId,
             'pfd_data': PfdData,
             'af_ee_data': AfEventExposureData,

@@ -31,7 +31,7 @@ class UdrInfo(Model):
         :param supported_data_sets: The supported_data_sets of this UdrInfo.  # noqa: E501
         :type supported_data_sets: List[DataSetId]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'group_id': str,
             'supi_ranges': List[SupiRange],
             'gpsi_ranges': List[IdentityRange],

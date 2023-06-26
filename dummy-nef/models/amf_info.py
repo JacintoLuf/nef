@@ -39,7 +39,7 @@ class AmfInfo(Model):
         :param n2_interface_amf_info: The n2_interface_amf_info of this AmfInfo.  # noqa: E501
         :type n2_interface_amf_info: N2InterfaceAmfInfo
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'amf_set_id': str,
             'amf_region_id': str,
             'guami_list': List[GuamiListCondGuamiList],

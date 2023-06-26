@@ -33,7 +33,7 @@ class DefaultNotificationSubscription(Model):
         :param binding: The binding of this DefaultNotificationSubscription.  # noqa: E501
         :type binding: str
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'notification_type': NotificationType,
             'callback_uri': str,
             'n1_message_class': AnyOfDefaultNotificationSubscriptionN1MessageClass,

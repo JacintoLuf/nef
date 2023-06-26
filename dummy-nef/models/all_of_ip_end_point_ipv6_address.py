@@ -18,7 +18,7 @@ class AllOfIpEndPointIpv6Address(Model):
         """AllOfIpEndPointIpv6Address - a model defined in Swagger
 
         """
-        self.swagger_types = {
+        self.openapi_types = {
         }
 
         self.attribute_map = {

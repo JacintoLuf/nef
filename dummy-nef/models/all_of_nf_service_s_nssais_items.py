@@ -22,7 +22,7 @@ class AllOfNFServiceSNssaisItems(Model):
         :param wildcard_sd: The wildcard_sd of this AllOfNFServiceSNssaisItems.  # noqa: E501
         :type wildcard_sd: bool
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'sd_ranges': List[object],
             'wildcard_sd': bool
         }

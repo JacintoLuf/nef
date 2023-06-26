@@ -27,7 +27,7 @@ class PlmnSnssai(Model):
         :param nid: The nid of this PlmnSnssai.  # noqa: E501
         :type nid: str
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'plmn_id': NFProfilePlmnList,
             's_nssai_list': List[AllOfPlmnSnssaiSNssaiListItems],
             'nid': str

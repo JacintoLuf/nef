@@ -24,7 +24,7 @@ class UpfInfoAtsssCapability(Model):
         :param rtt_without_pmf: The rtt_without_pmf of this UpfInfoAtsssCapability.  # noqa: E501
         :type rtt_without_pmf: bool
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'atsss_ll': bool,
             'mptcp': bool,
             'rtt_without_pmf': bool

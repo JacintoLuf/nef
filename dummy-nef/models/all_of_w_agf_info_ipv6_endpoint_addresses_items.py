@@ -18,7 +18,7 @@ class AllOfWAgfInfoIpv6EndpointAddressesItems(Model):
         """AllOfWAgfInfoIpv6EndpointAddressesItems - a model defined in Swagger
 
         """
-        self.swagger_types = {
+        self.openapi_types = {
         }
 
         self.attribute_map = {

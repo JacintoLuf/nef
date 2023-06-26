@@ -31,7 +31,7 @@ class LmfInfo(Model):
         :param serving_rat_types: The serving_rat_types of this LmfInfo.  # noqa: E501
         :type serving_rat_types: List[AnyOfLmfInfoServingRatTypesItems]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'serving_client_types': List[AnyOfLmfInfoServingClientTypesItems],
             'lmf_id': str,
             'serving_access_types': List[str],

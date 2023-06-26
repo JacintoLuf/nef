@@ -25,7 +25,7 @@ class IdentityRange(Model):
         :param pattern: The pattern of this IdentityRange.  # noqa: E501
         :type pattern: str
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'start': str,
             'end': str,
             'pattern': str

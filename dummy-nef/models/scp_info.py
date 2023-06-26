@@ -43,7 +43,7 @@ class ScpInfo(Model):
         :param remote_plmn_list: The remote_plmn_list of this ScpInfo.  # noqa: E501
         :type remote_plmn_list: List[NFProfilePlmnList]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'scp_domain_info_list': Dict[str, List[ScpDomainInfo]],
             'scp_prefix': str,
             'scp_ports': Dict[str, int],

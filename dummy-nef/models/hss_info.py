@@ -30,7 +30,7 @@ class HssInfo(Model):
         :param msisdn_ranges: The msisdn_ranges of this HssInfo.  # noqa: E501
         :type msisdn_ranges: List[IdentityRange]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'group_id': str,
             'imsi_ranges': List[ImsiRange],
             'ims_private_identity_ranges': List[IdentityRange],

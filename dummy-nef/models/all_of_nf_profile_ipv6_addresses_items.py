@@ -18,7 +18,7 @@ class AllOfNFProfileIpv6AddressesItems(Model):
         """AllOfNFProfileIpv6AddressesItems - a model defined in Swagger
 
         """
-        self.swagger_types = {
+        self.openapi_types = {
         }
 
         self.attribute_map = {

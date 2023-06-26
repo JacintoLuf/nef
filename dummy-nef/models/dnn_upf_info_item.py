@@ -31,7 +31,7 @@ class DnnUpfInfoItem(Model):
         :param ipv6_prefix_ranges: The ipv6_prefix_ranges of this DnnUpfInfoItem.  # noqa: E501
         :type ipv6_prefix_ranges: List[Ipv6PrefixRange]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'dnn': str,
             'dnai_list': List[str],
             'pdu_session_types': List[AnyOfDnnUpfInfoItemPduSessionTypesItems],

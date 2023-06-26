@@ -181,7 +181,7 @@ class NFProfile(Model):
         :param scp_info: The scp_info of this NFProfile.  # noqa: E501
         :type scp_info: ScpInfo
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'nf_instance_id': str,
             'nf_instance_name': str,
             'nf_type': NFType,

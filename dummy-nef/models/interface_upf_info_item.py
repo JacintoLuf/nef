@@ -31,7 +31,7 @@ class InterfaceUpfInfoItem(Model):
         :param network_instance: The network_instance of this InterfaceUpfInfoItem.  # noqa: E501
         :type network_instance: str
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'interface_type': UPInterfaceType,
             'ipv4_endpoint_addresses': List[str],
             'ipv6_endpoint_addresses': List[AllOfInterfaceUpfInfoItemIpv6EndpointAddressesItems],

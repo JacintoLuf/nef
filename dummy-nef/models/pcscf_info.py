@@ -30,7 +30,7 @@ class PcscfInfo(Model):
         :param gm_ipv6_addresses: The gm_ipv6_addresses of this PcscfInfo.  # noqa: E501
         :type gm_ipv6_addresses: List[AllOfPcscfInfoGmIpv6AddressesItems]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'access_type': List[str],
             'dnn_list': List[str],
             'gm_fqdn': Fqdn,

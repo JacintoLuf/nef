@@ -24,7 +24,7 @@ class GuamiListCondGuamiList(Model):
         :param amf_id: The amf_id of this GuamiListCondGuamiList.  # noqa: E501
         :type amf_id: str
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'plmn_id': NFProfileSnpnList,
             'amf_id': str
         }

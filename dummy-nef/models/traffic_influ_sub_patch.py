@@ -72,7 +72,7 @@ class TrafficInfluSubPatch(Model):
         :param tfc_corre_info: The tfc_corre_info of this TrafficInfluSubPatch.  # noqa: E501
         :type tfc_corre_info: TrafficCorrelationInfo
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'app_relo_ind': bool,
             'traffic_filters': List[FlowInfo],
             'eth_traffic_filters': List[EthFlowDescription],

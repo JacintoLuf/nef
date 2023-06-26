@@ -23,7 +23,7 @@ class Ipv4AddressRange(Model):
         :param end: The end of this Ipv4AddressRange.  # noqa: E501
         :type end: str
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'start': str,
             'end': str
         }

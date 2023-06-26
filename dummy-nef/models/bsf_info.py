@@ -28,7 +28,7 @@ class BsfInfo(Model):
         :param ipv6_prefix_ranges: The ipv6_prefix_ranges of this BsfInfo.  # noqa: E501
         :type ipv6_prefix_ranges: List[Ipv6PrefixRange]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'dnn_list': List[str],
             'ip_domain_list': List[str],
             'ipv4_address_ranges': List[Ipv4AddressRange],

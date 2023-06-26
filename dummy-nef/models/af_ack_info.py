@@ -26,7 +26,7 @@ class AfAckInfo(Model):
         :param gpsi: The gpsi of this AfAckInfo.  # noqa: E501
         :type gpsi: Gpsi
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'af_trans_id': str,
             'ack_result': AfResultInfo,
             'gpsi': Gpsi

@@ -27,7 +27,7 @@ class TaiRange(Model):
         :param nid: The nid of this TaiRange.  # noqa: E501
         :type nid: str
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'plmn_id': NFProfilePlmnList,
             'tac_range_list': List[TacRange],
             'nid': str

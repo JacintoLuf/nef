@@ -22,7 +22,7 @@ class VendorSpecificFeature(Model):
         :param feature_version: The feature_version of this VendorSpecificFeature.  # noqa: E501
         :type feature_version: str
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'feature_name': str,
             'feature_version': str
         }

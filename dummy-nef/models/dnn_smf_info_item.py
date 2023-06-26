@@ -21,7 +21,7 @@ class DnnSmfInfoItem(Model):
         :param dnn: The dnn of this DnnSmfInfoItem.  # noqa: E501
         :type dnn: AnyOfDnnSmfInfoItemDnn
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'dnn': AnyOfDnnSmfInfoItemDnn
         }
 

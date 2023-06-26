@@ -23,7 +23,7 @@ class SubscriptionDataReqSnssais(Model):
         :param sd: The sd of this SubscriptionDataReqSnssais.  # noqa: E501
         :type sd: str
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'sst': int,
             'sd': str
         }

@@ -24,7 +24,7 @@ class NFServiceVersion(Model):
         :param expiry: The expiry of this NFServiceVersion.  # noqa: E501
         :type expiry: datetime
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'api_version_in_uri': str,
             'api_full_version': str,
             'expiry': datetime

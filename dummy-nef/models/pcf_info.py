@@ -35,7 +35,7 @@ class PcfInfo(Model):
         :param v2x_support_ind: The v2x_support_ind of this PcfInfo.  # noqa: E501
         :type v2x_support_ind: bool
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'group_id': str,
             'dnn_list': List[str],
             'supi_ranges': List[SupiRange],

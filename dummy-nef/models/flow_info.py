@@ -22,7 +22,7 @@ class FlowInfo(Model):
         :param flow_descriptions: The flow_descriptions of this FlowInfo.  # noqa: E501
         :type flow_descriptions: List[str]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'flow_id': int,
             'flow_descriptions': List[str]
         }

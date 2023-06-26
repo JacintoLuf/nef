@@ -23,7 +23,7 @@ class NFProfilePlmnList(Model):
         :param mnc: The mnc of this NFProfilePlmnList.  # noqa: E501
         :type mnc: str
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'mcc': str,
             'mnc': str
         }

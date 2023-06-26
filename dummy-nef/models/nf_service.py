@@ -95,7 +95,7 @@ class NFService(Model):
         :param oauth2_required: The oauth2_required of this NFService.  # noqa: E501
         :type oauth2_required: bool
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'service_instance_id': str,
             'service_name': ServiceName,
             'versions': List[NFServiceVersion],

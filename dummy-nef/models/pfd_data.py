@@ -22,7 +22,7 @@ class PfdData(Model):
         :param af_ids: The af_ids of this PfdData.  # noqa: E501
         :type af_ids: List[str]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'app_ids': List[str],
             'af_ids': List[str]
         }

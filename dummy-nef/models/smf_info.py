@@ -36,7 +36,7 @@ class SmfInfo(Model):
         :param vsmf_support_ind: The vsmf_support_ind of this SmfInfo.  # noqa: E501
         :type vsmf_support_ind: bool
         """
-        self.swagger_types = {
+        self.openapi_types = {
             's_nssai_smf_info_list': List[SnssaiSmfInfoItem],
             'tai_list': List[AmfInfoTaiList],
             'tai_range_list': List[TaiRange],

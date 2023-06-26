@@ -26,7 +26,7 @@ class UdsfInfo(Model):
         :param storage_id_ranges: The storage_id_ranges of this UdsfInfo.  # noqa: E501
         :type storage_id_ranges: Dict[str, List[IdentityRange]]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'group_id': str,
             'supi_ranges': List[SupiRange],
             'storage_id_ranges': Dict[str, List[IdentityRange]]

@@ -22,7 +22,7 @@ class ChfServiceInfo(Model):
         :param secondary_chf_service_instance: The secondary_chf_service_instance of this ChfServiceInfo.  # noqa: E501
         :type secondary_chf_service_instance: str
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'primary_chf_service_instance': str,
             'secondary_chf_service_instance': str
         }

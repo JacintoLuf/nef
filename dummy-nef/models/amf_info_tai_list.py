@@ -26,7 +26,7 @@ class AmfInfoTaiList(Model):
         :param nid: The nid of this AmfInfoTaiList.  # noqa: E501
         :type nid: str
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'plmn_id': NFProfilePlmnList,
             'tac': str,
             'nid': str

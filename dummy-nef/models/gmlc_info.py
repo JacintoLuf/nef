@@ -21,7 +21,7 @@ class GmlcInfo(Model):
         :param serving_client_types: The serving_client_types of this GmlcInfo.  # noqa: E501
         :type serving_client_types: List[AnyOfGmlcInfoServingClientTypesItems]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'serving_client_types': List[AnyOfGmlcInfoServingClientTypesItems]
         }
 

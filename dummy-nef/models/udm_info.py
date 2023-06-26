@@ -33,7 +33,7 @@ class UdmInfo(Model):
         :param internal_group_identifiers_ranges: The internal_group_identifiers_ranges of this UdmInfo.  # noqa: E501
         :type internal_group_identifiers_ranges: List[InternalGroupIdRange]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'group_id': str,
             'supi_ranges': List[SupiRange],
             'gpsi_ranges': List[IdentityRange],

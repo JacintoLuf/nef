@@ -83,7 +83,7 @@ class PcfBinding(Model):
         :param ipv6_frame_route_list: The ipv6_frame_route_list of this PcfBinding.  # noqa: E501
         :type ipv6_frame_route_list: List[Ipv6Prefix]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'supi': str,
             'gpsi': Gpsi,
             'ipv4_addr': Ipv4Addr,

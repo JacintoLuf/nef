@@ -24,7 +24,7 @@ class Ipv6PrefixRange(Model):
         :param end: The end of this Ipv6PrefixRange.  # noqa: E501
         :type end: AllOfIpv6PrefixRangeEnd
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'start': AllOfIpv6PrefixRangeStart,
             'end': AllOfIpv6PrefixRangeEnd
         }

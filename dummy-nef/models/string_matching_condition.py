@@ -23,7 +23,7 @@ class StringMatchingCondition(Model):
         :param matching_operator: The matching_operator of this StringMatchingCondition.  # noqa: E501
         :type matching_operator: MatchingOperator
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'matching_string': str,
             'matching_operator': MatchingOperator
         }

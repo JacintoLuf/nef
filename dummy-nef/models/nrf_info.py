@@ -92,7 +92,7 @@ class NrfInfo(Model):
         :param served_scp_info_list: The served_scp_info_list of this NrfInfo.  # noqa: E501
         :type served_scp_info_list: Dict[str, ScpInfo]
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'served_udr_info': Dict[str, UdrInfo],
             'served_udr_info_list': Dict[str, Dict[str, UdrInfo]],
             'served_udm_info': Dict[str, UdmInfo],

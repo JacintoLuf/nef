@@ -29,7 +29,7 @@ class ChfInfo(Model):
         :param group_id: The group_id of this ChfInfo.  # noqa: E501
         :type group_id: str
         """
-        self.swagger_types = {
+        self.openapi_types = {
             'supi_range_list': List[SupiRange],
             'gpsi_range_list': List[IdentityRange],
             'plmn_range_list': List[PlmnRange],

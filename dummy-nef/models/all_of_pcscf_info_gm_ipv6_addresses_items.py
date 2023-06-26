@@ -18,7 +18,7 @@ class AllOfPcscfInfoGmIpv6AddressesItems(Model):
         """AllOfPcscfInfoGmIpv6AddressesItems - a model defined in Swagger
 
         """
-        self.swagger_types = {
+        self.openapi_types = {
         }
 
         self.attribute_map = {

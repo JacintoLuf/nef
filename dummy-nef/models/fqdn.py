@@ -18,7 +18,7 @@ class Fqdn(Model):
         """Fqdn - a model defined in Swagger
 
         """
-        self.swagger_types = {
+        self.openapi_types = {
         }
 
         self.attribute_map = {
