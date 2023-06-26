@@ -8,17 +8,14 @@ def create_sub():
     snssai = Snssai()
     snssai.sst=1
     snssai.sd="111111"
-    print(f"snssai: {snssai.to_dict()}")
 
     route_info = RouteInformation()
     route_info.ipv4_addr="10.255.32.132"
     route_info.port_number=80
-    print(f"route info: {route_info.to_dict()}")
 
     route_to_loc = RouteToLocation()
     route_to_loc.dnai="1-111111"
     route_to_loc.route_info=route_info
-    print(f"route to loc: {route_to_loc}")
 
     traffic_influ = TrafficInfluSub()
     traffic_influ.af_service_id="24caa907-f1ba-4e29-8a78-f9728dd45d83",
@@ -33,7 +30,6 @@ def create_sub():
     traffic_influ.traffic_filters="",#-----------------------------------------
     traffic_influ.traffic_routes=[route_to_loc],
     #supp_feat=1 "InfluenceOnTrafficRouting"
-    print(f"influ sub: {traffic_influ}")
 
     return traffic_influ
 
