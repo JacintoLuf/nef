@@ -33,6 +33,7 @@ def create_sub():
         temp_validities="",
         #supp_feat=1 "InfluenceOnTrafficRouting"
     )
+    print(traffic_influ.notification_destination)
     print("---------------------to dict----------------------")
     print(traffic_influ.to_dict())
     return traffic_influ
