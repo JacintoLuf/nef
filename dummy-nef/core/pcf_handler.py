@@ -42,13 +42,16 @@ async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_inf
     )
     req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
-    print(rout_req)
+    print(rout_req.addr_preser_ind)
+    print(rout_req.route_to_locs)
+    print(req_data.notif_uri)
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.post( #pcf_addrs[0] or 
                 f"http://{conf.HOSTS['PCF'][0]}:7777/npcf-policyauthorization/v1/app-sessions",
-                headers={'Accept': 'application/json,application/problem+json'},
+                headers={'Accept': 'application/json,application/problem+json', 'Content-Type': 'application/json'},
                 data=json.dumps(app_session_context.to_dict())
             )
+            print(response.headers)
             print(response.text)
     # if response.status_code == httpx.codes.SEE_OTHER:
     #     print(response.text)
