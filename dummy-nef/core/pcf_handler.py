@@ -47,7 +47,7 @@ async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_inf
             response = await client.post(
                 f"http://{pcf_addrs[0] or conf.HOSTS['PCF'][0]}:7777/npcf-policyauthorization/v1/app-sessions",
                 headers={'Accept': 'application/json,application/problem+json'},
-                data=app_session_context
+                data=app_session_context.to_dict()
             )
             print(response.text)
     # if response.status_code == httpx.codes.SEE_OTHER:
