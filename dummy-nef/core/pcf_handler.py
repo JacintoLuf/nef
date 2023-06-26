@@ -22,7 +22,8 @@ async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_inf
 
     req_data = AppSessionContextReqData()
     for attr_name in traffic_influ_sub.attribute_map.keys():
-        attr_val = getattr(traffic_influ_sub, attr_name)
+        print(attr_name)
+        attr_val = getattr(traffic_influ_sub, attr_name, None)
         if attr_name == 'ipv4_addr':
             setattr(req_data, 'ue_ipv4', attr_val)
         if attr_name == 'ipv6_addr':
