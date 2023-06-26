@@ -20,14 +20,11 @@ logger = logging.getLogger(__name__)
 
 @app.on_event("startup")
 async def startup():
-    print("starting up")
-    print(f"api uuid: {conf.NEF_PROFILE.nf_instance_id}")
     res = await nrf_handler.nrf_discovery()
     res = await nrf_handler.nf_register()
     if res == httpx.codes.CREATED:
         await nrf_heartbeat()
     await bsf_handler.bsf_management_discovery()
-    print("started")
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
 async def nrf_heartbeat():
@@ -99,7 +96,7 @@ async def ti_create():
     
     pcf_binding = PcfBinding.from_dict(response.json())
     
-    response = await pcf_handler.pcf_policy_authorization_create([ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points], traffic_sub)
+    response = await pcf_handler.pcf_policy_authorization_create(pcf_addrs=[ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points], traffic_influ_sub=traffic_sub)
     if response.status_code != httpx.codes.CREATED:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
 

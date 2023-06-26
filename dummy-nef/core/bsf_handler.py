@@ -3,6 +3,7 @@ from api.config import conf
 from models.traffic_influ_sub import TrafficInfluSub
 
 async def bsf_management_discovery(sub: TrafficInfluSub=None) -> httpx.Response:
+    print(sub.ipv4_addr)
     if not sub:
         return (400, None)
     elif sub.ipv4_addr:
@@ -23,6 +24,5 @@ async def bsf_management_discovery(sub: TrafficInfluSub=None) -> httpx.Response:
                 headers={'Accept': 'application/json,application/problem+json'},
                 params=params
             )
-            print(response.text)
 
     return response

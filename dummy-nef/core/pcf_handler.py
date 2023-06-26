@@ -20,7 +20,8 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
 
 async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_influ_sub: TrafficInfluSub=None):
     print("----------------------------------")
-    print(traffic_influ_sub)
+    print(traffic_influ_sub.to_dict())
+    print(traffic_influ_sub.snssai)
     print("----------------------------------")
     req_data = AppSessionContextReqData()
     for attr_name in traffic_influ_sub.attribute_map.keys():
@@ -32,8 +33,6 @@ async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_inf
         if attr_name == 'mac_addr':
             setattr(req_data, 'ue_mac', attr_val)
         if hasattr(req_data, attr_name) and attr_val:
-            print("here")
-            print(f"name: {attr_name}, value: {attr_val}")
             setattr(req_data, attr_name, attr_val)
 
     req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback"                
@@ -45,7 +44,7 @@ async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_inf
     )
     req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
-    print(rout_req.addr_preser_ind)
+    print(rout_req == None)
     print(rout_req.route_to_locs)
     print(req_data.notif_uri)
     print("----------------------------------")
