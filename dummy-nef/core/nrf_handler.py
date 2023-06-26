@@ -41,6 +41,8 @@ async def nrf_discovery() -> int:
 async def nf_register():
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
+        tmp = conf.NEF_PROFILE
+        print(tmp.to_dict())
         response = await client.put(
             f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
             headers={
