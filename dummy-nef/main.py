@@ -63,23 +63,22 @@ async def ti_get(afId: str):
 # async def ti_create(afId, data: Request):
 @app.get("/ti_create")
 async def ti_create():
-    data = tf
-    if not afId:
-        afId = "default"
-    try:
-        traffic_sub = TrafficInfluSub.from_dict(data.json())
-    except:
-        raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
+    # if not afId:
+    #     afId = "default"
+    # try:
+    #     traffic_sub = TrafficInfluSub.from_dict(data.json())
+    # except:
+    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
     
-    if traffic_sub.notification_destination and not traffic_sub.subscribed_events:
-        raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
+    # if traffic_sub.notification_destination and not traffic_sub.subscribed_events:
+    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
     
-    if traffic_sub.tfc_corr_ind and not traffic_sub.external_group_id:
-        raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
+    # if traffic_sub.tfc_corr_ind and not traffic_sub.external_group_id:
+    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
     # if traffic_sub.af_app_id:
     # elif traffic_sub.traffic_filters:
     # elif traffic_sub.eth_traffic_filters:
-    
+    traffic_sub = tf
     if traffic_sub.any_ue_ind:
         print("any UE")
         return Response(status_code=500)
