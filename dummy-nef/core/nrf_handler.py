@@ -3,7 +3,8 @@ import json
 from api.config import conf
 from session import db
 from models.nf_profile import NFProfile
-from crud import nfProfile
+#from models.subscription_data import SubscriptionData
+import crud.nfProfile as nfProfile
 
 async def nrf_discovery() -> int:
     collection = db["nf_instances"]
@@ -28,18 +29,17 @@ async def nrf_discovery() -> int:
                 headers={'Accept': 'application/json,application/problem+json'}
             )
             profiles.append(NFProfile.from_dict(response.json()))
+            # res = nfProfile.insert_one(response.json())
+            # print(res)
             instances.append(response.json())
     conf.set_nf_endpoints(profiles)
-    result = collection.insert_many(instances)
-    #result.inserted_ids
+    res = nfProfile.insert_many(instances)
+    #result = collection.insert_many(instances)
     print("Core NF instances saved")
-
-    # collection.update_many([{'nfInstanceId': i['nfInstanceId']} for i in instances], instances, upsert=True)
-    # print("Core NF instances saved")
 
     return 1
 
-async def nf_register() -> int:
+async def nf_register():
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
@@ -57,17 +57,16 @@ async def nf_register() -> int:
 
     return response.status_code
 
-async def nf_upfate() -> int:
+async def nf_update(profile):
 
     return 1
 
-async def nf_deregister() -> int:
+async def nf_deregister():
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.delete(
             "http://"+conf.HOSTS["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
             headers={'Accept': 'application/json,application/problem+json'}
         )
-        print(response.status_code)
         print(response.text)
         if response.status_code == httpx.codes.NO_CONTENT:
             print(f"[{conf.NEF_PROFILE.nf_instance_id}] NF de-registered")
@@ -96,14 +95,27 @@ async def nf_register_heart_beat() -> int:
 
     return response.status_code
 
-async def nf_status_subscribe() -> int:
-
+async def nf_status_subscribe():
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.post(
+            f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/subscriptions",
+            headers={
+                'Accept': 'application/json,application/problem+json',
+                'Content-Type': 'application/json-patch+json'
+                },
+            data = ""
+        )
+        print(response.text)
     return 1
 
-async def nf_status_notify() -> int:
-
-    return 1
-
-async def nf_status_unsubscribe() -> int:
-
+async def nf_status_unsubscribe(subId):
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+            response = await client.patch(
+                f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/subscriptions/{subId}",
+                headers={
+                    'Accept': 'application/json,application/problem+json',
+                    'Content-Type': 'application/json-patch+json'
+                    }
+            )
+            print(response.text)
     return 1

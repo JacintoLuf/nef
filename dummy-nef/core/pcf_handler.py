@@ -10,12 +10,12 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
     if app_session_id:
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(
-                f"http://{conf.HOSTS['PCF'][0]}:7777/npcf-policyauthorization/v1/app-sessions/{app_session_id}",
+                f"http://{conf.HOSTS['PCF'][0]}:7777/npcf-policyauthorization/v1/app-sessions/{conf.NEF_PROFILE.nf_instance_id}",
                 headers={'Accept': 'application/json,application/problem+json'}
             )
             print(response.text)
             #app_session_context = AppSessionContext.from_dict(response.json())
-        return None #app_session_context
+        return response.json()
 
 async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_influ_sub: TrafficInfluSub=None):
     print(pcf_addrs)
@@ -30,8 +30,8 @@ async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_inf
         if attr_name == 'mac_addr':
             setattr(req_data, 'ue_mac', attr_val)
         if hasattr(req_data, attr_name) and attr_val:
-            print(f"name: {attr_name}, type: {type(getattr(traffic_influ_sub, attr_name))}")
-            setattr(req_data, attr_name, getattr(traffic_influ_sub, attr_name))
+            print(f"name: {attr_name}, type: {type(attr_val)}")
+            setattr(req_data, attr_name, attr_val)
 
     req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback"                
     rout_req = AfRoutingRequirement(
@@ -53,7 +53,7 @@ async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_inf
     # if response.status_code == httpx.codes.SEE_OTHER:
     #     print(response.text)
 
-    return response.status_code
+    return response
 
 async def pcf_policy_authorization_delete(subId: str=None):
 

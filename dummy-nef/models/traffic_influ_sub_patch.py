@@ -11,7 +11,7 @@ from models.flow_info import FlowInfo  # noqa: F401,E501
 from models.link import Link  # noqa: F401,E501
 from models.eth_flow_description import EthFlowDescription  # noqa: F401,E501
 from models.temporal_validity import TemporalValidity  # noqa: F401,E501
-#from models.geographical_area import GeographicalArea  # noqa: F401,E501
+from models.geographical_area import GeographicalArea  # noqa: F401,E501
 from models.reporting_information import ReportingInformation  # noqa: F401,E501
 from models.duration_sec import DurationSec  # noqa: F401,E501
 from models.eas_ip_replacement_info import EasIpReplacementInfo  # noqa: F401,E501
@@ -26,7 +26,7 @@ class TrafficInfluSubPatch(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, app_relo_ind: bool=None, traffic_filters: List[FlowInfo]=None, eth_traffic_filters: List[EthFlowDescription]=None, traffic_routes: List[RouteToLocation]=None, sfc_id_dl: str=None, sfc_id_ul: str=None, tfc_corr_ind: bool=None, temp_validities: List[TemporalValidity]=None, valid_geo_zone_ids: List[str]=None, af_ack_ind: bool=None, addr_preser_ind: bool=None, sim_conn_ind: bool=None, sim_conn_term: DurationSec=None, max_allowed_up_lat: UintegerRm=None, eas_ip_replace_infos: List[EasIpReplacementInfo]=None, eas_redis_ind: bool=None, notification_destination: Link=None, event_req: ReportingInformation=None, tfc_corre_info: TrafficCorrelationInfo=None):  # noqa: E501
+    def __init__(self, app_relo_ind: bool=None, traffic_filters: List[FlowInfo]=None, eth_traffic_filters: List[EthFlowDescription]=None, traffic_routes: List[RouteToLocation]=None, sfc_id_dl: str=None, sfc_id_ul: str=None, tfc_corr_ind: bool=None, temp_validities: List[TemporalValidity]=None, valid_geo_zone_ids: List[str]=None, geo_areas: GeographicalArea=None, af_ack_ind: bool=None, addr_preser_ind: bool=None, sim_conn_ind: bool=None, sim_conn_term: DurationSec=None, max_allowed_up_lat: UintegerRm=None, eas_ip_replace_infos: List[EasIpReplacementInfo]=None, eas_redis_ind: bool=None, notification_destination: Link=None, event_req: ReportingInformation=None, tfc_corre_info: TrafficCorrelationInfo=None):  # noqa: E501
         """TrafficInfluSubPatch - a model defined in Swagger
 
         :param app_relo_ind: The app_relo_ind of this TrafficInfluSubPatch.  # noqa: E501
@@ -83,7 +83,7 @@ class TrafficInfluSubPatch(Model):
             'tfc_corr_ind': bool,
             'temp_validities': List[TemporalValidity],
             'valid_geo_zone_ids': List[str],
-            #'geo_areas': List[GeographicalArea],
+            'geo_areas': List[GeographicalArea],
             'af_ack_ind': bool,
             'addr_preser_ind': bool,
             'sim_conn_ind': bool,
@@ -129,7 +129,7 @@ class TrafficInfluSubPatch(Model):
         self._tfc_corr_ind = tfc_corr_ind
         self._temp_validities = temp_validities
         self._valid_geo_zone_ids = valid_geo_zone_ids
-        #self._geo_areas = geo_areas
+        self._geo_areas = geo_areas
         self._af_ack_ind = af_ack_ind
         self._addr_preser_ind = addr_preser_ind
         self._sim_conn_ind = sim_conn_ind
