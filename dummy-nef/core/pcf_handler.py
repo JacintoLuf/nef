@@ -1,5 +1,6 @@
-from typing import List
+import json
 import httpx
+from typing import List
 from api.config import conf
 from models.app_session_context import AppSessionContext
 from models.app_session_context_req_data import AppSessionContextReqData
@@ -47,7 +48,7 @@ async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_inf
             response = await client.post(
                 f"http://{pcf_addrs[0] or conf.HOSTS['PCF'][0]}:7777/npcf-policyauthorization/v1/app-sessions",
                 headers={'Accept': 'application/json,application/problem+json'},
-                data=app_session_context.to_dict()
+                data=json.dumps(app_session_context.to_dict())
             )
             print(response.text)
     # if response.status_code == httpx.codes.SEE_OTHER:
