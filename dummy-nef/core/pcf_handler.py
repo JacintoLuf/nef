@@ -23,6 +23,7 @@ async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_inf
     req_data = AppSessionContextReqData()
     for attr_name in traffic_influ_sub.attribute_map.keys():
         attr_val = getattr(traffic_influ_sub, attr_name, None)
+        print(f"name: {attr_name}, value: {attr_val}")
         if attr_name == 'ipv4_addr':
             setattr(req_data, 'ue_ipv4', attr_val)
         if attr_name == 'ipv6_addr':
@@ -30,7 +31,7 @@ async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_inf
         if attr_name == 'mac_addr':
             setattr(req_data, 'ue_mac', attr_val)
         if hasattr(req_data, attr_name) and attr_val:
-            print(f"name: {attr_name}, type: {type(attr_val)}")
+            #print(f"name: {attr_name}, type: {type(attr_val)}")
             setattr(req_data, attr_name, attr_val)
 
     req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback"                
