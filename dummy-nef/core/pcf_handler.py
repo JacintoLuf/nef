@@ -44,6 +44,7 @@ async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_inf
     req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
     print(f"type: {type(pcf_addrs)}, {pcf_addrs[0]}")
+    print(f"{conf.HOSTS['PCF'][0]}")
     print(req_data.to_dict())
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.post( #pcf_addrs[0] or 
