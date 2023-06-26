@@ -16,7 +16,7 @@ async def nrf_discovery() -> int:
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
-            "http://"+conf.HOSTS["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances",
+            f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances",
             headers={'Accept': 'application/json,application/problem+json'},
         )
         j = json.loads(response.text)
@@ -25,7 +25,7 @@ async def nrf_discovery() -> int:
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         for id in uuids:
             response = await client.get(
-                "http://"+conf.HOSTS["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances/"+id,
+                f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances/"+id,
                 headers={'Accept': 'application/json,application/problem+json'}
             )
             profiles.append(NFProfile.from_dict(response.json()))
@@ -43,7 +43,7 @@ async def nf_register():
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
-            "http://"+conf.HOSTS["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
+            f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
             headers={
                 'Accept': 'application/json,application/problem+json',
                 'Content-Type': 'application/json'
@@ -64,7 +64,7 @@ async def nf_update(profile):
 async def nf_deregister():
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.delete(
-            "http://"+conf.HOSTS["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
+            f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
             headers={'Accept': 'application/json,application/problem+json'}
         )
         print(response.text)
@@ -78,7 +78,7 @@ async def nf_deregister():
 async def nf_register_heart_beat() -> int:
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.patch(
-            "http://"+conf.HOSTS["NRF"][0]+":7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
+            f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
             headers={
                 'Accept': 'application/json,application/problem+json',
                 'Content-Type': 'application/json-patch+json'

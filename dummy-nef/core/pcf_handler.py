@@ -45,8 +45,8 @@ async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_inf
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
-            response = await client.post(
-                f"http://{pcf_addrs[0] or conf.HOSTS['PCF'][0]}:7777/npcf-policyauthorization/v1/app-sessions",
+            response = await client.post( #pcf_addrs[0] or 
+                f"http://{conf.HOSTS['PCF'][0]}:7777/npcf-policyauthorization/v1/app-sessions",
                 headers={'Accept': 'application/json,application/problem+json'},
                 data=json.dumps(app_session_context.to_dict())
             )
