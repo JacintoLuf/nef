@@ -4,7 +4,7 @@ from models.route_to_location import RouteToLocation
 from models.route_information import RouteInformation
 from models.snssai import Snssai
 
-def create():
+def create_sub():
     snssai = Snssai(1, "111111")
 
     route_info = RouteInformation(
@@ -33,7 +33,8 @@ def create():
         temp_validities="",
         #supp_feat=1 "InfluenceOnTrafficRouting"
     )
-
+    print("---------------------to dict----------------------")
+    print(traffic_influ.to_dict())
     return traffic_influ
 
 # imsi = "999700000000001" #imsi/supi
