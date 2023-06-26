@@ -12,6 +12,7 @@ import core.bsf_handler as bsf_handler
 import core.pcf_handler as pcf_handler
 import core.udm_handler as udm_handler
 import crud.trafficInfluSub as trafficInfluSub
+from api.af_request_template import traffic_influ as tf
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
@@ -58,9 +59,11 @@ async def ti_get(afId: str):
     res = trafficInfluSub.traffic_influence_subscription_get(afId=afId)
     return Response(status_code=httpx.codes.OK, content={'TrafficInfluSubs': res})
 
-@app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
-async def ti_create(afId, data: Request):
-    #data = TrafficInfluSub(ipv4_addr=ipv4)
+# @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
+# async def ti_create(afId, data: Request):
+@app.get("/ti_create")
+async def ti_create():
+    data = tf
     if not afId:
         afId = "default"
     try:
