@@ -22,16 +22,15 @@ async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_inf
     req_data = AppSessionContextReqData()
     for attr_name in traffic_influ_sub.attribute_map.keys():
         attr_val = getattr(traffic_influ_sub, attr_name)
-        print(f"name: {attr_name}, value: {attr_val}")
         if attr_name == 'ipv4_addr':
-            print("here")
             setattr(req_data, 'ue_ipv4', attr_val)
         if attr_name == 'ipv6_addr':
             setattr(req_data, 'ue_ipv6', attr_val)
         if attr_name == 'mac_addr':
             setattr(req_data, 'ue_mac', attr_val)
         if hasattr(req_data, attr_name) and attr_val:
-            #print(f"name: {attr_name}, type: {type(attr_val)}")
+            print("here")
+            print(f"name: {attr_name}, value: {attr_val}")
             setattr(req_data, attr_name, attr_val)
 
     req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback"                
@@ -43,9 +42,7 @@ async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_inf
     )
     req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
-    # print(f"type: {type(pcf_addrs)}, {pcf_addrs[0]}")
-    # print(f"{conf.HOSTS['PCF'][0]}")
-    print(req_data)
+    print(rout_req)
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.post( #pcf_addrs[0] or 
                 f"http://{conf.HOSTS['PCF'][0]}:7777/npcf-policyauthorization/v1/app-sessions",
