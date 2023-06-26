@@ -100,6 +100,8 @@ async def ti_create():
     pcf_binding = PcfBinding.from_dict(response.json())
     
     response = await pcf_handler.pcf_policy_authorization_create([ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points], traffic_sub)
+    if response.status_code != httpx.codes.CREATED:
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
 
     sub_id = trafficInfluSub.traffic_influence_subscription_post(traffic_sub, response.headers['Location'])
     if sub_id:
