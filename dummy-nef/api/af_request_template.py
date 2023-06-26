@@ -6,13 +6,13 @@ from models.snssai import Snssai
 
 def create_sub():
     snssai = Snssai()
-    snssai.sst = 1
-    snssai.sd = "111111"
+    snssai.sst=1
+    snssai.sd="111111"
     print(f"snssai: {snssai.to_dict()}")
 
     route_info = RouteInformation()
-    route_info.ipv4_addr = "10.255.32.132"
-    route_info.port_number="80"
+    route_info.ipv4_addr="10.255.32.132"
+    route_info.port_number=80
     print(f"route info: {route_info.to_dict()}")
 
     route_to_loc = RouteToLocation()
