@@ -19,12 +19,12 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
         return response.json()
 
 async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_influ_sub: TrafficInfluSub=None):
-
     req_data = AppSessionContextReqData()
     for attr_name in traffic_influ_sub.attribute_map.keys():
-        attr_val = getattr(traffic_influ_sub, attr_name, None)
+        attr_val = getattr(traffic_influ_sub, attr_name)
         print(f"name: {attr_name}, value: {attr_val}")
         if attr_name == 'ipv4_addr':
+            print("here")
             setattr(req_data, 'ue_ipv4', attr_val)
         if attr_name == 'ipv6_addr':
             setattr(req_data, 'ue_ipv6', attr_val)
@@ -43,12 +43,12 @@ async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_inf
     )
     req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
-    print(f"type: {type(pcf_addrs)}, {pcf_addrs[0]}")
-    print(f"{conf.HOSTS['PCF'][0]}")
-    print(req_data.to_dict())
+    # print(f"type: {type(pcf_addrs)}, {pcf_addrs[0]}")
+    # print(f"{conf.HOSTS['PCF'][0]}")
+    print(req_data)
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.post( #pcf_addrs[0] or 
-                f"http://{pcf_addrs[0]}:7777/npcf-policyauthorization/v1/app-sessions",
+                f"http://{conf.HOSTS['PCF'][0]}:7777/npcf-policyauthorization/v1/app-sessions",
                 headers={'Accept': 'application/json,application/problem+json'},
                 data=json.dumps(app_session_context.to_dict())
             )
