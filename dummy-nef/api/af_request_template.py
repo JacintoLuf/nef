@@ -27,7 +27,7 @@ traffic_influ = TrafficInfluSub(
     traffic_filters="",#-----------------------------------------
     traffic_routes=[route_to_loc],
     temp_validities="",
-    supp_feat="InfluenceOnTrafficRouting"
+    #supp_feat=1 "InfluenceOnTrafficRouting"
 
 )
 
