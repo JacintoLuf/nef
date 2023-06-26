@@ -1,4 +1,4 @@
-from config import conf
+from api.config import conf
 from models.traffic_influ_sub import TrafficInfluSub
 from models.route_to_location import RouteToLocation
 from models.route_information import RouteInformation
