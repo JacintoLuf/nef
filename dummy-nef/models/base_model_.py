@@ -31,8 +31,6 @@ class Model(object):
 
         for attr, _ in six.iteritems(self.swagger_types):
             value = getattr(self, attr)
-            print(f"attr: {attr}")
-            print(f"maaped: {self.attribute_map[attr]}")
             if isinstance(value, list):
                 #self.attribute_map[attr]
                 result[self.attribute_map[attr]] = list(map(
