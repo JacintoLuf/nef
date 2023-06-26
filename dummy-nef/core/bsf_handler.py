@@ -2,8 +2,7 @@ import httpx
 from api.config import conf
 from models.traffic_influ_sub import TrafficInfluSub
 
-async def bsf_management_discovery(sub: TrafficInfluSub=None) -> httpx.Response:
-    print(sub.ipv4_addr)
+async def bsf_management_discovery(sub: TrafficInfluSub=None):
     if not sub:
         return (400, None)
     elif sub.ipv4_addr:
@@ -20,7 +19,7 @@ async def bsf_management_discovery(sub: TrafficInfluSub=None) -> httpx.Response:
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(
-                "http://"+conf.HOSTS["BSF"][0]+":7777/nbsf-management/v1/pcfBindings",
+                f"http://{conf.HOSTS['BSF'][0]}:7777/nbsf-management/v1/pcfBindings",
                 headers={'Accept': 'application/json,application/problem+json'},
                 params=params
             )
