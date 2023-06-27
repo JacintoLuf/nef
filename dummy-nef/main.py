@@ -96,9 +96,8 @@ async def ti_create():
             return response
     
     pcf_binding = PcfBinding.from_dict(response.json())
-    print("pcf binding")
-    print(pcf_binding)
-    response = await pcf_handler.pcf_policy_authorization_create(traffic_influ_sub=traffic_sub) #pcf_addrs=[ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points]
+
+    response = await pcf_handler.pcf_policy_authorization_create(pcf_binding ,traffic_influ_sub=traffic_sub)
     if response.status_code != httpx.codes.CREATED:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
 
