@@ -1,11 +1,10 @@
+from fastapi import HTTPException
 import httpx
 from api.config import conf
 from models.traffic_influ_sub import TrafficInfluSub
 
 async def bsf_management_discovery(sub: TrafficInfluSub=None):
-    if not sub:
-        return (400, None)
-    elif sub.ipv4_addr:
+    if sub.ipv4_addr:
         #supi = udm_handler.udm_sdm_id_trans(sub.gpsi)
         params = {'ipv4Addr': sub.ipv4_addr}
     elif sub.ipv6_addr:
