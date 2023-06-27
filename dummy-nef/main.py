@@ -84,7 +84,7 @@ async def ti_create():
         if response.status_code != httpx.codes.OK:
                 return response
         pcf_binding = PcfBinding.from_dict(response.json())
-        response = await pcf_handler.pcf_policy_authorization_create([ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points], traffic_sub)
+        response = await pcf_handler.pcf_policy_authorization_create([ip.ipv4_address for ip in pcf_binding.pcf_ip_end_points], traffic_sub)
     elif traffic_sub.gpsi:
         translation_res = udm_handler.udm_sdm_id_translation(traffic_sub.gpsi)
     elif traffic_sub.external_group_id:
