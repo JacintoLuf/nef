@@ -17,20 +17,7 @@ from models.priority_sharing_indicator import PrioritySharingIndicator
 from models.reserv_priority import ReservPriority
 from models.tscai_input_container import TscaiInputContainer
 from models.tsn_qos_container import TsnQosContainer
-import re
 import util
-
-from models.af_routing_requirement import AfRoutingRequirement  # noqa: E501
-from models.alternative_service_requirements_data import AlternativeServiceRequirementsData  # noqa: E501
-from models.flow_status import FlowStatus  # noqa: E501
-from models.media_sub_component import MediaSubComponent  # noqa: E501
-from models.media_type import MediaType  # noqa: E501
-from models.preemption_capability import PreemptionCapability  # noqa: E501
-from models.preemption_vulnerability import PreemptionVulnerability  # noqa: E501
-from models.priority_sharing_indicator import PrioritySharingIndicator  # noqa: E501
-from models.reserv_priority import ReservPriority  # noqa: E501
-from models.tscai_input_container import TscaiInputContainer  # noqa: E501
-from models.tsn_qos_container import TsnQosContainer  # noqa: E501
 import re  # noqa: E501
 
 class MediaComponent(Model):
