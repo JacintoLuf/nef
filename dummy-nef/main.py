@@ -76,27 +76,27 @@ async def ti_create():
     # elif traffic_sub.eth_traffic_filters:
     traffic_sub = sub_template
 
-    if traffic_sub.any_ue_ind == True:
-        print("any UE")
-        return Response(status_code=httpx.codes.BAD_REQUEST)
-    elif traffic_sub.ipv4_addr or traffic_sub.ipv6_addr or traffic_sub.mac_addr:
-        response: httpx.Response = await bsf_handler.bsf_management_discovery(traffic_sub)
-        if response.status_code != httpx.codes.OK:
-                return response
-        pcf_binding = PcfBinding.from_dict(response.json())
-        response = await pcf_handler.pcf_policy_authorization_create([ip.ipv4_address for ip in pcf_binding.pcf_ip_end_points], traffic_sub)
-    elif traffic_sub.gpsi:
-        translation_res = udm_handler.udm_sdm_id_translation(traffic_sub.gpsi)
-    elif traffic_sub.external_group_id:
-        translation_res = udm_handler.udm_sdm_group_identifiers_translation(traffic_sub.external_group_id)
+    # if traffic_sub.any_ue_ind == True:
+    #     print("any UE")
+    #     return Response(status_code=httpx.codes.BAD_REQUEST)
+    # elif traffic_sub.ipv4_addr or traffic_sub.ipv6_addr or traffic_sub.mac_addr:
+    #     response: httpx.Response = await bsf_handler.bsf_management_discovery(traffic_sub)
+    #     if response.status_code != httpx.codes.OK:
+    #             return response
+    #     pcf_binding = PcfBinding.from_dict(response.json())
+    #     response = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
+    # elif traffic_sub.gpsi:
+    #     translation_res = udm_handler.udm_sdm_id_translation(traffic_sub.gpsi)
+    # elif traffic_sub.external_group_id:
+    #     translation_res = udm_handler.udm_sdm_group_identifiers_translation(traffic_sub.external_group_id)
 
-    response: httpx.Response = await bsf_handler.bsf_management_discovery(traffic_sub)
+    response = await bsf_handler.bsf_management_discovery(traffic_sub)
     if response.status_code != httpx.codes.OK:
             return response
     
     pcf_binding = PcfBinding.from_dict(response.json())
-
-    response = await pcf_handler.pcf_policy_authorization_create(pcf_binding ,traffic_influ_sub=traffic_sub)
+    print(pcf_binding)
+    response = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
     if response.status_code != httpx.codes.CREATED:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
 

@@ -22,16 +22,16 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
 async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_influ_sub: TrafficInfluSub=None):
     #host_addr = binding.pcf_ip_end_points.ipv4_address or conf.HOSTS['PCF'][0]
 
-    req_data = AppSessionContextReqData()
+    req_data = AppSessionContextReqData(slice_info=traffic_influ_sub.snssai)
     for attr_name in traffic_influ_sub.attribute_map.keys():
         attr_val = getattr(traffic_influ_sub, attr_name)
         if attr_name == 'ipv4_addr':
             setattr(req_data, 'ue_ipv4', attr_val)
-        if attr_name == 'ipv6_addr':
+        elif attr_name == 'ipv6_addr':
             setattr(req_data, 'ue_ipv6', attr_val)
-        if attr_name == 'mac_addr':
+        elif attr_name == 'mac_addr':
             setattr(req_data, 'ue_mac', attr_val)
-        if hasattr(req_data, attr_name) and attr_val:
+        elif hasattr(req_data, attr_name) and attr_val:
             setattr(req_data, attr_name, attr_val)
 
     req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback"                
