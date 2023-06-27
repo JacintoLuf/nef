@@ -77,7 +77,7 @@ async def ti_create():
     # elif traffic_sub.eth_traffic_filters:
     traffic_sub = sub_template
     print("traffic sub:")
-    print(traffic_sub.to_dict())
+    print(sub_template.to_dict())
     print("nf profile:")
     print(conf.NEF_PROFILE.to_dict())
     if traffic_sub.any_ue_ind == True:

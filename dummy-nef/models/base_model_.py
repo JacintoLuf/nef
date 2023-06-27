@@ -44,8 +44,8 @@ class Model(object):
                     if hasattr(item[1], "to_dict") else item,
                     value.items()
                 ))
-            # elif value is None:
-            #     pass
+            elif value is None:
+                pass
             else:
                 result[self.attribute_map[attr]] = value
 
