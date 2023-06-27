@@ -1,5 +1,6 @@
 import httpx
 import logging
+import json
 from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi_utils.tasks import repeat_every
 from session import async_db
@@ -75,7 +76,10 @@ async def ti_create():
     # elif traffic_sub.traffic_filters:
     # elif traffic_sub.eth_traffic_filters:
     traffic_sub = sub_template
+    print("dict:")
     print(traffic_sub.to_dict())
+    print("raw:")
+    print(json.dumps(traffic_sub.to_dict()))
     if traffic_sub.any_ue_ind == True:
         print("any UE")
         return Response(status_code=httpx.codes.BAD_REQUEST)
