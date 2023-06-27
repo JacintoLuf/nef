@@ -6,6 +6,7 @@ from models.app_session_context import AppSessionContext
 from models.app_session_context_req_data import AppSessionContextReqData
 from models.af_routing_requirement import AfRoutingRequirement
 from models.traffic_influ_sub import TrafficInfluSub
+from models.pcf_binding import PcfBinding
 
 async def pcf_policy_authorization_get(app_session_id: str=None):
     if app_session_id:
@@ -18,8 +19,9 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
             #app_session_context = AppSessionContext.from_dict(response.json())
         return response.json()
 
-async def pcf_policy_authorization_create(pcf_addrs: List[str]=None, traffic_influ_sub: TrafficInfluSub=None):
-    
+async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_influ_sub: TrafficInfluSub=None):
+    #host_addr = binding.pcf_ip_end_points.ipv4_address or conf.HOSTS['PCF'][0]
+
     req_data = AppSessionContextReqData()
     for attr_name in traffic_influ_sub.attribute_map.keys():
         attr_val = getattr(traffic_influ_sub, attr_name)
