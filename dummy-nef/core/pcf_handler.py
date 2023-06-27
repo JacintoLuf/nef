@@ -20,7 +20,7 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
         return response.json()
 
 async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_influ_sub: TrafficInfluSub=None):
-    #host_addr = binding.pcf_ip_end_points.ipv4_address or conf.HOSTS['PCF'][0]
+    host_addr = binding.pcf_ip_end_points.ipv4_address or conf.HOSTS['PCF'][0]
 
     req_data = AppSessionContextReqData(slice_info=traffic_influ_sub.snssai)
     for attr_name in traffic_influ_sub.attribute_map.keys():
@@ -44,17 +44,16 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
     req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
+    print("pcf app session context request")
     print(app_session_context)
     async with httpx.AsyncClient(http1=False, http2=True) as client:
-            response = await client.post( #pcf_addrs[0] or 
-                f"http://{conf.HOSTS['PCF'][0]}:7777/npcf-policyauthorization/v1/app-sessions",
+            response = await client.post(
+                f"http://{host_addr}:7777/npcf-policyauthorization/v1/app-sessions",
                 headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
                 data=json.dumps(app_session_context.to_dict())
             )
-            print(response.headers)
+            print("pcf app session context response")
             print(response.text)
-    # if response.status_code == httpx.codes.SEE_OTHER:
-    #     print(response.text)
 
     return response
 

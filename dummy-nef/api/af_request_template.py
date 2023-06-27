@@ -31,10 +31,3 @@ def create_sub():
 sub_template = create_sub()
 # imsi = "999700000000001" #imsi/supi
 # msin = "0000000001"
-
-{'ascReqData': {'afRoutReq': {'routeToLocs': [{'dnai': '1-111111',
-                                               'routeInfo': {'ipv4Addr': '10.255.32.132',
-                                                             'portNumber': 80}}]},
-                'dnn': 'internet',
-                'notifUri': 'http://10.102.141.12:80/pcf-policy-authorization-callback',
-                'ueIpv4': '10.45.0.2'}}

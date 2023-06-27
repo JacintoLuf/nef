@@ -95,6 +95,7 @@ async def ti_create():
             return response
     
     pcf_binding = PcfBinding.from_dict(response.json())
+    print("pcf binding response")
     print(pcf_binding)
     response = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
     if response.status_code != httpx.codes.CREATED:
