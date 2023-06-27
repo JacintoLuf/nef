@@ -76,10 +76,7 @@ async def ti_create():
     # elif traffic_sub.traffic_filters:
     # elif traffic_sub.eth_traffic_filters:
     traffic_sub = sub_template
-    print("traffic sub:")
-    print(sub_template.to_dict())
-    print("nf profile:")
-    print(conf.NEF_PROFILE.to_dict())
+
     if traffic_sub.any_ue_ind == True:
         print("any UE")
         return Response(status_code=httpx.codes.BAD_REQUEST)
@@ -99,8 +96,9 @@ async def ti_create():
             return response
     
     pcf_binding = PcfBinding.from_dict(response.json())
-    
-    response = await pcf_handler.pcf_policy_authorization_create(pcf_addrs=[ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points], traffic_influ_sub=traffic_sub)
+    print("pcf binding")
+    print(pcf_binding)
+    response = await pcf_handler.pcf_policy_authorization_create(traffic_influ_sub=traffic_sub) #pcf_addrs=[ip['ipv4Address'] for ip in pcf_binding.pcf_ip_end_points]
     if response.status_code != httpx.codes.CREATED:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
 
