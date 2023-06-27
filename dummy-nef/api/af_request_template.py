@@ -22,8 +22,7 @@ def create_sub():
         ipv4_addr="10.45.0.2",
         notification_destination=f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback",
         traffic_filters="",#-----------------------------------------
-        traffic_routes=[route_to_loc],
-        any_ue_ind=False
+        traffic_routes=[route_to_loc]
         #supp_feat=1 "InfluenceOnTrafficRouting"
     )
     return traffic_influ
