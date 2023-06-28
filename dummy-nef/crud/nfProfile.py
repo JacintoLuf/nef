@@ -2,9 +2,30 @@ from typing import List
 from models.nf_profile import NFProfile
 from session import async_db
 
-async def insert_one(profile: NFProfile=None):
+async def get_one(nfId: str):
     collection = async_db["nf_instances"]
-    doc = {'_id': profile.nf_instance_id, 'profile': profile}
+    doc = await collection.find_one({'_id': nfId})
+    return doc
+
+async def get_by_type(type: str):
+    docs = []
+    collection = async_db["nf_instances"]
+    cursor = await collection.find({'profile': {'nfType': type}})
+    for doc in await cursor.to_list(length=100):
+        docs.append(doc)
+    return docs
+
+async def get_all():
+    docs = []
+    collection = async_db["nf_instances"]
+    cursor = await collection.find({})
+    for doc in await cursor.to_list(length=100):
+        docs.append(doc)
+    return docs
+
+async def insert_one(profile):
+    collection = async_db["nf_instances"]
+    doc = {'_id': profile['nfInstanceId'], 'profile': profile}
     try:
         result = await collection.insert_one(doc)
         return result.inserted.id
