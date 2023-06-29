@@ -16,6 +16,7 @@ async def get_by_type(type: str):
 async def get_all():
     docs = []
     collection = async_db["nf_instances"]
+    print("here")
     async for doc in await collection.find({}):
         docs.append(doc)
     print(docs)
