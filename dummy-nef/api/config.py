@@ -128,7 +128,7 @@ class Settings():
             #temp_validities=[temp_val],
             addr_preser_ind=True,
             supp_feat="InfluenceOnTrafficRouting"
-        ).to_dict()
-        return traffic_influ
+        )
+        return traffic_influ.to_dict()
 
 conf = Settings()
