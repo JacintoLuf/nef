@@ -40,7 +40,7 @@ async def read_root():
     collection = async_db["nf_instances"]
     insts = []
     async for user in collection.find({}):
-        insts.append(user)
+        insts.append(user.pop('_id'))
     return {'nfs instances': insts}
 
 @app.post("/nnef-callback/notification/subscription")
