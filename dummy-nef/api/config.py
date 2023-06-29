@@ -113,5 +113,6 @@ class Settings():
             addr_preser_ind=True,
             supp_feat="InfluenceOnTrafficRouting"
         )
+        return traffic_influ
 
 conf = Settings()
