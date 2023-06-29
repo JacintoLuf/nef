@@ -30,7 +30,7 @@ async def insert_one(profile):
     update = {"$set": {'profile': doc}}
     try:
         result = await collection.update_one({"_id": profile['nfInstanceId']}, {"$set": doc}, upsert=True)
-        return result.inserted_id
+        return result.modified_count
     except Exception as e:
         print(e)
         return None
