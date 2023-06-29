@@ -32,16 +32,16 @@ async def nrf_heartbeat():
 @app.on_event("shutdown")
 async def shutdown():
     print("shuting down...")
-    nrf_handler.nf_deregister()
+    await nrf_handler.nf_deregister()
 
 @app.get("/")
 async def read_root():
-    res = nfProfile.get_all()
-    # collection = async_db["nf_instances"]
-    # insts = []
-    # async for user in collection.find({}):
-    #     insts.append(user)
-    return {'nfs instances': " "}
+    #res = await nfProfile.get_all()
+    collection = async_db["nf_instances"]
+    insts = []
+    async for user in collection.find({}):
+        insts.append(user)
+    return {'nfs instances': insts}
 
 @app.post("/nnef-callback/notification/subscription")
 async def nrf_notif(notif: Response):
