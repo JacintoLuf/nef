@@ -11,7 +11,7 @@ def create_sub():
     snssai = Snssai(sst=1, sd="111111")
     route_info = RouteInformation(ipv4_addr="10.255.32.132", port_number=80)
     route_to_loc = RouteToLocation(dnai="1-111111", route_info=route_info)
-    temp_val = TemporalValidity(str(datetime.now()), str(datetime.now()+timedelta(minutes=10)))
+    #temp_val = TemporalValidity(str(datetime.now()), str(datetime.now()+timedelta(minutes=10)))
 
     traffic_influ = TrafficInfluSub(
         af_service_id="24caa907-f1ba-4e29-8a78-f9728dd45d83",
@@ -27,7 +27,7 @@ def create_sub():
         notification_destination=f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback",
         #traffic_filters="",
         traffic_routes=[route_to_loc],
-        temp_validities=[temp_val],
+        #temp_validities=[temp_val],
         addr_preser_ind=True,
         supp_feat="InfluenceOnTrafficRouting"
     )
