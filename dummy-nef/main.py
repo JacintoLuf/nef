@@ -74,7 +74,7 @@ async def ti_create():
     # if traffic_sub.af_app_id:
     # elif traffic_sub.traffic_filters:
     # elif traffic_sub.eth_traffic_filters:
-    traffic_sub = TrafficInfluSub() #conf.SUB_TEMP
+    traffic_sub = TrafficInfluSub.from_dict(conf.SUB_TEMP)
 
     # if traffic_sub.any_ue_ind == True:
     #     print("any UE")
