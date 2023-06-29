@@ -24,8 +24,6 @@ async def startup():
     res = await nrf_handler.nf_register()
     if res == httpx.codes.CREATED:
         await nrf_heartbeat()
-    res = sub_template.to_dict()
-    print(res)
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
 async def nrf_heartbeat():
@@ -77,7 +75,7 @@ async def ti_create():
     # if traffic_sub.af_app_id:
     # elif traffic_sub.traffic_filters:
     # elif traffic_sub.eth_traffic_filters:
-    traffic_sub = sub_template
+    traffic_sub = await sub_template
 
     # if traffic_sub.any_ue_ind == True:
     #     print("any UE")

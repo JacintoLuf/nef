@@ -7,7 +7,7 @@ from models.temporal_validity import TemporalValidity
 from models.dnai_change_type import DnaiChangeType
 from models.snssai import Snssai
 
-def create_sub():
+async def create_sub():
     snssai = Snssai(sst=1, sd="111111")
     route_info = RouteInformation(ipv4_addr="10.255.32.132", port_number=80)
     route_to_loc = RouteToLocation(dnai="1-111111", route_info=route_info)
