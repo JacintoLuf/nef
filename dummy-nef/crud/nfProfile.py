@@ -1,5 +1,3 @@
-from typing import List
-from models.nf_profile import NFProfile
 from session import async_db
 
 async def get_one(nfId: str):
@@ -18,8 +16,7 @@ async def get_by_type(type: str):
 async def get_all():
     docs = []
     collection = async_db["nf_instances"]
-    cursor = await collection.find({})
-    for doc in await cursor.to_list(length=100):
+    async for doc in await collection.find({}):
         docs.append(doc)
     print(docs)
     return docs
