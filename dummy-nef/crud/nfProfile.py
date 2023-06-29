@@ -21,11 +21,13 @@ async def get_all():
     cursor = await collection.find({})
     for doc in await cursor.to_list(length=100):
         docs.append(doc)
+    print(docs)
     return docs
 
 async def insert_one(profile):
     collection = async_db["nf_instances"]
     doc = {'_id': profile['nfInstanceId'], 'profile': profile}
+    update = {"$set": {'profile': doc}}
     try:
         result = await collection.update_one({"_id": profile['nfInstanceId']}, {"$set": doc}, upsert=True)
         return result.inserted_id
