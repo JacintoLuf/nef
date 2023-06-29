@@ -24,6 +24,7 @@ async def startup():
     res = await nrf_handler.nf_register()
     if res == httpx.codes.CREATED:
         await nrf_heartbeat()
+    res = sub_template.to_dict()
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
 async def nrf_heartbeat():
