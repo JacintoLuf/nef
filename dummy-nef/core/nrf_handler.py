@@ -29,7 +29,7 @@ async def nrf_discovery() -> int:
                 headers={'Accept': 'application/json,application/problem+json'}
             )
             profiles.append(NFProfile.from_dict(response.json()))
-            res = nfProfile.insert_one(response.json())
+            res = await nfProfile.insert_one(response.json())
             print(res)
             instances.append(response.json())
     conf.set_nf_endpoints(profiles)
