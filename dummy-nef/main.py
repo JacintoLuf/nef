@@ -10,7 +10,6 @@ from models.pcf_binding import PcfBinding
 import core.nrf_handler as nrf_handler
 import core.bsf_handler as bsf_handler
 import core.pcf_handler as pcf_handler
-import core.udm_handler as udm_handler
 import crud.trafficInfluSub as trafficInfluSub
 import crud.nfProfile as nfProfile
 from api.af_request_template import sub_template
@@ -42,7 +41,7 @@ async def read_root():
     # insts = []
     # async for user in collection.find({}):
     #     insts.append(user)
-    return {'nfs instances': res}
+    return {'nfs instances': " "}
 
 @app.post("/nnef-callback/notification/subscription")
 async def nrf_notif(notif: Response):
