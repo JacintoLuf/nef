@@ -27,7 +27,7 @@ async def insert_one(profile):
     doc = {'_id': profile['nfInstanceId'], 'profile': profile}
     update = {"$set": {'profile': doc}}
     try:
-        result = await collection.update_one({"_id": profile['nfInstanceId']}, {"$set": doc}, upsert=True)
+        result = await collection.update_one({"_id": profile['nfInstanceId']}, update, upsert=True)
         return result.modified_count
     except Exception as e:
         print(e)
