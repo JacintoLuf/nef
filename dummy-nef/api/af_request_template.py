@@ -7,7 +7,7 @@ from models.temporal_validity import TemporalValidity
 from models.dnai_change_type import DnaiChangeType
 from models.snssai import Snssai
 
-async def create_sub():
+def create_sub():
     snssai = Snssai(sst=1, sd="111111")
     route_info = RouteInformation(ipv4_addr="10.255.32.132", port_number=80)
     route_to_loc = RouteToLocation(dnai="1-111111", route_info=route_info)
@@ -32,3 +32,5 @@ async def create_sub():
         supp_feat="InfluenceOnTrafficRouting"
     )
     return traffic_influ
+
+influ_sub = create_sub()

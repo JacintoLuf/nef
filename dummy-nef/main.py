@@ -12,6 +12,7 @@ import core.bsf_handler as bsf_handler
 import core.pcf_handler as pcf_handler
 import crud.trafficInfluSub as trafficInfluSub
 import crud.nfProfile as nfProfile
+from api.af_request_template import influ_sub
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
@@ -74,8 +75,16 @@ async def ti_create():
     # if traffic_sub.af_app_id:
     # elif traffic_sub.traffic_filters:
     # elif traffic_sub.eth_traffic_filters:
-    traffic_sub = TrafficInfluSub.from_dict(conf.SUB_TEMP)
-
+    try:
+        print("from conf")
+        traffic_sub = TrafficInfluSub.from_dict(conf.SUB_TEMP)
+    except Exception as e:
+        print(e)
+    try:
+        print("from template")
+        traffic_sub = influ_sub
+    except Exception as e:
+        print(e)
     # if traffic_sub.any_ue_ind == True:
     #     print("any UE")
     #     return Response(status_code=httpx.codes.BAD_REQUEST)
