@@ -12,7 +12,6 @@ import core.bsf_handler as bsf_handler
 import core.pcf_handler as pcf_handler
 import crud.trafficInfluSub as trafficInfluSub
 import crud.nfProfile as nfProfile
-from api.af_request_template import create_sub
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
@@ -75,7 +74,7 @@ async def ti_create():
     # if traffic_sub.af_app_id:
     # elif traffic_sub.traffic_filters:
     # elif traffic_sub.eth_traffic_filters:
-    traffic_sub = await create_sub()
+    traffic_sub = conf.create_sub()
 
     # if traffic_sub.any_ue_ind == True:
     #     print("any UE")
