@@ -25,6 +25,7 @@ async def startup():
     if res == httpx.codes.CREATED:
         await nrf_heartbeat()
     res = sub_template.to_dict()
+    print(res)
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
 async def nrf_heartbeat():
@@ -103,7 +104,7 @@ async def ti_create():
     if response.status_code != httpx.codes.CREATED:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
 
-    sub_id = trafficInfluSub.traffic_influence_subscription_post(traffic_sub, response.headers['Location'])
+    sub_id = await trafficInfluSub.traffic_influence_subscription_post(traffic_sub, response.headers['Location'])
     if sub_id:
         traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{traffic_sub}/subscriptions/{sub_id}"
     else:
@@ -121,29 +122,29 @@ async def pcf_callback(data):
 async def ti_get(afId: str, subId: str):
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
     #res code: 200
-    res = trafficInfluSub.traffic_influence_subscription_get(afId=afId, subId=subId)
+    res = await trafficInfluSub.traffic_influence_subscription_get(afId=afId, subId=subId)
     return Response(status_code=httpx.codes.OK, content={'TrafficInfluSubs': res})
 
 @app.put("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_put(afId, subId, data: Request):
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
     #res code: 200
-    res = trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=data.json())
+    res = await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=data.json())
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
 @app.patch("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_patch(afId, subId, data: Request):
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
     #res code: 200 
-    res = trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=data.json(), partial=True)
+    res = await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=data.json(), partial=True)
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
 @app.delete("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_delete(afId: str, subId: str):
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
     #res code: 204
-    res = pcf_handler.pcf_policy_authorization_delete(subId)
+    res = await  pcf_handler.pcf_policy_authorization_delete(subId)
     print(res)
-    res = trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
+    res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
     print(res)
     return Response(status_code=httpx.codes.NO_CONTENT, content="The subscription was terminated successfully.")
