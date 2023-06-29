@@ -28,7 +28,7 @@ async def insert_one(profile):
     doc = {'_id': profile['nfInstanceId'], 'profile': profile}
     try:
         result = await collection.insert_one(doc)
-        return result.inserted.id
+        return result.inserted_id
     except Exception as e:
         print(e)
         return None
