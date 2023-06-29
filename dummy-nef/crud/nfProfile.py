@@ -27,7 +27,7 @@ async def insert_one(profile):
     collection = async_db["nf_instances"]
     doc = {'_id': profile['nfInstanceId'], 'profile': profile}
     try:
-        result = await collection.update_one({}, {"$set": doc}, upsert=True)
+        result = await collection.update_one({"_id": profile['nfInstanceId']}, {"$set": profile}, upsert=True)
         return result.inserted_id
     except Exception as e:
         print(e)
