@@ -79,7 +79,7 @@ async def ti_create():
     # elif traffic_sub.eth_traffic_filters:
     traffic_sub = influ_sub
     print(traffic_sub)
-    if not (traffic_sub.af_app_id is not traffic_sub.traffic_filters is not traffic_sub.eth_traffic_filters):
+    if (traffic_sub.af_app_id is not traffic_sub.traffic_filters is not traffic_sub.eth_traffic_filters):
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of afAppId, trafficFilters or ethTrafficFilters")
     if not (traffic_sub.ipv4_addr is not traffic_sub.ipv6_addr is not traffic_sub.mac_addr is not traffic_sub.gpsi is not traffic_sub.external_group_id is not traffic_sub.any_ue_ind):
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr, macAddr, gpsi, externalGroupId or anyUeInd")
