@@ -49,10 +49,10 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
         )
     if traffic_influ_sub.af_app_id != None:
         print(f"app id: {traffic_influ_sub.af_app_id}")
-        req_data.med_components = {'1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, med_type="MESSAGE")}
+        req_data.med_components = {'1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, med_type="OTHER")}
         req_data.af_rout_req = rout_req
     else:
-        req_data.med_components = {'1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, med_type="MESSAGE")}
+        req_data.med_components = {'1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, med_type="OTHER")}
         req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
@@ -66,7 +66,7 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
             )
             print("pcf app session context response")
             print(response.text)
-            
+
     return response
 
 async def pcf_policy_authorization_delete(subId: str=None):
