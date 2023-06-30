@@ -1,7 +1,5 @@
-import asyncio
 import httpx
 import logging
-import json
 from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi_utils.tasks import repeat_every
 from session import async_db
@@ -25,6 +23,8 @@ async def startup():
     res = await nrf_handler.nf_register()
     if res == httpx.codes.CREATED:
         await nrf_heartbeat()
+    res2 = ti_create()
+    print(res2)
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
 async def nrf_heartbeat():
@@ -60,9 +60,8 @@ async def ti_get(afId: str):
 
 # @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 # async def ti_create(afId, data: Request):
-@app.get("/ti_create")
-@asyncio.coroutine
-def ti_create():
+#@app.get("/ti_create")
+async def ti_create():
     # if not afId:
     #     afId = "default"
     # try:
@@ -94,16 +93,16 @@ def ti_create():
     # elif traffic_sub.external_group_id:
     #     translation_res = udm_handler.udm_sdm_group_identifiers_translation(traffic_sub.external_group_id)
 
-    response = yield bsf_handler.bsf_management_discovery(traffic_sub)
+    response = await bsf_handler.bsf_management_discovery(traffic_sub)
     if response.status_code != httpx.codes.OK:
             return response
     pcf_binding = PcfBinding.from_dict(response.json())
     
-    response = yield pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
+    response = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
     if response.status_code != httpx.codes.CREATED:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
 
-    sub_id = yield trafficInfluSub.traffic_influence_subscription_post(traffic_sub, response.headers['Location'])
+    sub_id = await trafficInfluSub.traffic_influence_subscription_post(traffic_sub, response.headers['Location'])
     if sub_id:
         traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{traffic_sub}/subscriptions/{sub_id}"
     else:
