@@ -48,10 +48,10 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
             addr_preser_ind=traffic_influ_sub.addr_preser_ind,
         )
     if traffic_influ_sub.af_app_id is not None:
-        req_data.med_components = {'1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, med_type="TEXT")}
+        req_data.med_components = {'1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, med_type="DATA")}
         req_data.af_rout_req = rout_req
     else:
-        req_data.med_components = {'1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, med_type="TEXT")}
+        req_data.med_components = {'1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, med_type="DATA")}
         req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
