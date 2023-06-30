@@ -45,15 +45,16 @@ async def read_root():
 
 @app.post("/nnef-callback/notification/subscription")
 async def nrf_notif(notif: Response):
+    print(notif)
     notif_data = notif.json()
-    res = nrf_handler.nf_update(notif_data)
+    #res = await nrf_handler.nf_update(notif_data)
     return Response(status_code=httpx.codes.NO_CONTENT)
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 async def ti_get(afId: str):
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions
     #res code: 200
-    res = trafficInfluSub.traffic_influence_subscription_get(afId=afId)
+    res = await trafficInfluSub.traffic_influence_subscription_get(afId=afId)
     return Response(status_code=httpx.codes.OK, content={'TrafficInfluSubs': res})
 
 # @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
@@ -102,10 +103,8 @@ async def ti_create():
     response = await bsf_handler.bsf_management_discovery(traffic_sub)
     if response.status_code != httpx.codes.OK:
             return response
-    
     pcf_binding = PcfBinding.from_dict(response.json())
-    print("pcf binding response")
-    print(pcf_binding)
+    
     response = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
     if response.status_code != httpx.codes.CREATED:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
@@ -116,8 +115,8 @@ async def ti_create():
     else:
         return Response(status_code=500, content="Error creating resource")
     
-    res_headers = conf.GLOBAL_HEADERS.update({'Location': traffic_sub.__self})
-    return Response(status_code=httpx.codes.CREATED, content="Resource created", headers=res_headers)
+    res_headers = conf.GLOBAL_HEADERS
+    return Response(status_code=httpx.codes.CREATED, content="Resource created", headers=res_headers.update({'Location': traffic_sub.__self}))
 
 @app.post("/pcf-policy-authorization-callback")
 async def pcf_callback(data):
