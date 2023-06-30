@@ -26,4 +26,4 @@ async def bsf_management_discovery(sub: TrafficInfluSub=None):
 
     print("control 2")
 
-    return response.text
+    return response
