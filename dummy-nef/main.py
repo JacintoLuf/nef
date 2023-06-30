@@ -78,12 +78,8 @@ def ti_create():
     # if traffic_sub.af_app_id:
     # elif traffic_sub.traffic_filters:
     # elif traffic_sub.eth_traffic_filters:
-    try:
-        print("from template")
-        traffic_sub = influ_sub
-        print(traffic_sub)
-    except Exception as e:
-        print(e)
+    traffic_sub = influ_sub
+    print(traffic_sub)
     # if traffic_sub.any_ue_ind == True:
     #     print("any UE")
     #     return Response(status_code=httpx.codes.BAD_REQUEST)

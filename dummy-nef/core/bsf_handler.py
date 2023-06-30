@@ -24,4 +24,4 @@ async def bsf_management_discovery(sub: TrafficInfluSub=None):
                 params=params
             )
 
-    return response
+    return response.text
