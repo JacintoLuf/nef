@@ -110,8 +110,8 @@ async def ti_create():
     else:
         return Response(status_code=500, content="Error creating resource")
     
-    res_headers = conf.GLOBAL_HEADERS
-    return Response(status_code=httpx.codes.CREATED, content="Resource created", headers=res_headers.update({'Location': traffic_sub.__self}))
+    #res_headers = conf.GLOBAL_HEADERS
+    return Response(status_code=httpx.codes.CREATED, content="Resource created")
 
 @app.post("/pcf-policy-authorization-callback")
 async def pcf_callback(data):
