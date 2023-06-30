@@ -16,7 +16,7 @@ from models.reporting_information import ReportingInformation
 from models.route_to_location import RouteToLocation
 from models.snssai import Snssai
 from models.subscribed_event import SubscribedEvent
-from models.temporal_validity import TemporalValidity
+#from models.temporal_validity import TemporalValidity
 from models.websock_notif_config import WebsockNotifConfig
 import util
 import re  # noqa: E501
@@ -127,7 +127,7 @@ class TrafficInfluSub(Model):
             'eth_traffic_filters': List[EthFlowDescription],
             'traffic_routes': List[RouteToLocation],
             'tfc_corr_ind': bool,
-            'temp_validities': List[TemporalValidity],
+            'temp_validities': List[str],
             'valid_geo_zone_ids': List[str],
             'geo_areas': List[GeographicalArea],
             'af_ack_ind': bool,

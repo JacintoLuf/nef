@@ -79,6 +79,7 @@ async def ti_create():
     try:
         print("from template")
         traffic_sub = influ_sub
+        print(traffic_sub)
     except Exception as e:
         print(e)
     # if traffic_sub.any_ue_ind == True:
