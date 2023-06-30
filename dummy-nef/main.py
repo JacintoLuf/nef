@@ -23,7 +23,7 @@ async def startup():
     res = await nrf_handler.nf_register()
     if res == httpx.codes.CREATED:
         await nrf_heartbeat()
-    res2 = ti_create()
+    res2 = await ti_create()
     print(res2)
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
