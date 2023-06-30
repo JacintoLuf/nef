@@ -1,9 +1,8 @@
-from fastapi import HTTPException
 import httpx
 from api.config import conf
 from models.traffic_influ_sub import TrafficInfluSub
 
-async def bsf_management_discovery(sub: TrafficInfluSub=None):
+def bsf_management_discovery(sub: TrafficInfluSub=None):
     if sub.ipv4_addr:
         #supi = udm_handler.udm_sdm_id_trans(sub.gpsi)
         params = {'ipv4Addr': sub.ipv4_addr}
@@ -16,11 +15,16 @@ async def bsf_management_discovery(sub: TrafficInfluSub=None):
     else:
         params = {'gpsi': sub.gpsi, 'dnn': sub.dnn, 'snssai': sub.snssai}
 
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-            response = await client.get(
-                f"http://{conf.HOSTS['BSF'][0]}:7777/nbsf-management/v1/pcfBindings",
-                headers={'Accept': 'application/json,application/problem+json'},
-                params=params
-            )
+    response = httpx.get(
+        f"http://{conf.HOSTS['BSF'][0]}:7777/nbsf-management/v1/pcfBindings",
+        headers={'Accept': 'application/json,application/problem+json'},
+        params=params
+    )
+    # async with httpx.AsyncClient(http1=False, http2=True) as client:
+    #         response = await client.get(
+    #             f"http://{conf.HOSTS['BSF'][0]}:7777/nbsf-management/v1/pcfBindings",
+    #             headers={'Accept': 'application/json,application/problem+json'},
+    #             params=params
+    #         )
 
     return response
