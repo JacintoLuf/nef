@@ -66,7 +66,7 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
             )
             print("pcf app session context response")
             print(response.text)
-
+            
     return response
 
 async def pcf_policy_authorization_delete(subId: str=None):

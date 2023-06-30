@@ -99,14 +99,13 @@ async def ti_create():
     pcf_binding = PcfBinding.from_dict(response.json())
     
     response = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
-    if response.status_code != httpx.codes.CREATED:
-        raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
-
-    sub_id = await trafficInfluSub.traffic_influence_subscription_post(traffic_sub, response.headers['Location'])
-    if sub_id:
-        traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{traffic_sub}/subscriptions/{sub_id}"
-    else:
-        return Response(status_code=500, content="Error creating resource")
+    if response.status_code == httpx.codes.CREATED:
+        sub_id = await trafficInfluSub.traffic_influence_subscription_post(traffic_sub, response.headers['Location'])
+        if sub_id:
+            traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{traffic_sub}/subscriptions/{sub_id}"
+            return Response(status_code=httpx.codes.CREATED, content="Resource created")
+        else:
+            return Response(status_code=500, content="Error creating resource")
     
     #res_headers = conf.GLOBAL_HEADERS
     return Response(status_code=httpx.codes.CREATED, content="Resource created")
