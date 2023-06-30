@@ -50,25 +50,25 @@ spec:
   #type: LoadBalancer
   type: ClusterIP
 
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: nef-mongodb
-spec:
-  capacity:
-    storage: 8Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: nef-mongodb
-  claimRef:
-    name: nef-mongodb
-    namespace: open5gs
-  hostPath:
-    path: /mnt/nef/mongodb
-    type: ''
-  volumeMode: Filesystem
+# ---
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: nef-mongodb
+# spec:
+#   capacity:
+#     storage: 8Gi
+#   accessModes:
+#     - ReadWriteOnce
+#   persistentVolumeReclaimPolicy: Retain
+#   storageClassName: nef-mongodb
+#   claimRef:
+#     name: nef-mongodb
+#     namespace: open5gs
+#   hostPath:
+#     path: /mnt/nef/mongodb
+#     type: ''
+#   volumeMode: Filesystem
 
 ---
 apiVersion: v1
