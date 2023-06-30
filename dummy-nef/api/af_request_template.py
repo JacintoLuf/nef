@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+#from datetime import datetime, timedelta
 from api.config import conf
 from models.traffic_influ_sub import TrafficInfluSub
 from models.route_to_location import RouteToLocation
@@ -27,7 +27,6 @@ def create_sub():
         traffic_routes=[route_to_loc],
         #temp_validities=[temp_val],
         addr_preser_ind=True,
-        supp_feat="InfluenceOnTrafficRouting"
     )
     return traffic_influ
 
