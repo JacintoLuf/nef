@@ -13,7 +13,7 @@ def create_sub():
 
     traffic_influ = TrafficInfluSub(
         af_service_id="24caa907-f1ba-4e29-8a78-f9728dd45d83",
-        af_app_id="udp-server1",
+        #af_app_id="udp-server1",
         af_trans_id="1",
         #app_relo_ind=False,
         dnn="internet",
