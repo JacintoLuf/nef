@@ -6,8 +6,6 @@ from models.nf_profile import NFProfile
 from models.traffic_influ_sub import TrafficInfluSub
 from models.route_to_location import RouteToLocation
 from models.route_information import RouteInformation
-from models.temporal_validity import TemporalValidity
-from models.dnai_change_type import DnaiChangeType
 from models.snssai import Snssai
 from kubernetes import client, config
 
