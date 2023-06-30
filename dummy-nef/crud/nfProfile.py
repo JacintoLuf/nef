@@ -1,3 +1,4 @@
+from pymongo.errors import DuplicateKeyError
 from session import async_db
 
 async def get_one(nfId: str):
@@ -28,7 +29,9 @@ async def insert_one(profile):
     update = {"$set": {'profile': doc}}
     try:
         result = await collection.update_one({"_id": profile['nfInstanceId']}, update, upsert=True)
-        return result.modified_count
+        return result.modified_count or result.upserted_count
+    except DuplicateKeyError:
+        return None
     except Exception as e:
         print(e)
         return None
