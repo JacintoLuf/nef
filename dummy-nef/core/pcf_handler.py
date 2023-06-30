@@ -10,6 +10,14 @@ from models.pcf_binding import PcfBinding
 from models.media_component import MediaComponent
 
 async def pcf_policy_authorization_get(app_session_id: str=None):
+    print("check BDT policies")
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.post(
+            f"http://{conf.HOSTS['PCF'][0]}:7777//npcf-bdtpolicycontrol/v1/bdtpolicies ",
+            headers={'Accept': 'application/json,application/problem+json'}
+        )
+        print(response.text)
+
     if app_session_id:
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(
@@ -49,10 +57,10 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
         )
     if traffic_influ_sub.af_app_id != None:
         print(f"app id: {traffic_influ_sub.af_app_id}")
-        req_data.med_components = {'1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, med_type="OTHER")}
+        req_data.med_components = {'1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, med_type="APPLICATION")}
         req_data.af_rout_req = rout_req
     else:
-        req_data.med_components = {'1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, med_type="OTHER")}
+        req_data.med_components = {'1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, med_type="APPLICATION")}
         req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
