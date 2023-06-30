@@ -1,3 +1,4 @@
+import asyncio
 import httpx
 import logging
 import json
@@ -60,7 +61,8 @@ async def ti_get(afId: str):
 # @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 # async def ti_create(afId, data: Request):
 @app.get("/ti_create")
-async def ti_create():
+@asyncio.coroutine
+def ti_create():
     # if not afId:
     #     afId = "default"
     # try:
@@ -96,16 +98,16 @@ async def ti_create():
     # elif traffic_sub.external_group_id:
     #     translation_res = udm_handler.udm_sdm_group_identifiers_translation(traffic_sub.external_group_id)
 
-    response = await bsf_handler.bsf_management_discovery(traffic_sub)
+    response = yield bsf_handler.bsf_management_discovery(traffic_sub)
     if response.status_code != httpx.codes.OK:
             return response
     pcf_binding = PcfBinding.from_dict(response.json())
     
-    response = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
+    response = yield pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
     if response.status_code != httpx.codes.CREATED:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
 
-    sub_id = await trafficInfluSub.traffic_influence_subscription_post(traffic_sub, response.headers['Location'])
+    sub_id = yield trafficInfluSub.traffic_influence_subscription_post(traffic_sub, response.headers['Location'])
     if sub_id:
         traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{traffic_sub}/subscriptions/{sub_id}"
     else:
