@@ -98,7 +98,7 @@ def ti_create():
     # elif traffic_sub.external_group_id:
     #     translation_res = udm_handler.udm_sdm_group_identifiers_translation(traffic_sub.external_group_id)
 
-    response = bsf_handler.bsf_management_discovery(traffic_sub)
+    response = yield bsf_handler.bsf_management_discovery(traffic_sub)
     if response.status_code != httpx.codes.OK:
             return response
     pcf_binding = PcfBinding.from_dict(response.json())

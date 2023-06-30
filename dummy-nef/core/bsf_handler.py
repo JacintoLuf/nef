@@ -1,7 +1,9 @@
 import httpx
+import asyncio
 from api.config import conf
 from models.traffic_influ_sub import TrafficInfluSub
 
+@asyncio.coroutine
 async def bsf_management_discovery(sub: TrafficInfluSub=None):
     if sub.ipv4_addr:
         #supi = udm_handler.udm_sdm_id_trans(sub.gpsi)
