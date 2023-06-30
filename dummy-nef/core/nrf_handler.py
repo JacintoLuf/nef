@@ -33,7 +33,7 @@ async def nrf_discovery() -> int:
             # print(res)
             instances.append(response.json())
     conf.set_nf_endpoints(profiles)
-    #res = nfProfile.insert_many(instances)
+    #res = await nfProfile.insert_many(instances)
     result = collection.insert_many(instances)
 
     return 1

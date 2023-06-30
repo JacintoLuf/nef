@@ -77,11 +77,6 @@ async def ti_create():
     # elif traffic_sub.traffic_filters:
     # elif traffic_sub.eth_traffic_filters:
     try:
-        print("from conf")
-        traffic_sub = TrafficInfluSub.from_dict(conf.SUB_TEMP)
-    except Exception as e:
-        print(e)
-    try:
         print("from template")
         traffic_sub = influ_sub
     except Exception as e:
