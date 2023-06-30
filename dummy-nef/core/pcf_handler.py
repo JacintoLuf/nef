@@ -21,16 +21,7 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
         return response.json()
 
 async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_influ_sub: TrafficInfluSub=None):
-    host_addr = conf.HOSTS['PCF'][0]
-    print(binding.pcf_ip_end_points[0].ipv4_address)
-    print("check BDT policies")
-
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-        response = await client.post(
-            f"http://{conf.HOSTS['PCF'][0]}:7777//npcf-bdtpolicycontrol/v1/bdtpolicies ",
-            headers={'Accept': 'application/json,application/problem+json'}
-        )
-        print(response.text)
+    host_addr = binding.pcf_ip_end_points[0].ipv4_address or conf.HOSTS['PCF'][0]
 
     req_data = AppSessionContextReqData(slice_info=traffic_influ_sub.snssai)
     for attr_name in traffic_influ_sub.attribute_map.keys():
@@ -56,15 +47,14 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
             temp_vals=traffic_influ_sub.temp_validities,
             addr_preser_ind=traffic_influ_sub.addr_preser_ind,
         )
-    if traffic_influ_sub.af_app_id != None:
-        req_data.med_components = {'1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, med_type="APPLICATION")}
+    if traffic_influ_sub.af_app_id is not None:
+        req_data.med_components = {'1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, med_type="AUDIO")}
         req_data.af_rout_req = rout_req
     else:
-        req_data.med_components = {'1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, med_type="APPLICATION")}
+        req_data.med_components = {'1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, med_type="AUDIO")}
         req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
-    print("pcf app session context request")
     print(app_session_context)
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.post(
@@ -72,7 +62,6 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
                 headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
                 data=json.dumps(app_session_context.to_dict())
             )
-            print("pcf app session context response")
             print(response.text)
 
     return response
