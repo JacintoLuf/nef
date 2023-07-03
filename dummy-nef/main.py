@@ -112,7 +112,7 @@ async def ti_create():
             return Response(status_code=500, content="Error creating resource")
     
     #res_headers = conf.GLOBAL_HEADERS
-    return response
+    return response.status_code
 
 @app.post("/pcf-policy-authorization-callback")
 async def pcf_callback(data):
