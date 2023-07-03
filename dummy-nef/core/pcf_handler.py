@@ -56,6 +56,7 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
     print(app_session_context)
+    print("---------------------------------------------")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.post(
                 f"http://{host_addr}:7777/npcf-policyauthorization/v1/app-sessions",
