@@ -21,7 +21,7 @@ def create_sub():
         #app_relo_ind=False,
         dnn="internet",
         #snssai=snssai,
-        any_ue_ind=True,
+        any_ue_ind=False,
         subscribed_events="UP_PATH_CHANGE",
         #ipv4_addr="10.45.0.2",
         #dnai_chg_type="EARLY_LATE",
