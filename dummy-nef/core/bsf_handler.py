@@ -22,4 +22,4 @@ async def bsf_management_discovery(sub: TrafficInfluSub=None):
                 params=params
             )
 
-    return response
+    return {'code': response.status_code, 'response': response.json()}
