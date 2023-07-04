@@ -21,7 +21,7 @@ def create_sub():
         #app_relo_ind=False,
         dnn="internet",
         snssai=snssai,
-        any_ue_ind=False,
+        any_ue_ind=True,
         subscribed_events="UP_PATH_CHANGE",
         ipv4_addr="10.45.0.2",
         dnai_chg_type="EARLY_LATE",
@@ -30,7 +30,7 @@ def create_sub():
         request_test_notification=True,
         traffic_routes=[route_to_loc],
         #temp_validities=[temp_val],
-        addr_preser_ind=True,
+        #addr_preser_ind=True,
     )
     return traffic_influ
 
