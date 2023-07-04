@@ -2,7 +2,7 @@ import httpx
 import logging
 from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi_utils.tasks import repeat_every
-from session import async_db
+from session import async_db, clean_db
 from api.config import conf
 from models.traffic_influ_sub import TrafficInfluSub
 from models.pcf_binding import PcfBinding
@@ -155,6 +155,10 @@ async def ti_delete(afId: str, subId: str):
     print(res)
     return Response(status_code=httpx.codes.NO_CONTENT, content="The subscription was terminated successfully.")
 
+@app.get("/clean")
+async def clean():
+    clean_db()
+    return Response(status_code=204) 
 
 async def qos_create():
     traffic_sub = influ_sub

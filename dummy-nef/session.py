@@ -9,9 +9,9 @@ async_client = AsyncIOMotorClient(conf.MONGO_URI)
 async_db = async_client["nef"]
 db = client["nef"]
 
-def close():
-    for collection in async_client.list_collection_names():
-        async_client.drop_collection(collection)
-    print("Database reset complete.")
-    async_client.close()
-    client.close()
+def clean_db():
+    collections = ['traffic_influ_sub', 'nf_instances', 'app_session_context']
+    for i in collections:
+        print(f"cleaning {i} collection docs")
+        async_db[i].delete_many({})
+    print("Database cleaned.")

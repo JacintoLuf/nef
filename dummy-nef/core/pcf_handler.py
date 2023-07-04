@@ -42,7 +42,7 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
             setattr(req_data, attr_name, attr_val)
 
     req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback"
-    req_data.supp_feat = "1"
+    req_data.supp_feat = "0001"
     rout_req = AfRoutingRequirement(
             app_reloc=traffic_influ_sub.app_relo_ind,
             route_to_locs=traffic_influ_sub.traffic_routes,
