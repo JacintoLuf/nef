@@ -104,11 +104,11 @@ async def ti_create():
         response = await bsf_handler.bsf_management_discovery(traffic_sub)
         if response.status_code != httpx.codes.OK:
                 return response
-        pcf_binding = PcfBinding.from_dict(response.json())
+        pcf_binding = PcfBinding.from_dict(await response.json())
         
         response = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
         if response.status_code == httpx.codes.CREATED:
-            sub_id = await trafficInfluSub.traffic_influence_subscription_insert(traffic_sub, response.headers['Location'])
+            sub_id = await trafficInfluSub.traffic_influence_subscription_insert(traffic_sub, await response.headers['Location'])
             if sub_id:
                 traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{traffic_sub}/subscriptions/{sub_id}"
                 return Response(status_code=httpx.codes.CREATED, content="Resource created")
