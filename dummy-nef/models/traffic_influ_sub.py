@@ -27,7 +27,7 @@ class TrafficInfluSub(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, af_service_id=None, af_app_id=None, af_trans_id=None, app_relo_ind=None, dnn=None, snssai=None, external_group_id=None, any_ue_ind=None, subscribed_events=None, gpsi=None, ipv4_addr=None, ip_domain=None, ipv6_addr=None, mac_addr=None, dnai_chg_type=None, notification_destination=None, request_test_notification=None, websock_notif_config=None, _self=None, traffic_filters=None, eth_traffic_filters=None, traffic_routes=None, tfc_corr_ind=None, temp_validities=None, valid_geo_zone_ids=None, geo_areas=None, af_ack_ind=None, addr_preser_ind=None, sim_conn_ind=None, sim_conn_term=None, max_allowed_up_lat=None, eas_ip_replace_infos=None, eas_redis_ind=None, event_req=None, event_reports=None, supp_feat=None):  # noqa: E501
+    def __init__(self, af_service_id=None, af_app_id=None, af_trans_id=None, app_relo_ind=None, dnn=None, snssai=None, external_group_id=None, any_ue_ind=None, subscribed_events=None, gpsi=None, ipv4_addr: str=None, ip_domain=None, ipv6_addr=None, mac_addr=None, dnai_chg_type=None, notification_destination=None, request_test_notification=None, websock_notif_config=None, _self=None, traffic_filters=None, eth_traffic_filters=None, traffic_routes=None, tfc_corr_ind=None, temp_validities=None, valid_geo_zone_ids=None, geo_areas=None, af_ack_ind=None, addr_preser_ind=None, sim_conn_ind=None, sim_conn_term=None, max_allowed_up_lat=None, eas_ip_replace_infos=None, eas_redis_ind=None, event_req=None, event_reports=None, supp_feat=None):  # noqa: E501
         """TrafficInfluSub - a model defined in OpenAPI
 
         :param af_service_id: The af_service_id of this TrafficInfluSub.  # noqa: E501
