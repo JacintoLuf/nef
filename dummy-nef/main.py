@@ -79,12 +79,12 @@ async def ti_create():
         # elif traffic_sub.eth_traffic_filters:
         traffic_sub = influ_sub
         print(traffic_sub)
-        if not ((traffic_sub.af_app_id is not None) ^ (traffic_sub.traffic_filters is not None) ^ (traffic_sub.eth_traffic_filters is not None)):
-            print(f"app id: {type(traffic_sub.af_app_id)}, traffic filters: {type(traffic_sub.traffic_filters)}, eth traffic filters: {type(traffic_sub.eth_traffic_filters)}")
-            raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of afAppId, trafficFilters or ethTrafficFilters")
-        if not ((traffic_sub.ipv4_addr is not None)^(traffic_sub.ipv6_addr is not None)^(traffic_sub.mac_addr is not None)^(traffic_sub.gpsi is not None)^(traffic_sub.external_group_id is not None)^(traffic_sub.any_ue_ind)):
-            print(f"ipv4: {type(traffic_sub.ipv4_addr)}, any ue: {type(traffic_sub.any_ue_ind)}")
-            raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr, macAddr, gpsi, externalGroupId or anyUeInd")
+        # if not ((traffic_sub.af_app_id is not None) ^ (traffic_sub.traffic_filters is not None) ^ (traffic_sub.eth_traffic_filters is not None)):
+        #     print(f"app id: {type(traffic_sub.af_app_id)}, traffic filters: {type(traffic_sub.traffic_filters)}, eth traffic filters: {type(traffic_sub.eth_traffic_filters)}")
+        #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of afAppId, trafficFilters or ethTrafficFilters")
+        # if not ((traffic_sub.ipv4_addr is not None)^(traffic_sub.ipv6_addr is not None)^(traffic_sub.mac_addr is not None)^(traffic_sub.gpsi is not None)^(traffic_sub.external_group_id is not None)^(traffic_sub.any_ue_ind)):
+        #     print(f"ipv4: {type(traffic_sub.ipv4_addr)}, any ue: {type(traffic_sub.any_ue_ind)}")
+        #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr, macAddr, gpsi, externalGroupId or anyUeInd")
         # if traffic_sub.af_app_id and traffic_sub.traffic_filters:
         #     udr_handler() criar pfd ts 29504 6.1.3.1 ts 29519 6.4.2.6 ts 29551 5.6.2.5 
         # if traffic_sub.any_ue_ind == True:
