@@ -61,64 +61,62 @@ async def ti_get(afId: str):
 # async def ti_create(afId, data: Request):
 @app.get("/ti_create")
 async def ti_create():
-    try:
-        # if not afId:
-        #     afId = "default"
-        # try:
-        #     traffic_sub = TrafficInfluSub.from_dict(data.json())
-        # except:
-        #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
-        
-        # if traffic_sub.notification_destination and not traffic_sub.subscribed_events:
-        #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
-        
-        # if traffic_sub.tfc_corr_ind and not traffic_sub.external_group_id:
-        #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
-        # if traffic_sub.af_app_id:
-        # elif traffic_sub.traffic_filters:
-        # elif traffic_sub.eth_traffic_filters:
-        traffic_sub = influ_sub
-        print(traffic_sub)
-        # if not ((traffic_sub.af_app_id is not None) ^ (traffic_sub.traffic_filters is not None) ^ (traffic_sub.eth_traffic_filters is not None)):
-        #     print(f"app id: {type(traffic_sub.af_app_id)}, traffic filters: {type(traffic_sub.traffic_filters)}, eth traffic filters: {type(traffic_sub.eth_traffic_filters)}")
-        #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of afAppId, trafficFilters or ethTrafficFilters")
-        # if not ((traffic_sub.ipv4_addr is not None)^(traffic_sub.ipv6_addr is not None)^(traffic_sub.mac_addr is not None)^(traffic_sub.gpsi is not None)^(traffic_sub.external_group_id is not None)^(traffic_sub.any_ue_ind)):
-        #     print(f"ipv4: {type(traffic_sub.ipv4_addr)}, any ue: {type(traffic_sub.any_ue_ind)}")
-        #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr, macAddr, gpsi, externalGroupId or anyUeInd")
-        # if traffic_sub.af_app_id and traffic_sub.traffic_filters:
-        #     udr_handler() criar pfd ts 29504 6.1.3.1 ts 29519 6.4.2.6 ts 29551 5.6.2.5 
-        # if traffic_sub.any_ue_ind == True:
-        #     print("any UE")
-        #     return Response(status_code=httpx.codes.BAD_REQUEST)
-        # elif traffic_sub.ipv4_addr or traffic_sub.ipv6_addr or traffic_sub.mac_addr:
-        #     response: httpx.Response = await bsf_handler.bsf_management_discovery(traffic_sub)
-        #     if response.status_code != httpx.codes.OK:
-        #             return response
-        #     pcf_binding = PcfBinding.from_dict(response.json())
-        #     response = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
-        # elif traffic_sub.gpsi:
-        #     translation_res = udm_handler.udm_sdm_id_translation(traffic_sub.gpsi)
-        # elif traffic_sub.external_group_id:
-        #     translation_res = udm_handler.udm_sdm_group_identifiers_translation(traffic_sub.external_group_id)
+    # if not afId:
+    #     afId = "default"
+    # try:
+    #     traffic_sub = TrafficInfluSub.from_dict(data.json())
+    # except:
+    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
+    
+    # if traffic_sub.notification_destination and not traffic_sub.subscribed_events:
+    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
+    
+    # if traffic_sub.tfc_corr_ind and not traffic_sub.external_group_id:
+    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
+    # if traffic_sub.af_app_id:
+    # elif traffic_sub.traffic_filters:
+    # elif traffic_sub.eth_traffic_filters:
+    traffic_sub = influ_sub
+    print(traffic_sub)
+    if not ((traffic_sub.af_app_id is not None) ^ (traffic_sub.traffic_filters is not None) ^ (traffic_sub.eth_traffic_filters is not None)):
+        print(f"app id: {type(traffic_sub.af_app_id)}, traffic filters: {type(traffic_sub.traffic_filters)}, eth traffic filters: {type(traffic_sub.eth_traffic_filters)}")
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of afAppId, trafficFilters or ethTrafficFilters")
+    if not ((traffic_sub.ipv4_addr is not None)^(traffic_sub.ipv6_addr is not None)^(traffic_sub.mac_addr is not None)^(traffic_sub.gpsi is not None)^(traffic_sub.external_group_id is not None)^(traffic_sub.any_ue_ind)):
+        print(f"ipv4: {type(traffic_sub.ipv4_addr)}, any ue: {type(traffic_sub.any_ue_ind)}")
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr, macAddr, gpsi, externalGroupId or anyUeInd")
+    # if traffic_sub.af_app_id and traffic_sub.traffic_filters:
+    #     udr_handler() criar pfd ts 29504 6.1.3.1 ts 29519 6.4.2.6 ts 29551 5.6.2.5 
+    # if traffic_sub.any_ue_ind == True:
+    #     print("any UE")
+    #     return Response(status_code=httpx.codes.BAD_REQUEST)
+    # elif traffic_sub.ipv4_addr or traffic_sub.ipv6_addr or traffic_sub.mac_addr:
+    #     response: httpx.Response = await bsf_handler.bsf_management_discovery(traffic_sub)
+    #     if response.status_code != httpx.codes.OK:
+    #             return response
+    #     pcf_binding = PcfBinding.from_dict(response.json())
+    #     response = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
+    # elif traffic_sub.gpsi:
+    #     translation_res = udm_handler.udm_sdm_id_translation(traffic_sub.gpsi)
+    # elif traffic_sub.external_group_id:
+    #     translation_res = udm_handler.udm_sdm_group_identifiers_translation(traffic_sub.external_group_id)
 
-        response = await bsf_handler.bsf_management_discovery(traffic_sub)
-        if response['code'] != httpx.codes.OK:
-            raise HTTPException(status_code=response['code'], detail="No session found")
-        pcf_binding = PcfBinding.from_dict(response['response'])
-        
-        response = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
-        if response.status_code == httpx.codes.CREATED:
-            sub_id = await trafficInfluSub.traffic_influence_subscription_insert(traffic_sub, response.headers['Location'])
-            if sub_id:
-                traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{traffic_sub}/subscriptions/{sub_id}"
-                return Response(status_code=httpx.codes.CREATED, content="Resource created")
-            else:
-                return Response(status_code=500, content="Error creating resource")
-        
-        #res_headers = conf.GLOBAL_HEADERS
-    except Exception as e:
-        print(e)
-        return Response(status_code=500)
+    response = await bsf_handler.bsf_management_discovery(traffic_sub)
+    if response['code'] != httpx.codes.OK:
+        print("No binding")
+        raise HTTPException(status_code=response['code'], detail="No session found")
+    pcf_binding = PcfBinding.from_dict(response['response'])
+    
+    response = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
+    if response.status_code == httpx.codes.CREATED:
+        sub_id = await trafficInfluSub.traffic_influence_subscription_insert(traffic_sub, response.headers['Location'])
+        if sub_id:
+            traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{traffic_sub}/subscriptions/{sub_id}"
+            return Response(status_code=httpx.codes.CREATED, content="Resource created")
+        else:
+            print("Server error")
+            return Response(status_code=500, content="Error creating resource")
+    
+    #res_headers = conf.GLOBAL_HEADERS
     return response.status_code
 
 @app.post("/pcf-policy-authorization-callback")

@@ -16,6 +16,7 @@ async def traffic_influence_subscription_get(afId: str, subId: str=None):
         return docs or None
 
 async def traffic_influence_subscription_insert(sub: TrafficInfluSub, location: str):
+    print("saving subscription")
     collection = db["traffic_influ_sub"]
     subId = '1' #token_bytes(16)
     document = {'_id': subId, 'sub': sub.to_dict(), 'location': location}
