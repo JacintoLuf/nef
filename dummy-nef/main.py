@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 async def startup():
     res = await nrf_handler.nrf_discovery()
     res = await nrf_handler.nf_register()
-    if res == httpx.codes.CREATED:
+    if res.status_code == httpx.codes.CREATED:
         await nrf_heartbeat()
     #res2 = await ti_create()
 

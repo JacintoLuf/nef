@@ -3,10 +3,10 @@ import json
 from api.config import conf
 from session import db
 from models.nf_profile import NFProfile
-#from models.subscription_data import SubscriptionData
+from models.subscription_data import SubscriptionData
 import crud.nfProfile as nfProfile
 
-async def nrf_discovery() -> int:
+async def nrf_discovery():
     collection = db["nf_instances"]
     uuids = []
     instances = []
@@ -39,7 +39,6 @@ async def nrf_discovery() -> int:
     return 1
 
 async def nf_register():
-
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
             f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
@@ -53,8 +52,7 @@ async def nf_register():
             print(f"[{conf.NEF_PROFILE.nf_instance_id}] NF registerd [Heartbeat: {conf.NEF_PROFILE.heart_beat_timer}]")
         else:
             print(response.text)
-
-    return response.status_code
+    return response
 
 async def nf_update(profile):
 
@@ -95,6 +93,8 @@ async def nf_register_heart_beat() -> int:
     return response.status_code
 
 async def nf_status_subscribe():
+    nf_types = []
+
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.post(
             f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/subscriptions",
