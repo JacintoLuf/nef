@@ -65,6 +65,7 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
                 headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
                 data=json.dumps(app_session_context.to_dict())
             )
+            print(response.status_code)
             print(response.text)
 
     return response
