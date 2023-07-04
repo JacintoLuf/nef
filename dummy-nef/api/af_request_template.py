@@ -9,7 +9,7 @@ from models.snssai import Snssai
 def create_sub():
     snssai = Snssai(sst=1, sd="0x111111")
     route_info = RouteInformation(ipv4_addr="10.255.32.132", port_number=80)
-    route_to_loc = RouteToLocation(dnai="internet", route_info=route_info)
+    route_to_loc = RouteToLocation(dnai="internet", route_info=route_info, route_prof_id='default')
     flow_infu = FlowInfo(flow_id=10, flow_descriptions="permit out udp from any to any")
     flow_infu2 = FlowInfo(flow_id=11, flow_descriptions="permit in udp from any to any")
     #temp_val = TemporalValidity(str(datetime.now()), str(datetime.now()+timedelta(minutes=10)))
@@ -27,6 +27,7 @@ def create_sub():
         dnai_chg_type="EARLY_LATE",
         notification_destination=f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback",
         traffic_filters=[flow_infu, flow_infu2],
+        request_test_notification=True,
         traffic_routes=[route_to_loc],
         #temp_validities=[temp_val],
         addr_preser_ind=True,
