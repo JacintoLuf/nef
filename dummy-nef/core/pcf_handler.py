@@ -32,6 +32,8 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
             setattr(req_data, 'ue_ipv6', attr_val)
         elif attr_name == 'mac_addr':
             setattr(req_data, 'ue_mac', attr_val)
+        elif attr_name == 'snssai':
+            setattr(req_data, 'slice_info', attr_val)
         elif hasattr(req_data, attr_name) and attr_val:
             setattr(req_data, attr_name, attr_val)
     
@@ -48,10 +50,10 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
             addr_preser_ind=traffic_influ_sub.addr_preser_ind,
         )
     if traffic_influ_sub.af_app_id is not None:
-        req_data.med_components = {'1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, med_type="AUDIO")}
+        req_data.med_components = {'traffic influ': MediaComponent(af_rout_req=rout_req, med_comp_n=1, f_status="ENABLED", med_type="AUDIO")}
         req_data.af_rout_req = rout_req
     else:
-        req_data.med_components = {'1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, med_type="AUDIO")}
+        req_data.med_components = {'traffic influ': MediaComponent(af_rout_req=rout_req, med_comp_n=1, f_status="ENABLED", med_type="AUDIO")}
         req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
