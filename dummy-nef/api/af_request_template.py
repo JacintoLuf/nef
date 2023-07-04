@@ -30,7 +30,7 @@ def create_sub():
         request_test_notification=True,
         traffic_routes=[route_to_loc],
         #temp_validities=[temp_val],
-        #addr_preser_ind=True,
+        addr_preser_ind=True,
     )
     return traffic_influ
 
