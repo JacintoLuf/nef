@@ -20,17 +20,17 @@ def create_sub():
         af_trans_id="1",
         #app_relo_ind=False,
         dnn="internet",
-        snssai=snssai,
-        any_ue_ind=False,
-        subscribed_events="UP_PATH_CHANGE",
-        ipv4_addr="10.45.0.2",
-        dnai_chg_type="EARLY_LATE",
+        #snssai=snssai,
+        any_ue_ind=True,
+        #subscribed_events="UP_PATH_CHANGE",
+        #ipv4_addr="10.45.0.2",
+        #dnai_chg_type="EARLY_LATE",
         notification_destination=f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback",
         traffic_filters=[flow_infu, flow_infu2],
         request_test_notification=True,
         traffic_routes=[route_to_loc],
         #temp_validities=[temp_val],
-        addr_preser_ind=True,
+        #addr_preser_ind=True,
     )
     return traffic_influ
 

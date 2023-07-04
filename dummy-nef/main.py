@@ -78,10 +78,10 @@ async def ti_create():
     # elif traffic_sub.eth_traffic_filters:
     traffic_sub = influ_sub
     print(traffic_sub)
-    if not (traffic_sub.af_app_id is not traffic_sub.traffic_filters is not traffic_sub.eth_traffic_filters):
+    if not ((traffic_sub.af_app_id is not None) ^ (traffic_sub.traffic_filters is not None) ^ (traffic_sub.eth_traffic_filters is not None)):
         print(f"app id: {type(traffic_sub.af_app_id)}, traffic filters: {type(traffic_sub.traffic_filters)}, eth traffic filters: {type(traffic_sub.eth_traffic_filters)}")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of afAppId, trafficFilters or ethTrafficFilters")
-    if traffic_sub.ipv4_addr is not traffic_sub.ipv6_addr is not traffic_sub.mac_addr is not traffic_sub.gpsi is not traffic_sub.external_group_id is not traffic_sub.any_ue_ind:
+    if not ((traffic_sub.ipv4_addr is not None)^(traffic_sub.ipv6_addr is not None)^(traffic_sub.mac_addr is not None)^(traffic_sub.gpsi is not None)^(traffic_sub.external_group_id is not None)^(traffic_sub.any_ue_ind)):
         print(f"ipv4: {type(traffic_sub.ipv4_addr)}, any ue: {type(traffic_sub.any_ue_ind)}")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr, macAddr, gpsi, externalGroupId or anyUeInd")
     # if traffic_sub.af_app_id and traffic_sub.traffic_filters:
@@ -107,7 +107,7 @@ async def ti_create():
     
     response = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
     if response.status_code == httpx.codes.CREATED:
-        sub_id = await trafficInfluSub.traffic_influence_subscription_post(traffic_sub, response.headers['Location'])
+        sub_id = await trafficInfluSub.traffic_influence_subscription_insert(traffic_sub, response.headers['Location'])
         if sub_id:
             traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{traffic_sub}/subscriptions/{sub_id}"
             return Response(status_code=httpx.codes.CREATED, content="Resource created")
