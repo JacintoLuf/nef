@@ -82,6 +82,8 @@ async def ti_create():
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of afAppId, trafficFilters or ethTrafficFilters")
     if traffic_sub.ipv4_addr is not traffic_sub.ipv6_addr is not traffic_sub.mac_addr is not traffic_sub.gpsi is not traffic_sub.external_group_id is not traffic_sub.any_ue_ind:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr, macAddr, gpsi, externalGroupId or anyUeInd")
+    # if traffic_sub.af_app_id and traffic_sub.traffic_filters:
+    #     udr_handler() criar pfd ts 29504 6.1.3.1 ts 29519 6.4.2.6 ts 29551 5.6.2.5 
     # if traffic_sub.any_ue_ind == True:
     #     print("any UE")
     #     return Response(status_code=httpx.codes.BAD_REQUEST)
