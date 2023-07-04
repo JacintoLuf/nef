@@ -23,7 +23,7 @@ def create_sub():
         #snssai=snssai,
         any_ue_ind=False,
         subscribed_events="UP_PATH_CHANGE",
-        ipv4_addr="10.45.0.2",
+        #ipv4_addr="10.45.0.2",
         #dnai_chg_type="EARLY_LATE",
         notification_destination=f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback",
         traffic_filters=[flow_infu, flow_infu2],
