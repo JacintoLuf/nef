@@ -44,16 +44,18 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
     req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback"
     req_data.supp_feat = "0001"
     rout_req = AfRoutingRequirement(
-            app_reloc=traffic_influ_sub.app_relo_ind,
+            app_reloc=not traffic_influ_sub.app_relo_ind,
             route_to_locs=traffic_influ_sub.traffic_routes,
+            sp_val=traffic_influ_sub.valid_geo_zone_ids,
             temp_vals=traffic_influ_sub.temp_validities,
+            #up_path_chg_sub=,
             addr_preser_ind=traffic_influ_sub.addr_preser_ind,
         )
     if traffic_influ_sub.af_app_id is not None:
-        req_data.med_components = {'traffic influ': MediaComponent(af_rout_req=rout_req, med_comp_n=1, f_status="ENABLED", med_type="AUDIO")}
+        req_data.med_components = {'traffic influ': MediaComponent(af_rout_req=rout_req, med_comp_n=1, f_status="ENABLED", med_type="CONTROL")}
         req_data.af_rout_req = rout_req
     else:
-        req_data.med_components = {'traffic influ': MediaComponent(af_rout_req=rout_req, med_comp_n=1, f_status="ENABLED", med_type="AUDIO")}
+        req_data.med_components = {'traffic influ': MediaComponent(af_rout_req=rout_req, med_comp_n=1, f_status="ENABLED", med_type="CONTROL")}
         req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
