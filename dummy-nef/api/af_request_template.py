@@ -10,8 +10,7 @@ def create_sub():
     snssai = Snssai(sst=1, sd="0x111111")
     route_info = RouteInformation(ipv4_addr="10.255.32.132", port_number=80)
     route_to_loc = RouteToLocation(dnai="internet", route_info=route_info)
-    flow_infu = FlowInfo(flow_id=10, flow_descriptions="permit out udp from 10.45.0.2 to 10.255.32.132 80")
-    flow_infu2 = FlowInfo(flow_id=11, flow_descriptions="permit in ip from 10.255.32.132 to 10.45.0.2")
+    flow_infu = FlowInfo(flow_id=10, flow_descriptions=["permit out 17 from 10.45.0.2 to 10.255.32.132 80", "permit in 17 from 10.255.32.132 to 10.45.0.2"])
     #temp_val = TemporalValidity(str(datetime.now()), str(datetime.now()+timedelta(minutes=10)))
 
     traffic_influ = TrafficInfluSub(
@@ -26,7 +25,7 @@ def create_sub():
         ipv4_addr="10.45.0.2",
         #dnai_chg_type="EARLY_LATE",
         notification_destination=f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback",
-        traffic_filters=[flow_infu, flow_infu2],
+        traffic_filters=[flow_infu],
         request_test_notification=True,
         traffic_routes=[route_to_loc],
         #temp_validities=[temp_val],

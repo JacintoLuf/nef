@@ -8,6 +8,7 @@ from models.af_routing_requirement import AfRoutingRequirement
 from models.traffic_influ_sub import TrafficInfluSub
 from models.pcf_binding import PcfBinding
 from models.media_component import MediaComponent
+from models.media_sub_component import MediaSubComponent
 
 async def pcf_policy_authorization_get(app_session_id: str=None):
     if app_session_id:
@@ -51,11 +52,17 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
             #up_path_chg_sub=,
             addr_preser_ind=traffic_influ_sub.addr_preser_ind,
         )
+    med_sub_cmp = {}
+    i = 1
+    for f in traffic_influ_sub.traffic_filters:
+        med_sub_cmp[f"med_sub_comp_{i}"] = MediaSubComponent(f_num=f.flow_id, f_descs=f.flow_descriptions)
+        i += 1
+    
     if traffic_influ_sub.af_app_id is not None:
-        req_data.med_components = {'traffic influ': MediaComponent(af_rout_req=rout_req, med_comp_n=1, f_status="ENABLED", med_type="VIDEO")}
+        req_data.med_components = {'traffic influ': MediaComponent(af_rout_req=rout_req, med_comp_n=1, f_status="ENABLED", med_type="VIDEO", med_sub_comps=med_sub_cmp)}
         req_data.af_rout_req = rout_req
     else:
-        req_data.med_components = {'traffic influ': MediaComponent(af_rout_req=rout_req, med_comp_n=1, f_status="ENABLED", med_type="VIDEO")}
+        req_data.med_components = {'traffic influ': MediaComponent(af_rout_req=rout_req, med_comp_n=1, f_status="ENABLED", med_type="VIDEO", med_sub_comps=med_sub_cmp)}
         req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
