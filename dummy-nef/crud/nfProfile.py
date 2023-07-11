@@ -28,7 +28,7 @@ async def insert_one(profile):
     update = {"$set": {'profile': doc}}
     try:
         result = await collection.update_one({"_id": profile['nfInstanceId']}, update, upsert=True)
-        return result.modified_count or result.upserted_count
+        return result.modified_count
     except DuplicateKeyError:
         print("duplicate key")
         return None
