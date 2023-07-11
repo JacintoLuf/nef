@@ -101,7 +101,7 @@ class Settings():
         print("inserting conf profiles-----------------------------")
         for profile in profiles:
             print(profile)
-            self.HOSTS[profile.nf_type] += profile.ipv4_addresses
+            self.HOSTS[profile.nf_type] += [profile.ipv4_addresses]
     
     def create_sub(self):
         snssai = Snssai(sst=1, sd="111111")
