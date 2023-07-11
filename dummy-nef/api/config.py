@@ -99,9 +99,7 @@ class Settings():
     
     def set_nf_endpoints(self, profiles: List[NFProfile]):
         for profile in profiles:
-            self.HOSTS[profile.nf_type] = profile.ipv4_addresses
-
-        return 1
+            self.HOSTS[profile.nf_type] += profile.ipv4_addresses
     
     def create_sub(self):
         snssai = Snssai(sst=1, sd="111111")

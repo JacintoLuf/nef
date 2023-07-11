@@ -1,9 +1,9 @@
 import httpx
-import json
+from models.traffic_influ_sub import TrafficInfluSub
 from api.config import conf
 from session import db
 
-async def udr_data_retrieval() -> int:
+async def udr_data_retrieval(sub: TrafficInfluSub) -> int:
 
     params = {}
     print("------------------------------subs data------------------------------")
@@ -33,10 +33,11 @@ async def udr_data_retrieval() -> int:
     print("------------------------------app data------------------------------")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(
-                "http://"+conf.HOSTS["UDR"][0]+":7777/nudr-dr/v1/application-data",
+                "http://"+conf.HOSTS["UDR"][0]+":7777/nudr-dr/v1/application-data/influenceData",
                 headers={'Accept': 'application/json,application/problem+json'},
                 params=params
             )
+            print(response.headers)
             print(response.text)
 
     return response.status_code

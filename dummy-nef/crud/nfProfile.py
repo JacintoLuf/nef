@@ -16,21 +16,21 @@ async def get_by_type(type: str):
 
 async def get_all():
     docs = []
-    collection = async_db["nf_instances"]
+    collection = async_db["nf_instances2"]
     print("here")
     async for doc in await collection.find({}):
         docs.append(doc)
-    print(docs)
     return docs
 
 async def insert_one(profile):
-    collection = async_db["nf_instances"]
+    collection = async_db["nf_instances2"]
     doc = {'_id': profile['nfInstanceId'], 'profile': profile}
     update = {"$set": {'profile': doc}}
     try:
         result = await collection.update_one({"_id": profile['nfInstanceId']}, update, upsert=True)
         return result.modified_count or result.upserted_count
     except DuplicateKeyError:
+        print("duplicate key")
         return None
     except Exception as e:
         print(e)
@@ -47,28 +47,34 @@ async def insert_many(profiles):
         return 0
 
 async def update(profile):
-    # coll = db.test_collection
-    # old_document = await coll.find_one({'i': 50})
-    # print('found document: %s' % pprint.pformat(old_document))
-    # _id = old_document['_id']
-    # result = await coll.replace_one({'_id': _id}, {'key': 'value'})
-    # print('replaced %s document' % result.modified_count)
-    # new_document = await coll.find_one({'_id': _id})
-    # print('document is now %s' % pprint.pformat(new_document))
-
-    #-------------------------
-
-    # coll = db.test_collection
-    # result = await coll.update_one({'i': 51}, {'$set': {'key': 'value'}})
-    # print('updated %s document' % result.modified_count)
-    # new_document = await coll.find_one({'i': 51})
-    # print('document is now %s' % pprint.pformat(new_document))
-    return 1
+    collection = async_db["nf_instances"]
+    old_document = await collection.find_one({'_id': profile["nfInstanceId"]})
+    if not old_document:
+        return None
+    _id = old_document['_id']
+    try:
+        result = await collection.replace_one({'_id': _id}, {'profile': profile})
+        return result.modified_count
+    except Exception as e:
+        print(e)
+        return -1
 
 async def delete_one(profile):
-
-    return 1
+    collection = async_db["nf_instances"]
+    n = await collection.count_documents({})
+    try:
+        result = await collection.delete_one({'_id': profile['nfInstanceId']})
+        return n - await collection.count_documents({})
+    except Exception as e:
+        print(e)
+        return -1
 
 async def delete_many(profiles):
-
-    return 1
+    collection = async_db["nf_instances"]
+    n = await collection.count_documents({})
+    try:
+        result = await collection.delete_one({'_id': {'$in': [profile['nfInstanceId'] for profile in profiles]}})
+        return n - await collection.count_documents({})
+    except Exception as e:
+        print(e)
+        return -1

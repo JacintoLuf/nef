@@ -43,7 +43,7 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
             setattr(req_data, attr_name, attr_val)
 
     req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback"
-    req_data.supp_feat = "0001"
+    req_data.supp_feat = "F"
     rout_req = AfRoutingRequirement(
             app_reloc=not traffic_influ_sub.app_relo_ind,
             route_to_locs=traffic_influ_sub.traffic_routes,
@@ -52,18 +52,13 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
             #up_path_chg_sub=,
             addr_preser_ind=traffic_influ_sub.addr_preser_ind,
         )
-    med_sub_cmp = {}
-    i = 1
-    for f in traffic_influ_sub.traffic_filters:
-        med_sub_cmp[f"med_sub_comp_{i}"] = MediaSubComponent(f_num=f.flow_id, f_descs=f.flow_descriptions)
-        i += 1
     
-    if traffic_influ_sub.af_app_id is not None:
+    if traffic_influ_sub.af_app_id:
+        med_sub_cmp = {}
+        for idx, f in enumerate(traffic_influ_sub.traffic_filters):
+            med_sub_cmp[f"{idx}"] = MediaSubComponent(f_num=f.flow_id, f_descs=f.flow_descriptions)
         req_data.med_components = {'traffic influ': MediaComponent(af_rout_req=rout_req, med_comp_n=1, f_status="ENABLED", med_type="VIDEO", med_sub_comps=med_sub_cmp)}
-        req_data.af_rout_req = rout_req
-    else:
-        req_data.med_components = {'traffic influ': MediaComponent(af_rout_req=rout_req, med_comp_n=1, f_status="ENABLED", med_type="VIDEO", med_sub_comps=med_sub_cmp)}
-        req_data.af_rout_req = rout_req
+    req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
     print(app_session_context)
@@ -77,7 +72,6 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
             print(response.headers)
             print(response.status_code)
             print(response.text)
-
     return response
 
 async def pcf_policy_authorization_delete(subId: str=None):

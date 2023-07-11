@@ -7,18 +7,18 @@ from models.traffic_influ_sub_patch import TrafficInfluSubPatch
 async def traffic_influence_subscription_get(afId: str, subId: str=None):
     collection = db["traffic_influ_sub"]
     if subId:
-        doc = await collection.find_one({'_id': subId, 'sub': {'af_service_id': afId}})
-        return doc
+        doc = await collection.find_one({'_id': subId, 'afId': afId})
+        return doc or None
     else:
         docs = []
-        for doc in await collection.find({'sub': {'af_service_id': afId}}):
+        for doc in await collection.find({'afId': afId}):
             docs.append(doc)
         return docs or None
 
-async def traffic_influence_subscription_insert(sub: TrafficInfluSub, location: str):
+async def traffic_influence_subscription_insert(afId: str, sub: TrafficInfluSub, location: str):
     collection = db["traffic_influ_sub"]
-    subId = '1' #token_bytes(16)
-    document = {'_id': subId, 'sub': sub.to_dict(), 'location': location}
+    subId = token_bytes(16)
+    document = {'_id': subId, 'afId': afId, 'sub': sub.to_dict(), 'location': location}
     try:
         result = await collection.insert_one(document)
         print(result.inserted_id)
@@ -30,7 +30,7 @@ async def traffic_influence_subscription_insert(sub: TrafficInfluSub, location: 
 async def individual_traffic_influence_subscription_update(afId: str, subId: str, sub, partial=False):
     collection = db["traffic_influ_sub"]
     if partial:
-        doc = await collection.find_one({'_id': subId, 'sub': {'af_service_id': afId}})
+        doc = await collection.find_one({'_id': subId, 'afId': afId})
         if not doc:
             return 404
         updated_sub = TrafficInfluSub.from_dict(doc['sub'])

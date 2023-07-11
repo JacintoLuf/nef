@@ -2,13 +2,15 @@ import httpx
 import logging
 from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi_utils.tasks import repeat_every
+from fastapi.responses import JSONResponse
 from session import async_db, clean_db
 from api.config import conf
-from models.traffic_influ_sub import TrafficInfluSub
-from models.pcf_binding import PcfBinding
 import core.nrf_handler as nrf_handler
 import core.bsf_handler as bsf_handler
 import core.pcf_handler as pcf_handler
+import core.udm_handler as udm_handler
+import core.udr_handler as udr_handler
+from models.pcf_binding import PcfBinding
 import crud.trafficInfluSub as trafficInfluSub
 import crud.nfProfile as nfProfile
 from api.af_request_template import influ_sub
@@ -23,7 +25,6 @@ async def startup():
     res = await nrf_handler.nf_register()
     if res.status_code == httpx.codes.CREATED:
         await nrf_heartbeat()
-    #res2 = await ti_create()
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
 async def nrf_heartbeat():
@@ -36,17 +37,15 @@ async def shutdown():
 
 @app.get("/")
 async def read_root():
-    #res = await nfProfile.get_all()
-    collection = async_db["nf_instances"]
-    insts = []
-    async for user in collection.find({}):
-        insts.append(user)
+    insts = await nfProfile.get_all()
     return {'nfs instances': str(insts)}
 
 @app.post("/nnef-callback/notification/subscription")
-async def nrf_notif(notif: Response):
+async def nrf_notif(notif):
+    print("--------------------------smf callback notif-------------------------")
+    print(type(notif))
     print(notif)
-    notif_data = notif.json()
+    #notif_data = notif.json()
     #res = await nrf_handler.nf_update(notif_data)
     return Response(status_code=httpx.codes.NO_CONTENT)
 
@@ -60,9 +59,9 @@ async def ti_get(afId: str):
 # @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 # async def ti_create(afId, data: Request):
 @app.get("/ti_create")
-async def ti_create():
-    # if not afId:
-    #     afId = "default"
+async def ti_create(afId: str):
+    if not afId:
+        afId = "default"
     # try:
     #     traffic_sub = TrafficInfluSub.from_dict(data.json())
     # except:
@@ -84,23 +83,15 @@ async def ti_create():
     if not ((traffic_sub.ipv4_addr is not None)^(traffic_sub.ipv6_addr is not None)^(traffic_sub.mac_addr is not None)^(traffic_sub.gpsi is not None)^(traffic_sub.external_group_id is not None)^(traffic_sub.any_ue_ind)):
         print(f"ipv4: {type(traffic_sub.ipv4_addr)}, any ue: {type(traffic_sub.any_ue_ind)}")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr, macAddr, gpsi, externalGroupId or anyUeInd")
-    # if traffic_sub.af_app_id and traffic_sub.traffic_filters:
-    #     udr_handler() criar pfd ts 29504 6.1.3.1 ts 29519 6.4.2.6 ts 29551 5.6.2.5 
-    # if traffic_sub.any_ue_ind == True:
-        # if not traffic_sub.dnn or traffic_sub.snssai:
-        #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
-    #     print("any UE")
-    #     return Response(status_code=httpx.codes.BAD_REQUEST)
-    # elif traffic_sub.ipv4_addr or traffic_sub.ipv6_addr or traffic_sub.mac_addr:
-    #     response: httpx.Response = await bsf_handler.bsf_management_discovery(traffic_sub)
-    #     if response.status_code != httpx.codes.OK:
-    #             return response
-    #     pcf_binding = PcfBinding.from_dict(response.json())
-    #     response = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
-    # elif traffic_sub.gpsi:
-    #     translation_res = udm_handler.udm_sdm_id_translation(traffic_sub.gpsi)
-    # elif traffic_sub.external_group_id:
-    #     translation_res = udm_handler.udm_sdm_group_identifiers_translation(traffic_sub.external_group_id)
+    if traffic_sub.any_ue_ind == True:
+        if not traffic_sub.dnn or traffic_sub.snssai:
+            raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
+        udr_handler
+        return Response(status_code=httpx.codes.BAD_REQUEST)
+    elif traffic_sub.gpsi:
+        print
+    elif traffic_sub.external_group_id:
+        print
 
     response = await bsf_handler.bsf_management_discovery(traffic_sub)
     if response['code'] != httpx.codes.OK:
@@ -110,28 +101,36 @@ async def ti_create():
     
     response = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
     if response.status_code == httpx.codes.CREATED:
-        sub_id = await trafficInfluSub.traffic_influence_subscription_insert(traffic_sub, response.headers['Location'])
+        sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, response.headers['location'])
         if sub_id:
             traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{traffic_sub}/subscriptions/{sub_id}"
-            return Response(status_code=httpx.codes.CREATED, content="Resource created")
+            headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
+            return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
         else:
             print("Server error")
             return Response(status_code=500, content="Error creating resource")
     
-    #res_headers = conf.GLOBAL_HEADERS
     return response.status_code
 
 @app.post("/pcf-policy-authorization-callback")
 async def pcf_callback(data):
+    print("-------------------------callback msg--------------------")
     print(data)
     return 200
+
+@app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
+async def ti_get(afId: str):
+    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
+    #res code: 200
+    res = await trafficInfluSub.traffic_influence_subscription_get(afId=afId)
+    return Response(status_code=httpx.codes.OK, content=res, headers={'content-type': 'application/json'})
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_get(afId: str, subId: str):
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
     #res code: 200
     res = await trafficInfluSub.traffic_influence_subscription_get(afId=afId, subId=subId)
-    return Response(status_code=httpx.codes.OK, content={'TrafficInfluSubs': res})
+    return Response(status_code=httpx.codes.OK, content=res, headers={'content-type': 'application/json'})
 
 @app.put("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_put(afId, subId, data: Request):
@@ -147,6 +146,11 @@ async def ti_patch(afId, subId, data: Request):
     res = await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=data.json(), partial=True)
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
+@app.delete("/delete_ti/{id}")
+async def delete_ti(id: str):
+    res = await  pcf_handler.pcf_policy_authorization_delete(id)
+    return res
+    
 @app.delete("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_delete(afId: str, subId: str):
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
