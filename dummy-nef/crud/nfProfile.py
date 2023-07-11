@@ -47,6 +47,7 @@ async def insert_many(profiles):
 
         # Perform the bulk write operation
         result = await collection.bulk_write(bulk_operations)
+        print(result)
         return result.modified_count + len(result.upserted_ids)
     except DuplicateKeyError:
         print("duplicate key")
