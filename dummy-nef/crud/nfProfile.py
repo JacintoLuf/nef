@@ -18,7 +18,7 @@ async def get_all():
     docs = []
     collection = async_db["nf_instances2"]
     print("here")
-    async for doc in await collection.find({}):
+    for doc in await collection.find({}):
         docs.append(doc)
     return docs
 
