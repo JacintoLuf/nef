@@ -19,7 +19,7 @@ async def get_all():
     docs = []
     collection = async_db["nf_instances2"]
     async for doc in collection.find({}):
-        docs.append(doc['profile'])
+        docs.append(doc)#['profile']
     return docs
 
 async def insert_one(profile):
