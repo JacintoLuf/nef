@@ -1,3 +1,4 @@
+from pymongo import UpdateOne
 from pymongo.errors import DuplicateKeyError
 from session import async_db
 
@@ -24,11 +25,11 @@ async def get_all():
 
 async def insert_one(profile):
     collection = async_db["nf_instances2"]
-    doc = {'_id': profile['nfInstanceId'], 'profile': profile}
-    update = {"$set": {'profile': doc}}
+    query = {'_id': profile['nfInstanceId']}
+    update = {"$set": {'profile': profile}}
     try:
-        result = await collection.update_one({"_id": profile['nfInstanceId']}, update, upsert=True)
-        return result.modified_count
+        result = await collection.update_one(query, update, upsert=True)
+        return result.modified_count or result.upserted_id
     except DuplicateKeyError:
         print("duplicate key")
         return None
@@ -38,10 +39,19 @@ async def insert_one(profile):
 
 async def insert_many(profiles):
     collection = async_db["nf_instances"]
-    docs = [{'_id': i['nfInstanceId'], 'profile': i} for i in profiles]
     try:
-        result = await collection.insert_many(docs, { 'ordered': False })
-        return result.inserted_ids
+        bulk_operations = []
+        for profile in profiles:
+            query = {"_id": profile['nfInstanceId']}
+            update = {"$set": {'profile': profile}}
+            bulk_operations.append(UpdateOne(query, update, upsert=True))
+
+        # Perform the bulk write operation
+        result = await collection.bulk_write(bulk_operations)
+        return result.modified_count + len(result.upserted_ids)
+    except DuplicateKeyError:
+        print("duplicate key")
+        return None
     except Exception as e:
         print(e)
         return 0
