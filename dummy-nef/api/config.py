@@ -98,11 +98,12 @@ class Settings():
         return self.API_UUID
     
     def set_nf_endpoints(self, profiles: List[NFProfile]):
-        print("inserting conf profiles-----------------------------")
         for profile in profiles:
-            print(profile)
-            self.HOSTS[profile.nf_type] += [profile.ipv4_addresses]
-    
+            if profile.nf_type in self.HOSTS:
+                self.HOSTS[profile.nf_type].append(profile.ipv4_addresses)
+            else:
+                self.HOSTS[profile.nf_type] = [profile.ipv4_addresses]
+                
     def create_sub(self):
         snssai = Snssai(sst=1, sd="111111")
         route_info = RouteInformation(ipv4_addr="10.255.32.132", port_number=80)
