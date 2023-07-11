@@ -18,9 +18,8 @@ async def get_by_type(type: str):
 async def get_all():
     docs = []
     collection = async_db["nf_instances2"]
-    print("here")
     async for doc in collection.find({}):
-        docs.append(doc)
+        docs.append(doc['profile'])
     return docs
 
 async def insert_one(profile):
