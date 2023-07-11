@@ -12,7 +12,7 @@ async def nrf_discovery():
     instances = []
     profiles = []
 
-    collection.delete_many({})
+    #collection.delete_many({})
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
@@ -30,13 +30,9 @@ async def nrf_discovery():
             )
             profiles.append(NFProfile.from_dict(response.json()))
             res = await nfProfile.insert_one(response.json())
-            print(res)
             instances.append(response.json())
     conf.set_nf_endpoints(profiles)
     # res = await nfProfile.insert_many(instances)
-    # print(res)
-    #result = collection.insert_many(instances)
-
     return 1
 
 async def nf_register():
