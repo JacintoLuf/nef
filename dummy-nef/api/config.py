@@ -98,7 +98,9 @@ class Settings():
         return self.API_UUID
     
     def set_nf_endpoints(self, profiles: List[NFProfile]):
+        print("inserting conf profiles-----------------------------")
         for profile in profiles:
+            print(profile)
             self.HOSTS[profile.nf_type] += profile.ipv4_addresses
     
     def create_sub(self):
