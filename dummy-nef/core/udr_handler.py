@@ -32,7 +32,7 @@ async def udr_data_retrieval(sub: TrafficInfluSub) -> int:
             print(response.text)
     print("------------------------------app data------------------------------")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
-            response = await client.get(
+            response = await client.post(
                 "http://"+conf.HOSTS["UDR"][0]+":7777/nudr-dr/v1/application-data/influenceData",
                 headers={'Accept': 'application/json,application/problem+json'},
                 params=params

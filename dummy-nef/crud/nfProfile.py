@@ -17,13 +17,13 @@ async def get_by_type(type: str):
 
 async def get_all():
     docs = []
-    collection = async_db["nf_instances2"]
+    collection = async_db["nf_instances"]
     async for doc in collection.find({}):
         docs.append(doc['profile'])
     return docs
 
 async def insert_one(profile):
-    collection = async_db["nf_instances2"]
+    collection = async_db["nf_instances"]
     query = {'_id': profile['nfInstanceId']}
     update = {"$set": {'profile': profile}}
     try:

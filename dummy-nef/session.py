@@ -10,9 +10,8 @@ async_db = async_client["nef"]
 db = client["nef"]
 
 def clean_db():
-    collections = ['traffic_influ_sub', 'nf_instances2', 'app_session_context']
+    collections = ['traffic_influ_sub']
     for i in collections:
         print(f"cleaning {i} collection docs")
         async_db[i].delete_many({})
-    async_db.drop_collection("nf_instances2")#-----------------
     print("Database cleaned.")

@@ -1,18 +1,17 @@
 import httpx
 import json
+import api.sbi_req
 from api.config import conf
-from session import db
 from models.nf_profile import NFProfile
 from models.subscription_data import SubscriptionData
+from models.subscr_cond import SubscrCond
 import crud.nfProfile as nfProfile
+import crud.subscriptionData as subscriptionData
 
 async def nrf_discovery():
-    collection = db["nf_instances2"]
     uuids = []
     instances = []
     profiles = []
-
-    #collection.delete_many({})
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
@@ -90,23 +89,33 @@ async def nf_register_heart_beat() -> int:
     return response.status_code
 
 async def nf_status_subscribe():
-    nf_types = []
-
+    sub_cond = SubscrCond(nf_type="PCF")
+    sub = SubscriptionData(
+        nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}:80/nfStatusNotification",
+        req_nf_instance_id=conf.NEF_PROFILE.nf_instance_id,
+        #subscr_cond=sub_cond,
+        req_nf_type="NEF"
+    )
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.post(
             f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/subscriptions",
             headers={
-                'Accept': 'application/json,application/problem+json',
-                'Content-Type': 'application/json-patch+json'
+                'accept': 'application/json,application/problem+json',
+                'content-type': 'application/json-patch+json'
                 },
-            data = ""
+            data = json.dumps(sub)
         )
+        print(response.headers)
         print(response.text)
-    return 1
+        if response.status_code == httpx.codes.CREATED:
+            res = subscriptionData.subscription_data_insert(sub, response.headers['location'])
+            if not res:
+                return httpx.codes.INTERNAL_SERVER_ERROR
+    return response.status_code
 
 async def nf_status_unsubscribe(subId):
     async with httpx.AsyncClient(http1=False, http2=True) as client:
-            response = await client.patch(
+            response = await client.delete(
                 f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/subscriptions/{subId}",
                 headers={
                     'Accept': 'application/json,application/problem+json',

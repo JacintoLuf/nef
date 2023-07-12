@@ -25,6 +25,9 @@ async def startup():
     res = await nrf_handler.nf_register()
     if res.status_code == httpx.codes.CREATED:
         await nrf_heartbeat()
+    res = await nrf_handler.nf_status_subscribe()
+    if res != httpx.codes.CREATED:
+        print("NF status nootify failed")
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
 async def nrf_heartbeat():
@@ -40,9 +43,9 @@ async def read_root():
     insts = await nfProfile.get_all()
     return {'nfs instances': str(insts)}
 
-@app.post("/nnef-callback/notification/subscription")
+@app.post("/nfStatusNotification")
 async def nrf_notif(notif):
-    print("--------------------------smf callback notif-------------------------")
+    print("--------------------------nrf callback notif-------------------------")
     print(type(notif))
     print(notif)
     #notif_data = notif.json()
@@ -114,7 +117,7 @@ async def ti_create(afId: str):
 
 @app.post("/pcf-policy-authorization-callback")
 async def pcf_callback(data):
-    print("-------------------------callback msg--------------------")
+    print("-------------------------smf callback msg--------------------")
     print(data)
     return 200
 

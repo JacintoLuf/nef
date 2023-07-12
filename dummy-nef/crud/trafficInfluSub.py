@@ -11,7 +11,7 @@ async def traffic_influence_subscription_get(afId: str, subId: str=None):
         return doc or None
     else:
         docs = []
-        for doc in await collection.find({'afId': afId}):
+        async for doc in collection.find({'afId': afId}):
             docs.append(doc)
         return docs or None
 
@@ -45,6 +45,12 @@ async def individual_traffic_influence_subscription_update(afId: str, subId: str
 
 async def individual_traffic_influence_subscription_delete(afId: str, subId: str=None):
     collection = db["traffic_influ_sub"]
+    n = await collection.count_documents({})
     if afId and subId:
-        result = await collection.delete_one({'_id': subId, 'sub': {'af_service_id': afId}})
-    return result
+        try:
+            result = await collection.delete_one({'_id': subId, 'sub': {'af_service_id': afId}})
+            return n - await collection.count_documents({})
+        except Exception as e:
+            print(e)
+            return -1
+    return -1
