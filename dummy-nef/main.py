@@ -126,7 +126,7 @@ async def pcf_callback(data):
 
 # @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 # async def ti_get(afId: str):
-@app.get("ti_get")
+@app.get("/ti_get")
 async def ti_get():
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
     #res code: 200
