@@ -1,7 +1,7 @@
 import httpx
 import json
-import api.sbi_req
 from api.config import conf
+from session import async_db
 from models.nf_profile import NFProfile
 from models.subscription_data import SubscriptionData
 from models.subscr_cond import SubscrCond
@@ -12,7 +12,8 @@ async def nrf_discovery():
     uuids = []
     instances = []
     profiles = []
-
+    collection = async_db['nf_instances']
+    collection.delete_many({})
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
             f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances",

@@ -4,7 +4,7 @@ from models.traffic_influ_sub import TrafficInfluSub
 from models.traffic_influ_sub_patch import TrafficInfluSubPatch
 
 
-async def traffic_influence_subscription_get(afId: str, subId: str=None):
+async def traffic_influence_subscription_get(afId: str=None, subId: str=None):
     collection = db["traffic_influ_sub"]
     if subId:
         doc = await collection.find_one({'_id': subId, 'afId': afId})

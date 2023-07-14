@@ -27,7 +27,7 @@ async def startup():
         await nrf_heartbeat()
     res = await nrf_handler.nf_status_subscribe()
     if res != httpx.codes.CREATED:
-        print("NF status nootify failed")
+        print("NF status notify failed")
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
 async def nrf_heartbeat():
