@@ -62,7 +62,7 @@ async def ti_get(afId: str):
 # @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 # async def ti_create(afId, data: Request):
 @app.get("/ti_create")
-async def ti_create(afId: str):
+async def ti_create(afId: str=None):
     if not afId:
         afId = "default"
     # try:
