@@ -14,7 +14,7 @@ async def bsf_management_discovery(sub: TrafficInfluSub=None):
     print(conf.HOSTS['BSF'][0])
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(
-                f"http://{conf.HOSTS['BSF'][0]}:7777/nbsf-management/v1/pcfBindings",
+                url=f"http://{conf.HOSTS['BSF'][0]}:7777/nbsf-management/v1/pcfBindings",
                 headers={'Accept': 'application/json,application/problem+json'},
                 params=params
             )
