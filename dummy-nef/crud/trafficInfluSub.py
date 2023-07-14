@@ -11,7 +11,8 @@ async def traffic_influence_subscription_get(afId: str, subId: str=None):
         return doc or None
     else:
         docs = []
-        async for doc in collection.find({'afId': afId}):
+        #async for doc in collection.find({'afId': afId}):
+        async for doc in collection.find({}):
             docs.append(doc)
         return docs or None
 

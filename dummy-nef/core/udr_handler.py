@@ -1,43 +1,30 @@
 import httpx
-from models.traffic_influ_sub import TrafficInfluSub
 from api.config import conf
-from session import db
+from models.traffic_influ_sub import TrafficInfluSub
 
-async def udr_data_retrieval(sub: TrafficInfluSub) -> int:
-
-    params = {}
-    print("------------------------------subs data------------------------------")
+async def udr_app_data_retrieval(loc: str=None):
+    uri = loc or f"http://{conf.HOSTS['UDR'][0]}:7777/nudr-dr/v1/application-data/influenceData"
+    #params = {'dnn': "", 'snssai': '', 'internal-Group-Id': '', 'supi': ''}
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(
-                "http://"+conf.HOSTS["UDR"][0]+":7777/nudr-dr/v1/subscription-data",
+                uri,
                 headers={'Accept': 'application/json,application/problem+json'},
-                params=params
-            )
-            print(response.text)
-    print("------------------------------policy data------------------------------")
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-            response = await client.get(
-                "http://"+conf.HOSTS["UDR"][0]+":7777/nudr-dr/v1/policy-data/bdt-data",
-                headers={'Accept': 'application/json,application/problem+json'},
-                params=params
-            )
-            print(response.text)
-    print("------------------------------exposure data------------------------------")
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-            response = await client.get(
-                "http://"+conf.HOSTS["UDR"][0]+":7777/nudr-dr/v1/exposure-data",
-                headers={'Accept': 'application/json,application/problem+json'},
-                params=params
-            )
-            print(response.text)
-    print("------------------------------app data------------------------------")
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-            response = await client.post(
-                "http://"+conf.HOSTS["UDR"][0]+":7777/nudr-dr/v1/application-data/influenceData",
-                headers={'Accept': 'application/json,application/problem+json'},
-                params=params
+                #params=params
             )
             print(response.headers)
             print(response.text)
 
     return response.status_code
+
+async def udr_app_data_insert(sub: TrafficInfluSub):
+
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+            response = await client.put(
+                f"http://{conf.HOSTS['UDR'][0]}:7777/nudr-dr/v1/application-data/influenceData",
+                headers={'Accept': 'application/json,application/problem+json'},
+                data=sub
+            )
+            print(response.headers)
+            print(response.text)
+            
+    return {'doc': response.json(), 'location': response.headers['location']}

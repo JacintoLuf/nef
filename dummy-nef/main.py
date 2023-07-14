@@ -86,15 +86,18 @@ async def ti_create(afId: str):
     if not ((traffic_sub.ipv4_addr is not None)^(traffic_sub.ipv6_addr is not None)^(traffic_sub.mac_addr is not None)^(traffic_sub.gpsi is not None)^(traffic_sub.external_group_id is not None)^(traffic_sub.any_ue_ind)):
         print(f"ipv4: {type(traffic_sub.ipv4_addr)}, any ue: {type(traffic_sub.any_ue_ind)}")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr, macAddr, gpsi, externalGroupId or anyUeInd")
-    if traffic_sub.any_ue_ind == True:
-        if not traffic_sub.dnn or traffic_sub.snssai:
-            raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
-        udr_handler
-        return Response(status_code=httpx.codes.BAD_REQUEST)
-    elif traffic_sub.gpsi:
-        print
-    elif traffic_sub.external_group_id:
-        print
+    
+    # if traffic_sub.any_ue_ind == True:
+    #     if not traffic_sub.dnn or traffic_sub.snssai:
+    #         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
+    #     res = await udr_handler.udr_app_data_insert(traffic_sub)
+    #     return Response(status_code=httpx.codes.BAD_REQUEST)
+    # elif traffic_sub.gpsi:
+    #     #udm_handler translate to supi and assign in traffic_sub
+    #     res = await udr_handler.udr_app_data_insert(traffic_sub)
+    # elif traffic_sub.external_group_id:
+    #     #udm_handler translate to internal group id and assign in traffic_sub
+    #     res = await udr_handler.udr_app_data_insert(traffic_sub)
 
     response = await bsf_handler.bsf_management_discovery(traffic_sub)
     if response['code'] != httpx.codes.OK:
@@ -121,11 +124,13 @@ async def pcf_callback(data):
     print(data)
     return 200
 
-@app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
-async def ti_get(afId: str):
+# @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
+# async def ti_get(afId: str):
+@app.get("ti_get")
+async def ti_get():
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
     #res code: 200
-    res = await trafficInfluSub.traffic_influence_subscription_get(afId=afId)
+    res = await trafficInfluSub.traffic_influence_subscription_get()
     return Response(status_code=httpx.codes.OK, content=res, headers={'content-type': 'application/json'})
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")

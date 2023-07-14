@@ -24,7 +24,7 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
 async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_influ_sub: TrafficInfluSub=None):
     host_addr = binding.pcf_ip_end_points[0].ipv4_address or conf.HOSTS['PCF'][0]
 
-    req_data = AppSessionContextReqData(slice_info=traffic_influ_sub.snssai)
+    req_data = AppSessionContextReqData()
     for attr_name in traffic_influ_sub.attribute_map.keys():
         attr_val = getattr(traffic_influ_sub, attr_name)
         if attr_name == 'ipv4_addr':
