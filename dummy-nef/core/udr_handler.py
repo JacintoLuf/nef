@@ -1,4 +1,5 @@
 import httpx
+import json
 from api.config import conf
 from models.traffic_influ_sub import TrafficInfluSub
 
@@ -22,7 +23,7 @@ async def udr_app_data_insert(sub: TrafficInfluSub):
             response = await client.put(
                 f"http://{conf.HOSTS['UDR'][0]}:7777/nudr-dr/v1/application-data/influenceData",
                 headers={'Accept': 'application/json,application/problem+json'},
-                data=sub
+                data=json.dumps(sub.to_dict())
             )
             print(response.headers)
             print(response.text)

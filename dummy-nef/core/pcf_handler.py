@@ -1,6 +1,5 @@
 import json
 import httpx
-from typing import List
 from api.config import conf
 from models.app_session_context import AppSessionContext
 from models.app_session_context_req_data import AppSessionContextReqData
@@ -64,23 +63,23 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
     print(app_session_context)
     print("---------------------------------------------")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
-            response = await client.post(
-                f"http://{host_addr}:7777/npcf-policyauthorization/v1/app-sessions",
-                headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
-                data=json.dumps(app_session_context.to_dict())
-            )
-            print(response.headers)
-            print(response.status_code)
-            print(response.text)
+        response = await client.post(
+            f"http://{host_addr}:7777/npcf-policyauthorization/v1/app-sessions",
+            headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
+            data=json.dumps(app_session_context.to_dict())
+        )
+        print(response.headers)
+        print(response.status_code)
+        print(response.text)
     return response
 
 async def pcf_policy_authorization_delete(subId: str=None):
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
-            response = await client.post(
-                f"http://{conf.HOSTS['PCF'][0]}:7777/npcf-policyauthorization/v1/app-sessions/{subId}/delete",
-                headers={'Accept': 'application/json,application/problem+json'},
-            )
-            print(response.text)
+        response = await client.post(
+            f"http://{conf.HOSTS['PCF'][0]}:7777/npcf-policyauthorization/v1/app-sessions/{subId}/delete",
+            headers={'Accept': 'application/json,application/problem+json'},
+        )
+        print(response.text)
 
     return {'code': response.status_code, 'response': response.json()}

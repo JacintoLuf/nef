@@ -103,7 +103,7 @@ async def nf_status_subscribe():
                 'accept': 'application/json,application/problem+json',
                 'content-type': 'application/json-patch+json'
                 },
-            data = json.dumps(sub)
+            data=json.dumps(sub.to_dict())
         )
         print(response.headers)
         print(response.text)
@@ -115,12 +115,12 @@ async def nf_status_subscribe():
 
 async def nf_status_unsubscribe(subId):
     async with httpx.AsyncClient(http1=False, http2=True) as client:
-            response = await client.delete(
-                f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/subscriptions/{subId}",
-                headers={
-                    'Accept': 'application/json,application/problem+json',
-                    'Content-Type': 'application/json-patch+json'
-                    }
-            )
-            print(response.text)
+        response = await client.delete(
+            f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/subscriptions/{subId}",
+            headers={
+                'Accept': 'application/json,application/problem+json',
+                'Content-Type': 'application/json-patch+json'
+                }
+        )
+        print(response.text)
     return 1
