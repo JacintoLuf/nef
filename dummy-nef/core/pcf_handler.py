@@ -52,7 +52,7 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
             addr_preser_ind=traffic_influ_sub.addr_preser_ind,
         )
     
-    if traffic_influ_sub.af_app_id:
+    if not traffic_influ_sub.af_app_id:
         med_sub_cmp = {}
         for idx, f in enumerate(traffic_influ_sub.traffic_filters):
             med_sub_cmp[f"{idx}"] = MediaSubComponent(f_num=f.flow_id, f_descs=f.flow_descriptions)
