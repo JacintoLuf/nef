@@ -102,7 +102,7 @@ class Settings():
             if profile.nf_type in self.HOSTS:
                 self.HOSTS[profile.nf_type].append(profile.ipv4_addresses)
             else:
-                self.HOSTS[profile.nf_type] = [profile.ipv4_addresses]
+                self.HOSTS[profile.nf_type] = profile.ipv4_addresses
                 
     def create_sub(self):
         snssai = Snssai(sst=1, sd="111111")
