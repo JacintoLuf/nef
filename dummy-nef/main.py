@@ -131,7 +131,7 @@ async def ti_get():
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
     #res code: 200
     res = await trafficInfluSub.traffic_influence_subscription_get()
-    return Response(status_code=httpx.codes.OK, content=res)
+    return {'content': res}
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_get(afId: str, subId: str):
