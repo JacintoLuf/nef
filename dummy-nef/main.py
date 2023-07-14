@@ -157,7 +157,7 @@ async def ti_patch(afId, subId, data: Request):
 @app.delete("/delete_ti/{id}")
 async def delete_ti(id: str):
     res = await  pcf_handler.pcf_policy_authorization_delete(id)
-    return res
+    return Response(status_code=res['code'])
     
 @app.delete("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_delete(afId: str, subId: str):
