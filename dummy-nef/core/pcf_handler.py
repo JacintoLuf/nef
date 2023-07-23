@@ -56,7 +56,7 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
         med_sub_cmp = {}
         for idx, f in enumerate(traffic_influ_sub.traffic_filters):
             med_sub_cmp[f"{idx}"] = MediaSubComponent(f_num=f.flow_id, f_descs=f.flow_descriptions)
-        req_data.med_components = {'traffic influ': MediaComponent(af_rout_req=rout_req, med_comp_n=1, f_status="ENABLED", med_type="VIDEO", med_sub_comps=med_sub_cmp)}
+        req_data.med_components = {'med_comp_1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, f_status="ENABLED", med_type="AUDIO", med_sub_comps=med_sub_cmp)}
     req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
 

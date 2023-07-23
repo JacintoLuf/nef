@@ -11,7 +11,12 @@ db = client["nef"]
 
 def clean_db():
     collections = ['traffic_influ_sub']
-    for i in collections:
-        print(f"cleaning {i} collection docs")
-        async_db[i].delete_many({})
-    print("Database cleaned.")
+    try:
+        for i in collections:
+            print(f"cleaning {i} collection docs")
+            async_db[i].delete_many({})
+        print("Database cleaned.")
+        return True
+    except Exception as e:
+        print("Error cleaning database!")
+        return False

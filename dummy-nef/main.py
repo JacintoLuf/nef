@@ -171,8 +171,11 @@ async def ti_delete(afId: str, subId: str):
 
 @app.get("/clean")
 async def clean():
-    clean_db()
-    return Response(status_code=204) 
+    res = clean_db()
+    if res:
+        return {"result": "Database cleaned."}
+    else:
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Error cleaning database!")
 
 async def qos_create():
     traffic_sub = influ_sub

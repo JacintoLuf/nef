@@ -1,4 +1,6 @@
 from secrets import token_bytes
+from pymongo.errors import DuplicateKeyError
+import uuid
 from session import async_db as db
 from models.traffic_influ_sub import TrafficInfluSub
 from models.traffic_influ_sub_patch import TrafficInfluSubPatch
@@ -18,9 +20,14 @@ async def traffic_influence_subscription_get(afId: str=None, subId: str=None):
 
 async def traffic_influence_subscription_insert(afId: str, sub: TrafficInfluSub, location: str):
     collection = db["traffic_influ_sub"]
-    subId = token_bytes(16)
+    subId = str(uuid.uuid4().hex)
     document = {'_id': subId, 'afId': afId, 'sub': sub.to_dict(), 'location': location}
     try:
+        result = await collection.insert_one(document)
+        print(result.inserted_id)
+        return result.inserted_id
+    except DuplicateKeyError as e:
+        document['_id'] = str(uuid.uuid4().hex)
         result = await collection.insert_one(document)
         print(result.inserted_id)
         return result.inserted_id
