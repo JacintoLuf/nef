@@ -109,7 +109,7 @@ async def ti_create(afId: str=None):
     if response.status_code == httpx.codes.CREATED:
         sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, response.headers['location'])
         if sub_id:
-            traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{traffic_sub}/subscriptions/{sub_id}"
+            traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{afId}/subscriptions/{sub_id}"
             headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
             return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
         else:
