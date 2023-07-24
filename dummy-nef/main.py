@@ -154,7 +154,7 @@ async def ti_patch(afId, subId, data: Request):
     res = await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=data.json(), partial=True)
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
-@app.get("/delete_ti/{id}")
+@app.delete("/delete_ti/{id}")
 async def delete_ti(id: str):
     res = await  pcf_handler.pcf_policy_authorization_delete(id)
     return Response(status_code=res['code'])
