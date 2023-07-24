@@ -80,6 +80,7 @@ async def pcf_policy_authorization_delete(subId: str=None):
             f"http://{conf.HOSTS['PCF'][0]}:7777/npcf-policyauthorization/v1/app-sessions/{subId}/delete",
             headers={'Accept': 'application/json,application/problem+json'},
         )
+        print(response.status_code)
         print(response.text)
 
-    return {'code': response.status_code, 'response': response.json()}
+    return {'code': response.status_code, 'response': response.text}
