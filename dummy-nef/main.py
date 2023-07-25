@@ -132,6 +132,8 @@ async def ti_get():
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
     #res code: 200
     res = await trafficInfluSub.traffic_influence_subscription_get()
+    if not res:
+        return {'subs': [], 'context': []}
     context = []
     for i in res:
         r :httpx.Response = await get_req(i['location'], conf.GLOBAL_HEADERS)
@@ -175,7 +177,7 @@ async def delete_ti(subId: str):
             print("Context not found!")
             res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
             if res > 0:
-                return Response(status_code=httpx.codes.NO_CONTENT, content="The subscription was terminated successfully.")
+                return Response(status_code=httpx.codes.NO_CONTENT)
     raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
     
 @app.delete("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
@@ -186,7 +188,7 @@ async def ti_delete(afId: str, subId: str):
     print(res)
     res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
     print(res)
-    return Response(status_code=httpx.codes.NO_CONTENT, content="The subscription was terminated successfully.")
+    return Response(status_code=httpx.codes.NO_CONTENT)
 
 @app.get("/clean")
 async def clean():
