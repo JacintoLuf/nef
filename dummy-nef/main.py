@@ -123,7 +123,7 @@ async def ti_create(afId: str=None):
 async def pcf_callback(data):
     print("-------------------------smf callback msg--------------------")
     print(data)
-    return 200
+    return httpx.codes.OK
 
 # @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 # async def ti_get(afId: str):
