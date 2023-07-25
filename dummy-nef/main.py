@@ -171,6 +171,9 @@ async def delete_ti(subId: str):
         res :httpx.Response = await get_req(res['location'])
         if res.status_code == httpx.codes.OK:
             res = await pcf_handler.pcf_policy_authorization_delete(contextId)
+        else:
+            print("Context not found!")
+            res = trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
     return Response(status_code=res.status_code)
     
 @app.delete("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")

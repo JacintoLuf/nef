@@ -32,7 +32,6 @@ async def nrf_discovery():
             res = await nfProfile.insert_one(response.json())
             instances.append(response.json())
     conf.set_nf_endpoints(profiles)
-    # res = await nfProfile.insert_many(instances)
     return 1
 
 async def nf_register():
@@ -94,7 +93,8 @@ async def nf_status_subscribe():
     sub = SubscriptionData(
         nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}:80/nfStatusNotification",
         req_nf_instance_id=conf.NEF_PROFILE.nf_instance_id,
-        #subscr_cond=sub_cond,
+        subscr_cond=sub_cond,
+        req_notif_events=['NF_REGISTERED','NF_PROFILE_CHANGED','NF_DEREGISTERED'],
         req_nf_type="NEF"
     )
     async with httpx.AsyncClient(http1=False, http2=True) as client:
@@ -111,7 +111,7 @@ async def nf_status_subscribe():
         if response.status_code == httpx.codes.CREATED:
             res = subscriptionData.subscription_data_insert(sub, response.headers['location'])
             if not res:
-                return httpx.codes.INTERNAL_SERVER_ERROR
+                print("NF status not subscribed")
     return response.status_code
 
 async def nf_status_unsubscribe(subId):
