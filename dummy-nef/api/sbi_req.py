@@ -17,6 +17,8 @@ async def post_req(url, headers=None, data=None):
             headers=headers,
             data=data
         )
+        print(response.headers)
+        print(response.text)
     return response
 
 async def put_req(url, headers=None, data=None):
@@ -26,6 +28,8 @@ async def put_req(url, headers=None, data=None):
             headers=headers,
             data=data
         )
+        print(response.headers)
+        print(response.text)
     return response
 
 async def patch_req(url, headers=None, data=None):
@@ -35,6 +39,8 @@ async def patch_req(url, headers=None, data=None):
             headers=headers,
             data=data
         )
+        print(response.headers)
+        print(response.text)
     return response
 
 
@@ -45,4 +51,6 @@ async def delete_req(url, headers=None, data=None):
             headers=headers,
             data=data
         )
+        print(response.headers)
+        print(response.text)
     return response
