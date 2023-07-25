@@ -73,25 +73,6 @@ class Settings():
             ipv4_addresses=self.HOSTS["NEF"]
         )
 
-        self.SUB_TEMP = TrafficInfluSub(
-            af_service_id="24caa907-f1ba-4e29-8a78-f9728dd45d83",
-            #af_app_id="udp-server1",
-            af_trans_id="1",
-            #app_relo_ind=False,
-            dnn="internet",
-            snssai= Snssai(sst=1, sd="111111"),
-            any_ue_ind=False,
-            subscribed_events="UP_PATH_CHANGE",
-            ipv4_addr="10.45.0.2",
-            dnai_chg_type="EARLY_LATE",
-            notification_destination=f"http://{self.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback",
-            #traffic_filters="",
-            traffic_routes=[RouteToLocation(dnai="1-111111", route_info=RouteInformation(ipv4_addr="10.255.32.132", port_number=80))],
-            #temp_validities=[temp_val],
-            addr_preser_ind=True,
-            supp_feat="InfluenceOnTrafficRouting"
-        )
-
     def set_new_api_uuid(self):
         self.API_UUID = str(uuid.uuid4())
        

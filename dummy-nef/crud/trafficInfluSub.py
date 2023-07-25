@@ -1,6 +1,5 @@
-from secrets import token_bytes
-from pymongo.errors import DuplicateKeyError
 import uuid
+from pymongo.errors import DuplicateKeyError
 from session import async_db as db
 from models.traffic_influ_sub import TrafficInfluSub
 from models.traffic_influ_sub_patch import TrafficInfluSubPatch
