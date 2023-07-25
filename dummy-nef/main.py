@@ -160,7 +160,7 @@ async def ti_patch(afId, subId, data: Request):
     res = await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=data.json(), partial=True)
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
-@app.delete("/delete_ti/{subId}")
+@app.get("/delete_ti/{subId}")
 async def delete_ti(subId: str):
     afId = "default"
     res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
@@ -173,7 +173,7 @@ async def delete_ti(subId: str):
             res = await pcf_handler.pcf_policy_authorization_delete(contextId)
         else:
             print("Context not found!")
-            res = trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
+            res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
     return Response(status_code=res.status_code)
     
 @app.delete("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
