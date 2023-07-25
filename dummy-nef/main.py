@@ -134,7 +134,7 @@ async def ti_get():
     res = await trafficInfluSub.traffic_influence_subscription_get()
     context = []
     for i in res:
-        r :httpx.Response = await get_req(i['location'])
+        r :httpx.Response = await get_req(i['location'], conf.GLOBAL_HEADERS)
         if r.status_code == httpx.codes.OK:
             context.append(r.json())
     return {'subs': res, 'context': context}
@@ -168,13 +168,15 @@ async def delete_ti(subId: str):
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
     else:
         contextId = res['location'].split('/')[-1]
-        res :httpx.Response = await get_req(res['location'])
+        res :httpx.Response = await get_req(res['location'], conf.GLOBAL_HEADERS)
         if res.status_code == httpx.codes.OK:
             res = await pcf_handler.pcf_policy_authorization_delete(contextId)
         else:
             print("Context not found!")
             res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
-    return Response(status_code=res.status_code)
+            if res > 0:
+                return Response(status_code=httpx.codes.NO_CONTENT, content="The subscription was terminated successfully.")
+    raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
     
 @app.delete("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_delete(afId: str, subId: str):
