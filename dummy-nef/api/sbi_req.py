@@ -6,6 +6,7 @@ async def get_req(url, headers=None):
             url=url,
             headers=headers
         )
+        print(response.headers)
         print(response.text)
     return response
 

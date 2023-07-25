@@ -55,7 +55,7 @@ async def individual_traffic_influence_subscription_delete(afId: str, subId: str
     n = await collection.count_documents({})
     if afId and subId:
         try:
-            result = await collection.delete_one({'_id': subId, 'sub': {'af_service_id': afId}})
+            result = await collection.delete_one({'_id': subId, 'afId': afId})
             return n - await collection.count_documents({})
         except Exception as e:
             print(e)
