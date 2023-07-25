@@ -5,6 +5,7 @@ from fastapi_utils.tasks import repeat_every
 from fastapi.responses import JSONResponse
 from session import async_db, clean_db
 from api.config import conf
+from api.sbi_req import *
 import core.nrf_handler as nrf_handler
 import core.bsf_handler as bsf_handler
 import core.pcf_handler as pcf_handler
@@ -131,7 +132,12 @@ async def ti_get():
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
     #res code: 200
     res = await trafficInfluSub.traffic_influence_subscription_get()
-    return {'content': res}
+    context = []
+    for i in res:
+        r :httpx.Response = await get_req(i['location'])
+        if r.status_code == httpx.codes.OK:
+            context.append(r.json())
+    return {'subs': res, 'context': context}
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_get(afId: str, subId: str):
@@ -154,10 +160,18 @@ async def ti_patch(afId, subId, data: Request):
     res = await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=data.json(), partial=True)
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
-@app.delete("/delete_ti/{id}")
-async def delete_ti(id: str):
-    res = await  pcf_handler.pcf_policy_authorization_delete(id)
-    return Response(status_code=res['code'])
+@app.delete("/delete_ti/{subId}")
+async def delete_ti(subId: str):
+    afId = "default"
+    res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
+    if not res:
+        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
+    else:
+        contextId = res['location'].split('/')[-1]
+        res :httpx.Response = await get_req(res['location'])
+        if res.status_code == httpx.codes.OK:
+            res = await pcf_handler.pcf_policy_authorization_delete(contextId)
+    return Response(status_code=res.status_code)
     
 @app.delete("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_delete(afId: str, subId: str):
