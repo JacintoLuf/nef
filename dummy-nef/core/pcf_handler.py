@@ -8,8 +8,6 @@ from models.app_session_context_req_data import AppSessionContextReqData
 from models.af_routing_requirement import AfRoutingRequirement
 from models.media_component import MediaComponent
 from models.media_sub_component import MediaSubComponent
-from models.events_notification import EventsNotification
-from models.af_event_notification import AfEventNotification
 
 async def pcf_policy_authorization_get(app_session_id: str=None):
     if app_session_id:
@@ -43,10 +41,10 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
         if hasattr(req_data, attr_name) and attr_val:
             setattr(req_data, attr_name, attr_val)
 
-    evts_notif = EventsNotification(ev_subs_uri=f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback") #----------
+    #evts_notif = EventsNotification(ev_subs_uri=f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback") #----------
     req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback"
 
-    req_data.supp_feat = "FFFFFF"
+    req_data.supp_feat = "1"
     rout_req = AfRoutingRequirement(
             app_reloc=not traffic_influ_sub.app_relo_ind,
             route_to_locs=traffic_influ_sub.traffic_routes,
@@ -63,8 +61,8 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
         req_data.med_components = {'med_comp_1': MediaComponent(af_rout_req=rout_req, med_comp_n=1, f_status="ENABLED", med_type="AUDIO", med_sub_comps=med_sub_cmp)}
     req_data.af_rout_req = rout_req
 
-    evts_notif.ev_notifs = [AfEventNotification(event="QOS_NOTIF"), AfEventNotification(event="QOS_MONITORING"), AfEventNotification(event="SUCCESSFUL_RESOURCES_ALLOCATION")] #------------
-    app_session_context = AppSessionContext(asc_req_data=req_data, evs_notif=evts_notif)
+    #evts_notif.ev_notifs = [AfEventNotification(event="QOS_NOTIF"), AfEventNotification(event="QOS_MONITORING"), AfEventNotification(event="SUCCESSFUL_RESOURCES_ALLOCATION")] #------------
+    app_session_context = AppSessionContext(asc_req_data=req_data)
 
     print(app_session_context)
     print("---------------------------------------------")
