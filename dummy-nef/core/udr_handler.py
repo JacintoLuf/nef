@@ -28,4 +28,4 @@ async def udr_app_data_insert(sub: TrafficInfluSub):
             print(response.headers)
             print(response.text)
             
-    return {'doc': response.json(), 'location': response.headers['location']}
+    return response

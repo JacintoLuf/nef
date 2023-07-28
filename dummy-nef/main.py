@@ -87,28 +87,38 @@ async def ti_create(afId: str=None):
     if not ((traffic_sub.ipv4_addr is not None)^(traffic_sub.ipv6_addr is not None)^(traffic_sub.mac_addr is not None)^(traffic_sub.gpsi is not None)^(traffic_sub.external_group_id is not None)^(traffic_sub.any_ue_ind)):
         print(f"ipv4: {type(traffic_sub.ipv4_addr)}, any ue: {type(traffic_sub.any_ue_ind)}")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr, macAddr, gpsi, externalGroupId or anyUeInd")
-    
+    #---------------------------------------------------
     # if traffic_sub.any_ue_ind == True:
     #     if not traffic_sub.dnn or traffic_sub.snssai:
     #         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
-    #     res = await udr_handler.udr_app_data_insert(traffic_sub)
-    #     return Response(status_code=httpx.codes.BAD_REQUEST)
+    #     res :httpx.Response = await udr_handler.udr_app_data_insert(traffic_sub)
+    #     if res.status_code == httpx.codes.CREATED:
+    #         sub_id = trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
+    #         if sub_id:
+    #             traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{afId}/subscriptions/{sub_id}"
+    #             headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
+    #             return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
+    #         else:
+    #             print("Server error")
+    #             raise HTTPException(status_code=500, detail="Error creating resource")
+    #     else:
+    #         raise HTTPException(status_code=500, detail="Error creating resource")
     # elif traffic_sub.gpsi:
-    #     #udm_handler translate to supi and assign in traffic_sub
+    #     supi = udm_handler.udm_sdm_id_translation(traffic_sub.gpsi)
     #     res = await udr_handler.udr_app_data_insert(traffic_sub)
     # elif traffic_sub.external_group_id:
     #     #udm_handler translate to internal group id and assign in traffic_sub
     #     res = await udr_handler.udr_app_data_insert(traffic_sub)
-
-    response = await bsf_handler.bsf_management_discovery(traffic_sub)
-    if response['code'] != httpx.codes.OK:
+    #---------------------------------------------------
+    res = await bsf_handler.bsf_management_discovery(traffic_sub)
+    if res['code'] != httpx.codes.OK:
         print("No binding")
-        raise HTTPException(status_code=response['code'], detail="No session found")
-    pcf_binding = PcfBinding.from_dict(response['response'])
+        raise HTTPException(status_code=res['code'], detail="No session found")
+    pcf_binding = PcfBinding.from_dict(res['response'])
     
-    response = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
-    if response.status_code == httpx.codes.CREATED:
-        sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, response.headers['location'])
+    res = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
+    if res.status_code == httpx.codes.CREATED:
+        sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
         if sub_id:
             traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{afId}/subscriptions/{sub_id}"
             headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
@@ -117,7 +127,7 @@ async def ti_create(afId: str=None):
             print("Server error")
             return Response(status_code=500, content="Error creating resource")
     
-    return response.status_code
+    return res.status_code
 
 @app.post("/pcf-policy-authorization-callback")
 async def pcf_callback(data):

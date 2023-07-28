@@ -17,7 +17,6 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
                 headers={'Accept': 'application/json,application/problem+json'}
             )
             print(response.text)
-            #app_session_context = AppSessionContext.from_dict(response.json())
         return response.json()
 
 async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_influ_sub: TrafficInfluSub=None):
