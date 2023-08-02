@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nef-mongodb-pv-volume
+spec:
+  capacity:
+    storage: 8Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nef-mongodb-pv-volume
+  hostPath:
+    path: /path/on/host
+    type: DirectoryOrCreate
