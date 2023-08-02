@@ -22,6 +22,7 @@ spec:
         env:
         - name: ME_CONFIG_MONGODB_SERVER
           value: "open5gs-mongodb"
+          #value: "mongo://open5gs-mongodb:27017"
         imagePullPolicy: Always
       restartPolicy: Always
 ---
