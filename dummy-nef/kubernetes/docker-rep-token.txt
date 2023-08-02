@@ -1,5 +1,0 @@
-dckr_pat_2UZCSvJEOSaCJ9HKli51DCSQ9Yg
-
-kubectl create secret docker-registry dockerhub-secret --docker-server=https://index.docker.io/v1/ --docker-username=jacintoluf \
- --docker-password=dckr_pat_2UZCSvJEOSaCJ9HKli51DCSQ9Yg --docker-email=jacinto.luf@ua.pt
-
