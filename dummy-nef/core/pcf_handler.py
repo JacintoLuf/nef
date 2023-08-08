@@ -41,9 +41,9 @@ async def pcf_policy_authorization_create(binding: PcfBinding=None, traffic_infl
             setattr(req_data, attr_name, attr_val)
 
     #evts_notif = EventsNotification(ev_subs_uri=f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback") #----------
-    req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback"
+    req_data.notif_uri = "http://10.102.141.12:80/pcf-policy-authorization-callback"
 
-    req_data.supp_feat = "1"
+    req_data.supp_feat = "3"
     rout_req = AfRoutingRequirement(
             app_reloc=not traffic_influ_sub.app_relo_ind,
             route_to_locs=traffic_influ_sub.traffic_routes,
@@ -85,4 +85,4 @@ async def pcf_policy_authorization_delete(subId: str=None):
         print(response.status_code)
         print(response.text)
 
-    return {'code': response.status_code, 'response': response.text}
+    return response

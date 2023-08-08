@@ -180,10 +180,10 @@ async def delete_ti(subId: str):
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
     else:
         contextId = res['location'].split('/')[-1]
-        res :httpx.Response = await get_req(res['location'], conf.GLOBAL_HEADERS)
-        if res.status_code == httpx.codes.OK:
-            res = await pcf_handler.pcf_policy_authorization_delete(contextId)
-        else:
+        # res :httpx.Response = await get_req(res['location'], conf.GLOBAL_HEADERS)
+        # if res.status_code == httpx.codes.OK:
+        res = await pcf_handler.pcf_policy_authorization_delete(contextId)
+        if res.status_code != httpx.codes.NO_CONTENT:
             print("Context not found!")
             res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
             if res > 0:
