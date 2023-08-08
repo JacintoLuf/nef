@@ -19,7 +19,7 @@ def create_sub():
         dnn="internet",
         any_ue_ind=False,
         subscribed_events="UP_PATH_CHANGE",
-        ipv4_addr="10.45.0.2",
+        ipv4_addr="10.45.0.3",
         notification_destination=f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback",
         traffic_filters=[flow_info],
         request_test_notification=True,
