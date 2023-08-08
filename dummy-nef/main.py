@@ -188,7 +188,7 @@ async def delete_ti(subId: str):
 
         res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
         print(f"deleting traffic influence docs response: {res}")
-        if res:
+        if res == 1:
             return Response(status_code=httpx.codes.NO_CONTENT)
     raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
     

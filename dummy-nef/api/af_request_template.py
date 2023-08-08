@@ -9,7 +9,7 @@ from models.snssai import Snssai
 def create_sub():
     route_info = RouteInformation(ipv4_addr="10.255.32.132", port_number=80)
     route_to_loc = RouteToLocation(dnai="internet", route_info=route_info)
-    flow_info = FlowInfo(flow_id=1, flow_descriptions=["permit out 17 from 10.45.0.2 to 10.255.32.132 80", "permit in 17 from any to 10.45.0.0/16"])
+    flow_info = FlowInfo(flow_id=1, flow_descriptions=["permit out 17 from 10.45.0.3 to 10.255.32.132 80", "permit in 17 from any to 10.45.0.0/16"])
 
     traffic_influ = TrafficInfluSub(
         #af_service_id="24caa907-f1ba-4e29-8a78-f9728dd45d83",
