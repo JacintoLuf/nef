@@ -59,5 +59,5 @@ async def individual_traffic_influence_subscription_delete(afId: str, subId: str
             return n - await collection.count_documents({})
         except Exception as e:
             print(e)
-            return -1
-    return -1
+            return None
+    return None

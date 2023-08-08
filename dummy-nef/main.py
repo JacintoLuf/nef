@@ -185,9 +185,11 @@ async def delete_ti(subId: str):
         res = await pcf_handler.pcf_policy_authorization_delete(contextId)
         if res.status_code != httpx.codes.NO_CONTENT:
             print("Context not found!")
-            res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
-            if res > 0:
-                return Response(status_code=httpx.codes.NO_CONTENT)
+
+        res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
+        print(f"deleting traffic influence docs response: {res}")
+        if res:
+            return Response(status_code=httpx.codes.NO_CONTENT)
     raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
     
 @app.delete("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
