@@ -5,17 +5,18 @@ from models.route_to_location import RouteToLocation
 from models.route_information import RouteInformation
 from models.flow_info import FlowInfo
 from models.snssai import Snssai
+from models.as_session_with_qo_s_subscription import AsSessionWithQoSSubscription
+from models.tsc_qos_requirement import TscQosRequirement
+
 
 def create_sub():
     route_info = RouteInformation(ipv4_addr="10.255.32.132", port_number=80)
     route_to_loc = RouteToLocation(dnai="internet", route_info=route_info)
-    flow_info = FlowInfo(flow_id=1, flow_descriptions=["permit out 17 from 10.45.0.3 to 10.255.32.132 80", "permit in 17 from any to 10.45.0.0/16"])
+    flow_info = FlowInfo(flow_id=1,
+                        flow_descriptions=["permit out 17 from 10.45.0.3 to 10.255.32.132 80", "permit in 17 from 10.255.32.132 to 10.45.0.3"])
 
     traffic_influ = TrafficInfluSub(
-        #af_service_id="24caa907-f1ba-4e29-8a78-f9728dd45d83",
-        #af_app_id="udp-server1",
         af_trans_id="1",
-        #app_relo_ind=False,
         dnn="internet",
         any_ue_ind=False,
         subscribed_events="UP_PATH_CHANGE",
@@ -25,6 +26,7 @@ def create_sub():
         request_test_notification=True,
         traffic_routes=[route_to_loc],
         addr_preser_ind=True,
+        supp_feat="f",
     )
     return traffic_influ
 
@@ -32,11 +34,11 @@ def create_sub2():
     snssai = Snssai(sst=1, sd="0x111111")
     route_info = RouteInformation(ipv4_addr="10.255.32.132", port_number=80)
     route_to_loc = RouteToLocation(dnai="internet", route_info=route_info)
-    flow_info = FlowInfo(flow_id=10, flow_descriptions=["permit out 17 from any to 10.255.32.132 80", "permit in 17 from any to 10.45.0.0/16"])
+    flow_info = FlowInfo(flow_id=10,
+                         flow_descriptions=["permit out 17 from any to 10.255.32.132 80", "permit in 17 from 10.255.32.132 to 10.45.0.0/16"])
     
     traffic_influ = TrafficInfluSub(
         af_trans_id="2",
-        #app_relo_ind=False,
         dnn="internet",
         snssai=snssai,
         any_ue_ind=True,
@@ -46,8 +48,52 @@ def create_sub2():
         request_test_notification=True,
         traffic_routes=[route_to_loc],
         addr_preser_ind=True,
+        supp_feat="f",
     )
     return traffic_influ
 
+def create_sub3():
+    snssai = Snssai(sst=1, sd="0x111111")
+    flow_info = FlowInfo(flow_id=10,
+                         flow_descriptions=["permit out 17 from any to 10.255.32.132 80", "permit in 17 from 10.255.32.132 to 10.45.0.0/16"])
+    
+    qos_sub = AsSessionWithQoSSubscription(
+        dnn="internet",
+        snssai=snssai,
+        supported_features="18000",
+        notification_destination="http://10.102.141.12:80/pcf-policy-authorization-qos-callback",
+        flow_info=[flow_info],
+        qos_reference="",
+        alt_qo_s_references=[""],
+        ue_ipv4_addr="10.45.0.3",
+        tsc_qos_req=TscQosRequirement(req_gbr_dl=100000000,
+                                      req_gbr_ul=1000000,
+                                      req_mbr_dl=10000000,
+                                      req_mbr_ul=1000000,
+                                      max_tsc_burst_size=100000,
+                                      req5_gsdelay=3,
+                                      priority=1),
+    )
+    return qos_sub
+
+def create_sub4():
+    snssai = Snssai(sst=1, sd="0x111111")
+    flow_info = FlowInfo(flow_id=10,
+                         flow_descriptions=["permit out 17 from any to 10.255.32.132 80", "permit in 17 from 10.255.32.132 to 10.45.0.0/16"])
+
+    qos_sub = AsSessionWithQoSSubscription(
+        dnn="internet",
+        snssai=snssai,
+        supported_features="18000",
+        notification_destination="http://10.102.141.12:80/pcf-policy-authorization-qos-callback",
+        flow_info=[flow_info],
+        qos_reference="",
+        alt_qo_s_references=[""],
+        ue_ipv4_addr="10.45.0.3",
+        tsc_qos_req=TscQosRequirement(),
+    )
+
 influ_sub = create_sub()
 any_influ_sub = create_sub2()
+qos_subscription = create_sub3()
+any_qos_sub = create_sub4()

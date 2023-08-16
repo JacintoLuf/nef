@@ -6,15 +6,18 @@ from fastapi.responses import JSONResponse
 from session import async_db, clean_db
 from api.config import conf
 from api.sbi_req import *
+from models.pcf_binding import PcfBinding
+from models.traffic_influ_sub import TrafficInfluSub
+from models.as_session_with_qo_s_subscription import AsSessionWithQoSSubscription
 import core.nrf_handler as nrf_handler
 import core.bsf_handler as bsf_handler
 import core.pcf_handler as pcf_handler
 import core.udm_handler as udm_handler
 import core.udr_handler as udr_handler
-from models.pcf_binding import PcfBinding
-import crud.trafficInfluSub as trafficInfluSub
 import crud.nfProfile as nfProfile
-from api.af_request_template import influ_sub
+import crud.trafficInfluSub as trafficInfluSub
+import crud.asSessionWithQoSSub as asSessionWithQoSSub
+from api.af_request_template import influ_sub, any_influ_sub, qos_subscription, any_qos_sub
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
@@ -29,6 +32,9 @@ async def startup():
     res = await nrf_handler.nf_status_subscribe()
     if res != httpx.codes.CREATED:
         print("NF status notify failed")
+    res = await nrf_handler.nrf_get_access_token()
+    if res != httpx.codes.OK:
+        print("Tokens denied")
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
 async def nrf_heartbeat():
@@ -53,16 +59,29 @@ async def nrf_notif(notif):
     #res = await nrf_handler.nf_update(notif_data)
     return Response(status_code=httpx.codes.NO_CONTENT)
 
-@app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
-async def ti_get(afId: str):
-    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions
-    #res code: 200
-    res = await trafficInfluSub.traffic_influence_subscription_get(afId=afId)
-    return Response(status_code=httpx.codes.OK, content={'TrafficInfluSubs': res})
+# @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
+@app.get("/get")
+async def ti_get():
+    res = await trafficInfluSub.traffic_influence_subscription_get()
+    if not res:
+        return {'subs': [], 'context': []}
+    context = []
+    for i in res:
+        r :httpx.Response = await get_req(i['location'], conf.GLOBAL_HEADERS)
+        if r.status_code == httpx.codes.OK:
+            context.append(r.json())
+    return {'subs': res, 'context': context}
+
+@app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
+async def ti_get(afId: str, subId: str=None):
+    res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
+    if not res:
+        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
+    return Response(content=res, status_code=httpx.codes.OK)
 
 # @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 # async def ti_create(afId, data: Request):
-@app.get("/ti_create")
+@app.get("/create")
 async def ti_create(afId: str=None):
     if not afId:
         afId = "default"
@@ -76,87 +95,61 @@ async def ti_create(afId: str=None):
     
     # if traffic_sub.tfc_corr_ind and not traffic_sub.external_group_id:
     #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
-    # if traffic_sub.af_app_id:
-    # elif traffic_sub.traffic_filters:
-    # elif traffic_sub.eth_traffic_filters:
     traffic_sub = influ_sub
-    print(traffic_sub)
     if not ((traffic_sub.af_app_id is not None)^(traffic_sub.traffic_filters is not None)^(traffic_sub.eth_traffic_filters is not None)):
         print(f"app id: {type(traffic_sub.af_app_id)}, traffic filters: {type(traffic_sub.traffic_filters)}, eth traffic filters: {type(traffic_sub.eth_traffic_filters)}")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of afAppId, trafficFilters or ethTrafficFilters")
     if not ((traffic_sub.ipv4_addr is not None)^(traffic_sub.ipv6_addr is not None)^(traffic_sub.mac_addr is not None)^(traffic_sub.gpsi is not None)^(traffic_sub.external_group_id is not None)^(traffic_sub.any_ue_ind)):
         print(f"ipv4: {type(traffic_sub.ipv4_addr)}, any ue: {type(traffic_sub.any_ue_ind)}")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr, macAddr, gpsi, externalGroupId or anyUeInd")
-    #---------------------------------------------------
-    # if traffic_sub.any_ue_ind == True:
-    #     if not traffic_sub.dnn or traffic_sub.snssai:
-    #         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
-    #     res :httpx.Response = await udr_handler.udr_app_data_insert(traffic_sub)
-    #     if res.status_code == httpx.codes.CREATED:
-    #         sub_id = trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
-    #         if sub_id:
-    #             traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{afId}/subscriptions/{sub_id}"
-    #             headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
-    #             return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
-    #         else:
-    #             print("Server error")
-    #             raise HTTPException(status_code=500, detail="Error creating resource")
-    #     else:
-    #         raise HTTPException(status_code=500, detail="Error creating resource")
-    # elif traffic_sub.gpsi:
-    #     supi = udm_handler.udm_sdm_id_translation(traffic_sub.gpsi)
-    #     res = await udr_handler.udr_app_data_insert(traffic_sub)
-    # elif traffic_sub.external_group_id:
-    #     #udm_handler translate to internal group id and assign in traffic_sub
-    #     res = await udr_handler.udr_app_data_insert(traffic_sub)
-    #---------------------------------------------------
-    res = await bsf_handler.bsf_management_discovery(traffic_sub)
-    if res['code'] != httpx.codes.OK:
-        print("No binding")
-        raise HTTPException(status_code=res['code'], detail="No session found")
-    pcf_binding = PcfBinding.from_dict(res['response'])
-    
-    res = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
-    if res.status_code == httpx.codes.CREATED:
-        sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
-        if sub_id:
-            traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{afId}/subscriptions/{sub_id}"
-            headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
-            return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
+    #---------------------------any ue, gpsi or ext group id------------------------
+    if traffic_sub.any_ue_ind or traffic_sub.gpsi or traffic_sub.external_group_id:
+        if traffic_sub.any_ue_ind and not traffic_sub.dnn or not traffic_sub.snssai:
+            raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
+        supi = intGroupId = None
+        if traffic_sub.gpsi:
+            supi = udm_handler.udm_sdm_id_translation(traffic_sub.gpsi)
+        elif traffic_sub.external_group_id:
+            intGroupId = udm_handler.udm_sdm_group_identifiers_translation(traffic_sub.external_group_id)
+        res = await udr_handler.udr_app_data_insert(traffic_sub, intGroupId, supi)
+        if res.status_code == httpx.codes.CREATED:
+            sub_id = trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
+            if sub_id:
+                traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{afId}/subscriptions/{sub_id}"
+                headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
+                return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
+            else:
+                print("Server error")
+                raise HTTPException(status_code=500, detail="Error creating resource")
         else:
-            print("Server error")
-            return Response(status_code=500, content="Error creating resource")
+            raise HTTPException(status_code=500, detail="Error creating resource")
+        
+    #------------------------ipv4, ipv6 or eth---------------------------
+    else:
+        bsf_params = {'ipv4Addr': traffic_sub.ipv4_addr,
+                      'ipv6Prefix': traffic_sub.ipv6_addr,
+                      'macAddr48': traffic_sub.mac_addr,
+                      'gpsi': traffic_sub.gpsi,
+                      'dnn': traffic_sub.dnn,
+                      'snssai': traffic_sub.snssai}
+        res = await bsf_handler.bsf_management_discovery(bsf_params)
+        if res['code'] != httpx.codes.OK:
+            print("No binding")
+            raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
+        pcf_binding = PcfBinding.from_dict(res['response'])
+        
+        res = await pcf_handler.pcf_policy_authorization_create_ti(pcf_binding, traffic_sub)
+        if res.status_code == httpx.codes.CREATED:
+            sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
+            if sub_id:
+                traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-traffic-influence/v1/{afId}/subscriptions/{sub_id}"
+                headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
+                return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
+            else:
+                print("Server error")
+                return Response(status_code=500, content="Error creating resource")
     
     return res.status_code
-
-@app.post("/pcf-policy-authorization-callback")
-async def pcf_callback(data):
-    print("-------------------------smf callback msg--------------------")
-    print(data)
-    return httpx.codes.OK
-
-# @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
-# async def ti_get(afId: str):
-@app.get("/ti_get")
-async def ti_get():
-    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
-    #res code: 200
-    res = await trafficInfluSub.traffic_influence_subscription_get()
-    if not res:
-        return {'subs': [], 'context': []}
-    context = []
-    for i in res:
-        r :httpx.Response = await get_req(i['location'], conf.GLOBAL_HEADERS)
-        if r.status_code == httpx.codes.OK:
-            context.append(r.json())
-    return {'subs': res, 'context': context}
-
-@app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
-async def ti_get(afId: str, subId: str):
-    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
-    #res code: 200
-    res = await trafficInfluSub.traffic_influence_subscription_get(afId=afId, subId=subId)
-    return Response(status_code=httpx.codes.OK, content=res)
 
 @app.put("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_put(afId, subId, data: Request):
@@ -172,36 +165,156 @@ async def ti_patch(afId, subId, data: Request):
     res = await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=data.json(), partial=True)
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
-@app.get("/delete_ti/{subId}")
+@app.get("/delete/{subId}")
 async def delete_ti(subId: str):
     afId = "default"
     res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
     else:
-        contextId = res['location'].split('/')[-1]
-        # res :httpx.Response = await get_req(res['location'], conf.GLOBAL_HEADERS)
-        # if res.status_code == httpx.codes.OK:
-        res = await pcf_handler.pcf_policy_authorization_delete(contextId)
+        #contextId = res['location'].split('/')[-1]
+        # res = await pcf_handler.pcf_policy_authorization_delete(contextId)
+        print(f"deleting at location: {res['location']}")
+        res :httpx.Response = await get_req(f"{res['location']}/delete", conf.GLOBAL_HEADERS)
         if res.status_code != httpx.codes.NO_CONTENT:
             print("Context not found!")
 
         res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
-        print(f"deleting traffic influence docs response: {res}")
         if res == 1:
             return Response(status_code=httpx.codes.NO_CONTENT)
     raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
     
 @app.delete("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_delete(afId: str, subId: str):
-    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
-    #res code: 204
-    res = await  pcf_handler.pcf_policy_authorization_delete(subId)
-    print(res)
-    res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
-    print(res)
-    return Response(status_code=httpx.codes.NO_CONTENT)
+    res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
+    if not res:
+        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
+    else:
+        print(f"deleting at location: {res['location']}")
+        res :httpx.Response = await get_req(f"{res['location']}/delete", conf.GLOBAL_HEADERS)
+        if res.status_code != httpx.codes.NO_CONTENT:
+            print("Context not found!")
 
+        res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
+        if res == 1:
+            return Response(status_code=httpx.codes.NO_CONTENT)
+    raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
+
+@app.post("/pcf-policy-authorization-callback")
+async def pcf_callback(data):
+    print("-------------------------smf callback msg--------------------")
+    print(data)
+    return httpx.codes.OK
+#--------------------------dummy---------------------------------
+@app.post("/dummy/{x}")
+async def dummy(x: str, data):
+    return f"dummy data: {data} at location {x}"
+#---------------------as-session-with-qos------------------------
+#
+#
+@app.get("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subscriptionId}")
+async def qos_get(scsAsId: str, subscriptionId: str=None):
+    res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId, subscriptionId)
+    if not res:
+        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
+    return Response(content=res, status_code=httpx.codes.OK)
+
+app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
+async def qos_create(scsAsId: str, data: Request):
+    qos_sub: AsSessionWithQoSSubscription = qos_subscription
+    if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
+    if not ((qos_sub.flow_info is not None)^(qos_sub.eth_flow_info is not None)^(qos_sub.exter_app_id is not None)):
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of IP flow info, Ethernet flow info or External Application")
+    if qos_sub.ue_ipv4_addr or qos_sub.ue_ipv6_addr and not qos_sub.flow_info:
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
+    if qos_sub.mac_addr and not qos_sub.eth_flow_info: 
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
+    if (qos_sub.qos_reference and qos_sub.alt_qos_reqs) or (qos_sub.alt_qo_s_references and qos_sub.alt_qos_reqs):
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
+    if qos_sub.qos_mon_info and qos_sub.events and "QOS_MONITORING" not in qos_sub.events:
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
+    # if qos_sub.alt_qo_s_references and not qos_sub.notif:
+    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
+    
+    bsf_params = {'ipv4Addr': qos_sub.ue_ipv4_addr,
+                  'ipv6Prefix': qos_sub.ue_ipv6_addr,
+                  'macAddr48': qos_sub.mac_addr}
+    res = await bsf_handler.bsf_management_discovery(bsf_params)
+    if res['code'] != httpx.codes.OK:
+        print("No binding")
+        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
+    pcf_binding = PcfBinding.from_dict(res['response'])
+    
+    response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
+    if response.status_code == httpx.codes.CREATED:
+        sub_id = await trafficInfluSub.traffic_influence_subscription_post(qos_sub, response.headers['Location'])
+        if sub_id:
+            qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
+            headers={'location': qos_sub.__self, 'content-type': 'application/json'}
+            return Response(status_code=httpx.codes.CREATED, content=qos_sub.to_dict(), headers=headers)
+        else:
+            return Response(status_code=500, content="Error creating resource")
+    return response
+
+@app.post("/pcf-policy-authorization-qos-callback")
+async def pcf_callback(data):
+    print("-------------------------smf callback msg--------------------")
+    print(data)
+    return httpx.codes.OK
+
+@app.put("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subscriptionId}")
+async def qos_put(afId, subId, data: Request):
+    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
+    #res code: 200
+    res = await asSessionWithQoSSub.as_session_with_qos_subscription_update(afId=afId, subId=subId, sub=data.json())
+    return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
+
+@app.patch("/3gpp-as-session-with-qos/v1/{afId}/subscriptions/{subId}")
+async def qos_patch(afId, subId, data: Request):
+    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
+    #res code: 200 
+    res = await asSessionWithQoSSub.as_session_with_qos_subscription_update(afId=afId, subId=subId, sub=data.json(), partial=True)
+    return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
+
+@app.get("/qdelete/{subId}")
+async def qo_s_delete(subId: str):
+    afId = "default"
+    res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
+    if not res:
+        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
+    else:
+        #contextId = res['location'].split('/')[-1]
+        # res = await pcf_handler.pcf_policy_authorization_delete(contextId)
+        print(f"deleting at location: {res['location']}")
+        res :httpx.Response = await get_req(f"{res['location']}/delete", conf.GLOBAL_HEADERS)
+        if res.status_code != httpx.codes.NO_CONTENT:
+            print("Context not found!")
+
+        res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
+        if res == 1:
+            return Response(status_code=httpx.codes.NO_CONTENT)
+    raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
+    
+@app.delete("/3gpp-as-session-with-qos/v1/{afId}/subscriptions/{subId}")
+async def qos_delete(afId: str, subId: str):
+    res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
+    if not res:
+        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
+    else:
+        print(f"deleting at location: {res['location']}")
+        res :httpx.Response = await get_req(f"{res['location']}/delete", conf.GLOBAL_HEADERS)
+        if res.status_code != httpx.codes.NO_CONTENT:
+            print("Context not found!")
+
+        res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
+        if res == 1:
+            return Response(status_code=httpx.codes.NO_CONTENT)
+    raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
+
+#----------------------clean db-------------------
+#
+#
 @app.get("/clean")
 async def clean():
     res = clean_db()
@@ -209,27 +322,3 @@ async def clean():
         return {"result": "Database cleaned."}
     else:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Error cleaning database!")
-
-async def qos_create():
-    traffic_sub = influ_sub
-    if traffic_sub.af_app_id is not traffic_sub.traffic_filters is not traffic_sub.eth_traffic_filters:
-        raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of afAppId, trafficFilters or ethTrafficFilters")
-    if traffic_sub.ipv4_addr is not traffic_sub.ipv6_addr is not traffic_sub.mac_addr is not traffic_sub.gpsi is not traffic_sub.external_group_id is not traffic_sub.any_ue_ind:
-        raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr, macAddr, gpsi, externalGroupId or anyUeInd")
-   
-    response = await bsf_handler.bsf_management_discovery(traffic_sub)
-    if response.status_code != httpx.codes.OK:
-            return response
-    pcf_binding = PcfBinding.from_dict(response.json())
-    
-    response = await pcf_handler.pcf_policy_authorization_create(pcf_binding, traffic_sub)
-    if response.status_code == httpx.codes.CREATED:
-        sub_id = await trafficInfluSub.traffic_influence_subscription_post(traffic_sub, response.headers['Location'])
-        if sub_id:
-            traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{traffic_sub}/subscriptions/{sub_id}"
-            return Response(status_code=httpx.codes.CREATED, content="Resource created")
-        else:
-            return Response(status_code=500, content="Error creating resource")
-    
-    #res_headers = conf.GLOBAL_HEADERS
-    return response

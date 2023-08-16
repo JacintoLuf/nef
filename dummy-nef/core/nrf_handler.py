@@ -5,6 +5,7 @@ from session import async_db
 from models.nf_profile import NFProfile
 from models.subscription_data import SubscriptionData
 from models.subscr_cond import SubscrCond
+from models.access_token_req import AccessTokenReq
 import crud.nfProfile as nfProfile
 import crud.subscriptionData as subscriptionData
 
@@ -33,6 +34,25 @@ async def nrf_discovery():
             instances.append(response.json())
     conf.set_nf_endpoints(profiles)
     return 1
+
+async def nrf_get_access_token():
+    for key in conf.TOKEN_SCOPES.keys():
+        access_token_req = AccessTokenReq(
+            grant_type="client_credentials",
+            nf_instance_id=conf.API_UUID,
+            nf_type="NEF",
+            target_nf_type=key,
+            scope=conf.TOKEN_SCOPES[key],
+        )
+        async with httpx.AsyncClient(http1=False, http2=True) as client:
+            response = await client.post(
+                f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances",
+                headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/x-www-form-urlencoded'},
+                data=access_token_req
+            )
+            print(response.status_code)
+            print(response.text)
+    return 200
 
 async def nf_register():
     async with httpx.AsyncClient(http1=False, http2=True) as client:

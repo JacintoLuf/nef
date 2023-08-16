@@ -9,13 +9,17 @@ async def traffic_influence_subscription_get(afId: str=None, subId: str=None):
     collection = db["traffic_influ_sub"]
     if subId:
         doc = await collection.find_one({'_id': subId, 'afId': afId})
-        return doc or None
+        return None if not doc else doc
+    elif afId:
+        docs = []
+        async for doc in collection.find({'afId': afId}):
+            docs.append(doc)
+        return None if not docs else docs
     else:
         docs = []
-        #async for doc in collection.find({'afId': afId}):
         async for doc in collection.find({}):
             docs.append(doc)
-        return docs or None
+        return None if not docs else docs
 
 async def traffic_influence_subscription_insert(afId: str, sub: TrafficInfluSub, location: str):
     collection = db["traffic_influ_sub"]
