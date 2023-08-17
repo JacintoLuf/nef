@@ -5,7 +5,7 @@ from fastapi_utils.tasks import repeat_every
 from fastapi.responses import JSONResponse
 from session import async_db, clean_db
 from api.config import conf
-from api.sbi_req import *
+from api.sbi_req import get_req, delete_req
 from models.pcf_binding import PcfBinding
 from models.traffic_influ_sub import TrafficInfluSub
 from models.as_session_with_qo_s_subscription import AsSessionWithQoSSubscription
@@ -67,7 +67,7 @@ async def get():
         return {'subs': [], 'context': []}
     context = []
     for i in res:
-        r :httpx.Response = await get_req(i['location'], conf.GLOBAL_HEADERS)
+        r :httpx.Response = await get_req(url=i['location'])
         if r.status_code == httpx.codes.OK:
             context.append(r.json())
     return {'subs': res, 'context': context}
@@ -172,10 +172,10 @@ async def delete_ti(subId: str):
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
     else:
-        #contextId = res['location'].split('/')[-1]
-        # res = await pcf_handler.pcf_policy_authorization_delete(contextId)
-        print(f"deleting at location: {res['location']}")
-        res :httpx.Response = await get_req(f"{res['location']}/delete", conf.GLOBAL_HEADERS)
+        contextId = res['location'].split('/')[-1]
+        res = await pcf_handler.pcf_policy_authorization_delete(contextId)
+        # print(f"deleting at location: {res['location']}")
+        # res :httpx.Response = await delete_req(f"{res['location']}/delete", conf.GLOBAL_HEADERS)
         if res.status_code != httpx.codes.NO_CONTENT:
             print("Context not found!")
 

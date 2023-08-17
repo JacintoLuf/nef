@@ -1,12 +1,12 @@
 import httpx
 
-async def get_req(url, headers=None):
+async def get_req(url, headers=None, params=None):
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
             url=url,
-            headers=headers
+            headers=headers,
+            params=params,
         )
-        print(response.headers)
         print(response.text)
     return response
 
@@ -17,7 +17,6 @@ async def post_req(url, headers=None, data=None):
             headers=headers,
             data=data
         )
-        print(response.headers)
         print(response.text)
     return response
 
@@ -28,7 +27,6 @@ async def put_req(url, headers=None, data=None):
             headers=headers,
             data=data
         )
-        print(response.headers)
         print(response.text)
     return response
 
@@ -39,7 +37,6 @@ async def patch_req(url, headers=None, data=None):
             headers=headers,
             data=data
         )
-        print(response.headers)
         print(response.text)
     return response
 
@@ -49,8 +46,6 @@ async def delete_req(url, headers=None, data=None):
         response = await client.delete(
             url=url,
             headers=headers,
-            data=data
         )
-        print(response.headers)
         print(response.text)
     return response
