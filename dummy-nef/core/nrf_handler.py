@@ -47,8 +47,8 @@ async def nrf_get_access_token():
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.post(
                 f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances",
-                headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/x-www-form-urlencoded'},
-                data=access_token_req
+                headers={'Accept': 'application/json,application/problem+json'},
+                data=json.dumps(access_token_req.to_dict())
             )
             print(response.status_code)
             print(response.text)
