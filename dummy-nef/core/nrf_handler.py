@@ -98,6 +98,7 @@ async def nf_register_heart_beat() -> int:
                 },
             data = json.dumps([{ "op": "replace", "path": "/nfStatus", "value": "REGISTERED" }])
         )
+        print(response.text)
         if response.status_code == httpx.codes.OK:
             new_nef_profile = NFProfile.from_dict(response.json())
             print(f"new profile {json.dumps(new_nef_profile)}")

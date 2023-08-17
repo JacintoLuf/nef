@@ -64,13 +64,8 @@ async def nrf_notif(notif):
 async def get():
     res = await trafficInfluSub.traffic_influence_subscription_get()
     if not res:
-        return {'subs': [], 'context': []}
-    context = []
-    for i in res:
-        r :httpx.Response = await get_req(url=i['location'])
-        if r.status_code == httpx.codes.OK:
-            context.append(r.json())
-    return {'subs': res, 'context': context}
+        return {'subs': []}
+    return {'subs': res}
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_get(afId: str, subId: str=None):
