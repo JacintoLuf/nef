@@ -24,6 +24,7 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
 
 async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_influ_sub: TrafficInfluSub=None):
     host_addr = binding.pcf_ip_end_points[0].ipv4_address or conf.HOSTS['PCF'][0]
+    print(f"pcf address: {host_addr}")
 
     req_data = AppSessionContextReqData()
     for attr_name in traffic_influ_sub.attribute_map.keys():
@@ -45,7 +46,6 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
 
     #evts_notif = EventsNotification(ev_subs_uri=f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback")
     req_data.notif_uri = "http://10.102.141.12:80/pcf-policy-authorization-callback"
-
     rout_req = AfRoutingRequirement(
             app_reloc=not traffic_influ_sub.app_relo_ind,
             route_to_locs=traffic_influ_sub.traffic_routes,
@@ -65,9 +65,7 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
                                                                 med_type="AUDIO",
                                                                 med_sub_comps=med_sub_cmp)}
     req_data.af_rout_req = rout_req
-
     app_session_context = AppSessionContext(asc_req_data=req_data)
-    print(app_session_context)
 
     print("---------------------------------------------")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
@@ -76,8 +74,6 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
             headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
             data=json.dumps(app_session_context.to_dict())
         )
-        print(response.headers)
-        print(response.status_code)
         print(response.text)
     return response
 
@@ -103,7 +99,6 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
             setattr(req_data, attr_name, attr_val)
 
     req_data.notif_uri = "http://10.102.141.12:80/pcf-policy-authorization-qos-callback"
-
     tsn_qos_c = None
     if as_session_qos_sub.tsc_qos_req:
         tsn_qos_c = TsnQosContainer(
@@ -123,11 +118,7 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
                                                             med_type="AUDIO",
                                                             med_sub_comps=med_sub_cmp,
                                                             tsn_qos=tsn_qos_c)}
-
-    req_data.notif_uri = "http://10.102.141.12:80/pcf-policy-authorization-callback"
-
     app_session_context = AppSessionContext(asc_req_data=req_data)
-    print(app_session_context)
 
     print("---------------------------------------------")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
@@ -136,8 +127,6 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
             headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
             data=json.dumps(app_session_context.to_dict())
         )
-        print(response.headers)
-        print(response.status_code)
         print(response.text)
     return response
 
