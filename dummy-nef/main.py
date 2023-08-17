@@ -32,9 +32,9 @@ async def startup():
     res = await nrf_handler.nf_status_subscribe()
     if res != httpx.codes.CREATED:
         print("NF status notify failed")
-    res = await nrf_handler.nrf_get_access_token()
-    if res != httpx.codes.OK:
-        print("Tokens denied")
+    # res = await nrf_handler.nrf_get_access_token()
+    # if res != httpx.codes.OK:
+    #     print("Tokens denied")
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
 async def nrf_heartbeat():
@@ -61,7 +61,7 @@ async def nrf_notif(notif):
 
 # @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 @app.get("/get")
-async def ti_get():
+async def get():
     res = await trafficInfluSub.traffic_influence_subscription_get()
     if not res:
         return {'subs': [], 'context': []}
