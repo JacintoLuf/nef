@@ -132,7 +132,6 @@ async def ti_create(afId: str=None):
         elif traffic_sub.mac_addr:
             bsf_params['macAddr48'] = traffic_sub.mac_addr
 
-        print(bsf_params)
         res = await bsf_handler.bsf_management_discovery(bsf_params)
         if res['code'] != httpx.codes.OK:
             print("No binding")
