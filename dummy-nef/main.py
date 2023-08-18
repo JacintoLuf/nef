@@ -121,9 +121,10 @@ async def ti_create(afId: str=None):
         
     #------------------------ipv4, ipv6 or eth---------------------------
     else:
-        bsf_params = {'gpsi': traffic_sub.gpsi,
-                      'dnn': traffic_sub.dnn,
-                      'snssai': traffic_sub.snssai}
+        bsf_params = {}
+        # bsf_params = {'gpsi': traffic_sub.gpsi,
+        #               'dnn': traffic_sub.dnn,
+        #               'snssai': traffic_sub.snssai}
         if traffic_sub.ipv4_addr:
             bsf_params['ipv4Addr'] = traffic_sub.ipv4_addr
         elif traffic_sub.ipv6_addr:
@@ -131,6 +132,7 @@ async def ti_create(afId: str=None):
         elif traffic_sub.mac_addr:
             bsf_params['macAddr48'] = traffic_sub.mac_addr
 
+        print(bsf_params)
         res = await bsf_handler.bsf_management_discovery(bsf_params)
         if res['code'] != httpx.codes.OK:
             print("No binding")
@@ -236,9 +238,14 @@ async def qos_create(scsAsId: str, data: Request):
     # if qos_sub.alt_qo_s_references and not qos_sub.notif:
     #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     
-    bsf_params = {'ipv4Addr': qos_sub.ue_ipv4_addr,
-                  'ipv6Prefix': qos_sub.ue_ipv6_addr,
-                  'macAddr48': qos_sub.mac_addr}
+    bsf_params = {}
+    if qos_sub.ue_ipv4_addr:
+        bsf_params['ipv4Addr'] = qos_sub.ue_ipv4_addr
+    elif qos_sub.ue_ipv6_addr:
+        bsf_params['ipv6Prefix'] = qos_sub.ue_ipv6_addr
+    elif qos_sub.mac_addr:
+        bsf_params['macAddr48'] = qos_sub.mac_addr
+
     res = await bsf_handler.bsf_management_discovery(bsf_params)
     if res['code'] != httpx.codes.OK:
         print("No binding")
