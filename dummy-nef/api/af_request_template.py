@@ -13,14 +13,14 @@ def create_sub():
     route_info = RouteInformation(ipv4_addr="10.255.32.132", port_number=80)
     route_to_loc = RouteToLocation(dnai="internet", route_info=route_info)
     flow_info = FlowInfo(flow_id=1,
-                        flow_descriptions=["permit out 17 from 10.45.0.3 to 10.255.32.132 80", "permit in 17 from 10.255.32.132 to 10.45.0.3"])
+                        flow_descriptions=["permit out 17 from 10.45.0.2 to 10.255.32.132 80", "permit in 17 from 10.255.32.132 to 10.45.0.2"])
 
     traffic_influ = TrafficInfluSub(
         af_trans_id="1",
         dnn="internet",
         any_ue_ind=False,
         subscribed_events="UP_PATH_CHANGE",
-        ipv4_addr="10.45.0.3",
+        ipv4_addr="10.45.0.2",
         notification_destination=f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback",
         traffic_filters=[flow_info],
         request_test_notification=True,
@@ -65,7 +65,7 @@ def create_sub3():
         flow_info=[flow_info],
         qos_reference="",
         alt_qo_s_references=[""],
-        ue_ipv4_addr="10.45.0.3",
+        ue_ipv4_addr="10.45.0.2",
         tsc_qos_req=TscQosRequirement(req_gbr_dl=100000000,
                                       req_gbr_ul=1000000,
                                       req_mbr_dl=10000000,
@@ -89,7 +89,7 @@ def create_sub4():
         flow_info=[flow_info],
         qos_reference="",
         alt_qo_s_references=[""],
-        ue_ipv4_addr="10.45.0.3",
+        ue_ipv4_addr="10.45.0.2",
         tsc_qos_req=TscQosRequirement(),
     )
 
