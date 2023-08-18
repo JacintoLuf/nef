@@ -127,7 +127,7 @@ async def nf_status_subscribe():
                 },
             data=json.dumps(sub.to_dict())
         )
-        print(response.headers)
+        print("NF status notify res")
         print(response.text)
         if response.status_code == httpx.codes.CREATED:
             res = subscriptionData.subscription_data_insert(sub, response.headers['location'])
