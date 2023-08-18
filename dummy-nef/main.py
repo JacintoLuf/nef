@@ -121,12 +121,16 @@ async def ti_create(afId: str=None):
         
     #------------------------ipv4, ipv6 or eth---------------------------
     else:
-        bsf_params = {'ipv4Addr': traffic_sub.ipv4_addr,
-                      'ipv6Prefix': traffic_sub.ipv6_addr,
-                      'macAddr48': traffic_sub.mac_addr,
-                      'gpsi': traffic_sub.gpsi,
+        bsf_params = {'gpsi': traffic_sub.gpsi,
                       'dnn': traffic_sub.dnn,
                       'snssai': traffic_sub.snssai}
+        if traffic_sub.ipv4_addr:
+            bsf_params['ipv4Addr'] = traffic_sub.ipv4_addr
+        elif traffic_sub.ipv6_addr:
+            bsf_params['ipv6Prefix'] = traffic_sub.ipv6_addr
+        elif traffic_sub.mac_addr:
+            bsf_params['macAddr48'] = traffic_sub.mac_addr
+
         res = await bsf_handler.bsf_management_discovery(bsf_params)
         if res['code'] != httpx.codes.OK:
             print("No binding")
