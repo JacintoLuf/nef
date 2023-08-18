@@ -36,7 +36,7 @@ def echo_client(host, port, delay=5, repeat=5, tun=None):
     print("Closing connection to the server") 
     sock.close() 
  
-if __name__ == '__main__': 
+if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Socket Server Example') 
     parser.add_argument('--host', action="store", dest="host", type=str, required=True,
                         help="server host address") 

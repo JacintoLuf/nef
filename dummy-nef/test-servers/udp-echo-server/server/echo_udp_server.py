@@ -3,8 +3,7 @@
 # This program is optimized for Python 2.7.12 and Python 3.5.2. 
 # It may run on any other version with/without modifications. 
  
-import socket 
-import sys
+import socket
 import argparse
  
 host = '0.0.0.0' 
