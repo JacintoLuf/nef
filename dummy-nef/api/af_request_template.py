@@ -25,7 +25,7 @@ def create_sub():
         traffic_filters=[flow_info],
         request_test_notification=True,
         traffic_routes=[route_to_loc],
-        addr_preser_ind=True,
+        #addr_preser_ind=True,
         supp_feat="F",
     )
     return traffic_influ
