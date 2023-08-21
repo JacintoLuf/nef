@@ -55,7 +55,7 @@ async def udr_app_data_insert(traffic_influ_sub: TrafficInfluSub, intGroupID=Non
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.put(
                 f"http://{conf.HOSTS['UDR'][0]}:7777/nudr-dr/v1/application-data/influenceData",
-                headers={'Accept': 'application/json,application/problem+json'},
+                headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
                 data=json.dumps(traffic_influ_data.to_dict())
             )
             print(response.text)
