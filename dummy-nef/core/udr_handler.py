@@ -34,9 +34,9 @@ async def udr_app_data_insert(traffic_influ_sub: TrafficInfluSub, intGroupID=Non
         elif hasattr(traffic_influ_data, attr_name) and attr_val:
             setattr(traffic_influ_data, attr_name, attr_val)
     
-    # if traffic_influ_sub.any_ue_ind:
-    #     traffic_influ_data.inter_group_id = "AnyUE"
-    if intGroupID:
+    if traffic_influ_sub.any_ue_ind:
+        traffic_influ_data.inter_group_id = "anyue"
+    elif intGroupID:
         traffic_influ_data.inter_group_id = intGroupID
     elif supi:
         traffic_influ_data.supi = supi
@@ -44,7 +44,7 @@ async def udr_app_data_insert(traffic_influ_sub: TrafficInfluSub, intGroupID=Non
     if traffic_influ_sub.subscribed_events and "UP_PATH_CHANGE" in traffic_influ_sub.subscribed_events:
         #map influ sub dest notif to an id and save
         traffic_influ_data.up_path_chg_notif_corre_id = 1 #test
-        traffic_influ_data.up_path_chg_notif_uri = f"http://{conf.HOSTS['NEF']}:80/up_path_change"
+        traffic_influ_data.up_path_chg_notif_uri = f"http://{conf.HOSTS['NEF'][0]}:80/up_path_change"
 
     if traffic_influ_sub.temp_validities and len(traffic_influ_sub.temp_validities) == 1:
         traffic_influ_data.valid_start_time = traffic_influ_sub.temp_validities[0].start_time

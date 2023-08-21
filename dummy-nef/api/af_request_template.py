@@ -42,13 +42,13 @@ def create_sub2():
         dnn="internet",
         snssai=snssai,
         any_ue_ind=True,
-        subscribed_events="UP_PATH_CHANGE",
+        #subscribed_events="UP_PATH_CHANGE",
         notification_destination=f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback",
         traffic_filters=[flow_info],
         request_test_notification=True,
         traffic_routes=[route_to_loc],
         dnai_chg_type="LATE",
-        addr_preser_ind=True,
+        #addr_preser_ind=True,
         supp_feat="0",
     )
     return traffic_influ
