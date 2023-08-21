@@ -34,9 +34,9 @@ async def udr_app_data_insert(traffic_influ_sub: TrafficInfluSub, intGroupID=Non
         elif hasattr(traffic_influ_data, attr_name) and attr_val:
             setattr(traffic_influ_data, attr_name, attr_val)
     
-    if traffic_influ_sub.any_ue_ind:
-        traffic_influ_data.inter_group_id = "anyue"
-    elif intGroupID:
+    # if traffic_influ_sub.any_ue_ind:
+    #     traffic_influ_data.inter_group_id = "anyue"
+    if intGroupID:
         traffic_influ_data.inter_group_id = intGroupID
     elif supi:
         traffic_influ_data.supi = supi
