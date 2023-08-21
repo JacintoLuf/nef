@@ -96,7 +96,7 @@ async def ti_create(afId: str=None):
     
     # if traffic_sub.tfc_corr_ind and not traffic_sub.external_group_id:
     #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
-    traffic_sub = any_influ_sub
+    traffic_sub = influ_sub
     if not ((traffic_sub.af_app_id is not None)^(traffic_sub.traffic_filters is not None)^(traffic_sub.eth_traffic_filters is not None)):
         print(f"app id: {type(traffic_sub.af_app_id)}, traffic filters: {type(traffic_sub.traffic_filters)}, eth traffic filters: {type(traffic_sub.eth_traffic_filters)}")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of afAppId, trafficFilters or ethTrafficFilters")
