@@ -29,6 +29,8 @@ async def udr_app_data_insert(traffic_influ_sub: TrafficInfluSub, intGroupID=Non
             setattr(traffic_influ_data, 'traff_corre_ind', attr_val)
         elif attr_name == 'notificationDestination':
             setattr(traffic_influ_data, 'up_path_chg_notif_uri', attr_val)
+        elif attr_name == 'tempValidities' and attr_val and len(attr_val) > 1:
+            setattr(traffic_influ_data, 'temp_validities', attr_val)
         elif hasattr(traffic_influ_data, attr_name) and attr_val:
             setattr(traffic_influ_data, attr_name, attr_val)
     
@@ -39,7 +41,7 @@ async def udr_app_data_insert(traffic_influ_sub: TrafficInfluSub, intGroupID=Non
     elif supi:
         traffic_influ_data.supi = supi
 
-    if len(traffic_influ_sub.temp_validities) == 1:
+    if traffic_influ_sub.temp_validities and len(traffic_influ_sub.temp_validities) == 1:
         traffic_influ_data.valid_start_time = traffic_influ_sub.temp_validities[0].start_time
         traffic_influ_data.valid_end_time = traffic_influ_sub.temp_validities[0].stop_time
 
