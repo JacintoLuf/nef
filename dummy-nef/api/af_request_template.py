@@ -47,7 +47,7 @@ def create_sub2():
         traffic_filters=[flow_info],
         request_test_notification=True,
         traffic_routes=[route_to_loc],
-        dnai_chg_type="LATE",
+        #dnai_chg_type="LATE",
         #addr_preser_ind=True,
         supp_feat="0",
     )
