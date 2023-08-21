@@ -16,7 +16,6 @@ async def udr_app_data_retrieval(loc: str=None):
                 headers={'Accept': 'application/json,application/problem+json'},
                 #params=params
             )
-            print(response.headers)
             print(response.text)
 
     return response.status_code
@@ -33,9 +32,9 @@ async def udr_app_data_insert(traffic_influ_sub: TrafficInfluSub, intGroupID=Non
         elif hasattr(traffic_influ_data, attr_name) and attr_val:
             setattr(traffic_influ_data, attr_name, attr_val)
     
-    if traffic_influ_sub.any_ue_ind:
-        traffic_influ_data.inter_group_id = "AnyUE"
-    elif intGroupID:
+    # if traffic_influ_sub.any_ue_ind:
+    #     traffic_influ_data.inter_group_id = "AnyUE"
+    if intGroupID:
         traffic_influ_data.inter_group_id = intGroupID
     elif supi:
         traffic_influ_data.supi = supi
@@ -50,7 +49,6 @@ async def udr_app_data_insert(traffic_influ_sub: TrafficInfluSub, intGroupID=Non
                 headers={'Accept': 'application/json,application/problem+json'},
                 data=json.dumps(traffic_influ_data.to_dict())
             )
-            print(response.headers)
             print(response.text)
             
     return response
@@ -86,7 +84,6 @@ async def udr_app_data_delete(sub: TrafficInfluSub):
                 headers={'Accept': 'application/json,application/problem+json'},
                 data=json.dumps(sub.to_dict())
             )
-            print(response.headers)
             print(response.text)
             
     return response
