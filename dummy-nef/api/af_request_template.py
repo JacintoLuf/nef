@@ -92,6 +92,7 @@ def create_sub4():
         ue_ipv4_addr="10.45.0.4",
         tsc_qos_req=TscQosRequirement(),
     )
+    return qos_sub
 
 influ_sub = create_sub()
 any_influ_sub = create_sub2()
