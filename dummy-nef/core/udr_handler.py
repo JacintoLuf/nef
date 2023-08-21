@@ -45,6 +45,8 @@ async def udr_app_data_insert(traffic_influ_sub: TrafficInfluSub, intGroupID=Non
         traffic_influ_data.valid_start_time = traffic_influ_sub.temp_validities[0].start_time
         traffic_influ_data.valid_end_time = traffic_influ_sub.temp_validities[0].stop_time
 
+    print("--------------------influ data-------------------")
+    print(traffic_influ_data)
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.put(
                 f"http://{conf.HOSTS['UDR'][0]}:7777/nudr-dr/v1/application-data/influenceData",
