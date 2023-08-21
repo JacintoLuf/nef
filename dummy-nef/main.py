@@ -226,7 +226,8 @@ async def qos_get(scsAsId: str, subscriptionId: str=None):
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
     return Response(content=res, status_code=httpx.codes.OK)
 
-app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
+#post
+app.get("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
 async def qos_create(scsAsId: str, data: Request):
     qos_sub: AsSessionWithQoSSubscription = qos_subscription
     if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
