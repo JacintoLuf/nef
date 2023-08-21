@@ -26,7 +26,7 @@ def create_sub():
         request_test_notification=True,
         traffic_routes=[route_to_loc],
         addr_preser_ind=True,
-        supp_feat="f",
+        supp_feat="F",
     )
     return traffic_influ
 
@@ -47,8 +47,9 @@ def create_sub2():
         traffic_filters=[flow_info],
         request_test_notification=True,
         traffic_routes=[route_to_loc],
+        dnai_chg_type="LATE",
         addr_preser_ind=True,
-        supp_feat="f",
+        supp_feat="0",
     )
     return traffic_influ
 

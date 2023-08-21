@@ -59,6 +59,12 @@ async def nrf_notif(notif):
     #res = await nrf_handler.nf_update(notif_data)
     return Response(status_code=httpx.codes.NO_CONTENT)
 
+@app.post("/up_path_change")
+async def up_path_chg_notif(notif):
+    print(type(notif))
+    print(notif)
+    return Response(status_code=httpx.codes.NO_CONTENT)
+
 # @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 @app.get("/get")
 async def get():
@@ -111,6 +117,7 @@ async def ti_create(afId: str=None):
             sub_id = trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
             if sub_id:
                 traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{afId}/subscriptions/{sub_id}"
+                traffic_sub.supp_feat = "0"
                 headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:

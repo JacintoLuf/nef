@@ -41,6 +41,11 @@ async def udr_app_data_insert(traffic_influ_sub: TrafficInfluSub, intGroupID=Non
     elif supi:
         traffic_influ_data.supi = supi
 
+    if traffic_influ_sub.subscribed_events and "UP_PATH_CHANGE" in traffic_influ_sub.subscribed_events:
+        #map influ sub dest notif to an id and save
+        traffic_influ_data.up_path_chg_notif_corre_id = 1 #test
+        traffic_influ_data.up_path_chg_notif_uri = f"http://{conf.HOSTS['NEF']}:80/up_path_change"
+
     if traffic_influ_sub.temp_validities and len(traffic_influ_sub.temp_validities) == 1:
         traffic_influ_data.valid_start_time = traffic_influ_sub.temp_validities[0].start_time
         traffic_influ_data.valid_end_time = traffic_influ_sub.temp_validities[0].stop_time
