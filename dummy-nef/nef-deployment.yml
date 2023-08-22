@@ -20,7 +20,7 @@ spec:
           image: jacintoluf/nef:v1
           imagePullPolicy: Always
           ports:
-            - containerPort: 80
+            - containerPort: 7777
           #added
           # envFrom:
           #   secretKeyVaRef:
@@ -44,7 +44,7 @@ spec:
   - port: 80
     protocol: TCP
     name: nef
-    targetPort: 80
+    targetPort: 7777
   selector:
     app: nef
   #type: LoadBalancer

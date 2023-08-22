@@ -116,7 +116,7 @@ async def ti_create(afId: str=None):
         if res.status_code == httpx.codes.CREATED:
             sub_id = trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
             if sub_id:
-                traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-trafficInfluence/v1/{afId}/subscriptions/{sub_id}"
+                traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:7777/3gpp-trafficInfluence/v1/{afId}/subscriptions/{sub_id}"
                 traffic_sub.supp_feat = "0"
                 headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
@@ -149,7 +149,7 @@ async def ti_create(afId: str=None):
         if res.status_code == httpx.codes.CREATED:
             sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
             if sub_id:
-                traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-traffic-influence/v1/{afId}/subscriptions/{sub_id}"
+                traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:7777/3gpp-traffic-influence/v1/{afId}/subscriptions/{sub_id}"
                 headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
@@ -267,7 +267,7 @@ async def qos_create(qci: int = 1):
     if response.status_code == httpx.codes.CREATED:
         sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
         if sub_id:
-            qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
+            qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:7777/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
             headers={'location': qos_sub.__self, 'content-type': 'application/json'}
             return JSONResponse(status_code=httpx.codes.CREATED, content=qos_sub.to_dict(), headers=headers)
         else:

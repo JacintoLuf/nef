@@ -109,7 +109,7 @@ async def nf_register_heart_beat():
 async def nf_status_subscribe():
     sub_cond = SubscrCond(nf_type="PCF")
     sub = SubscriptionData(
-        nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}:80/nfStatusNotification",
+        nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}:7777/nfStatusNotification",
         req_nf_instance_id=conf.NEF_PROFILE.nf_instance_id,
         subscr_cond=sub_cond,
         req_notif_events=['NF_REGISTERED','NF_PROFILE_CHANGED','NF_DEREGISTERED'],
