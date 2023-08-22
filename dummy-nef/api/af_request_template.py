@@ -7,6 +7,7 @@ from models.flow_info import FlowInfo
 from models.snssai import Snssai
 from models.as_session_with_qo_s_subscription import AsSessionWithQoSSubscription
 from models.tsc_qos_requirement import TscQosRequirement
+from models.alternative_service_requirements_data import AlternativeServiceRequirementsData
 
 
 def create_sub():
@@ -64,16 +65,16 @@ def create_sub3():
         supported_features="18000",
         notification_destination="http://10.102.141.12:80/pcf-policy-authorization-qos-callback",
         flow_info=[flow_info],
-        qos_reference="",
-        alt_qo_s_references=[""],
+        qos_reference="1",
+        alt_qo_s_references=["7","80"],
         ue_ipv4_addr="10.45.0.4",
-        tsc_qos_req=TscQosRequirement(req_gbr_dl=100000000,
-                                      req_gbr_ul=1000000,
-                                      req_mbr_dl=10000000,
-                                      req_mbr_ul=1000000,
-                                      max_tsc_burst_size=100000,
-                                      req5_gsdelay=3,
-                                      priority=1),
+        # tsc_qos_req=TscQosRequirement(req_gbr_dl=100000000,
+        #                               req_gbr_ul=1000000,
+        #                               req_mbr_dl=10000000,
+        #                               req_mbr_ul=1000000,
+        #                               max_tsc_burst_size=100000,
+        #                               req5_gsdelay=3,
+        #                               priority=1),
     )
     return qos_sub
 
@@ -82,16 +83,22 @@ def create_sub4():
     flow_info = FlowInfo(flow_id=10,
                          flow_descriptions=["permit out 17 from any to 10.255.32.132 80", "permit in 17 from 10.255.32.132 to 10.45.0.0/16"])
 
+    alt_reqs =  AlternativeServiceRequirementsData(
+        alt_qos_param_set_ref="big file dl",
+        gbr_dl=4096,
+        gbr_ul=4096,
+        pdb=1
+    )
+
     qos_sub = AsSessionWithQoSSubscription(
         dnn="internet",
         snssai=snssai,
         supported_features="18000",
         notification_destination="http://10.102.141.12:80/pcf-policy-authorization-qos-callback",
         flow_info=[flow_info],
-        qos_reference="",
-        alt_qo_s_references=[""],
+        alt_qos_reqs=alt_reqs,
         ue_ipv4_addr="10.45.0.4",
-        tsc_qos_req=TscQosRequirement(),
+        #tsc_qos_req=TscQosRequirement(),
     )
     return qos_sub
 

@@ -229,24 +229,25 @@ async def qos_get(scsAsId: str, subscriptionId: str=None):
 
 # @app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
 # async def qos_create(scsAsId: str, data: Request):
-@app.get("/qos")
-async def qos_create():
+@app.get("/qos/{qci}")
+async def qos_create(qci: int = 1):
     scsAsId = "default"
     qos_sub: AsSessionWithQoSSubscription = qos_subscription #data
-    # if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
-    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
-    # if not ((qos_sub.flow_info is not None)^(qos_sub.eth_flow_info is not None)^(qos_sub.exter_app_id is not None)):
-    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of IP flow info, Ethernet flow info or External Application")
-    # if qos_sub.ue_ipv4_addr or qos_sub.ue_ipv6_addr and not qos_sub.flow_info:
-    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
-    # if qos_sub.mac_addr and not qos_sub.eth_flow_info: 
-    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
-    # if (qos_sub.qos_reference and qos_sub.alt_qos_reqs) or (qos_sub.alt_qo_s_references and qos_sub.alt_qos_reqs):
-    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
-    # if qos_sub.qos_mon_info and qos_sub.events and "QOS_MONITORING" not in qos_sub.events:
-    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
-    # if qos_sub.alt_qo_s_references and not qos_sub.notif:
-    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
+    qos_sub.qos_reference = str(qci)
+    if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
+    if not ((qos_sub.flow_info is not None)^(qos_sub.eth_flow_info is not None)^(qos_sub.exter_app_id is not None)):
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of IP flow info, Ethernet flow info or External Application")
+    if qos_sub.ue_ipv4_addr or qos_sub.ue_ipv6_addr and not qos_sub.flow_info:
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
+    if qos_sub.mac_addr and not qos_sub.eth_flow_info: 
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
+    if (qos_sub.qos_reference and qos_sub.alt_qos_reqs) or (qos_sub.alt_qo_s_references and qos_sub.alt_qos_reqs):
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
+    if qos_sub.qos_mon_info and qos_sub.events and "QOS_MONITORING" not in qos_sub.events:
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
+    if qos_sub.alt_qo_s_references and not qos_sub.notif:
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     
     bsf_params = {}
     if qos_sub.ue_ipv4_addr:

@@ -44,7 +44,7 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
 
     #evts_notif = EventsNotification(ev_subs_uri=f"http://{conf.HOSTS['NEF'][0]}:80/pcf-policy-authorization-callback")
     req_data.notif_uri = "http://10.102.141.12:80/pcf-policy-authorization-callback"
-    req_data.supp_feat = "1"
+    req_data.supp_feat = "FFFFFF"#"1"
     rout_req = AfRoutingRequirement(
             app_reloc=not traffic_influ_sub.app_relo_ind,
             route_to_locs=traffic_influ_sub.traffic_routes,
@@ -96,7 +96,7 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
             setattr(req_data, attr_name, attr_val)
 
     req_data.notif_uri = "http://10.102.141.12:80/pcf-policy-authorization-qos-callback"
-    req_data.supp_feat = "18000"
+    req_data.supp_feat = "FFFFFF"#"18000"
     tsn_qos_c = None
     if as_session_qos_sub.tsc_qos_req:
         tsn_qos_c = TsnQosContainer(
