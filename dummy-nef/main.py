@@ -268,7 +268,7 @@ async def qos_create():
         if sub_id:
             qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
             headers={'location': qos_sub.__self, 'content-type': 'application/json'}
-            return Response(status_code=httpx.codes.CREATED, content=qos_sub.to_dict(), headers=headers)
+            return JSONResponse(status_code=httpx.codes.CREATED, content=qos_sub.to_dict(), headers=headers)
         else:
             return Response(status_code=500, content="Error creating resource")
     return response
