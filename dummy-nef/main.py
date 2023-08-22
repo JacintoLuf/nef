@@ -264,7 +264,7 @@ async def qos_create():
     
     response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
     if response.status_code == httpx.codes.CREATED:
-        sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(qos_sub, response.headers['Location'])
+        sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
         if sub_id:
             qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:80/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
             headers={'location': qos_sub.__self, 'content-type': 'application/json'}
