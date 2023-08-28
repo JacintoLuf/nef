@@ -14,7 +14,7 @@ def create_sub():
     route_info = RouteInformation(ipv4_addr="10.255.32.132", port_number=80)
     route_to_loc = RouteToLocation(dnai="internet", route_info=route_info)
     flow_info = FlowInfo(flow_id=1,
-                        flow_descriptions=["permit out 17 from 10.45.0.4 to 10.255.32.132 80", "permit in 17 from 10.255.32.132 to 10.45.0.4"])
+                        flow_descriptions=["permit out 17 from any to 10.255.32.132 80", "permit in 17 from 10.255.32.132 to any"])
 
     traffic_influ = TrafficInfluSub(
         af_trans_id="1",
