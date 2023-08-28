@@ -23,8 +23,8 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
     return None
 
 async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_influ_sub: TrafficInfluSub=None):
-    #host_addr = binding.pcf_ip_end_points[0].ipv4_address if binding is not None else conf.HOSTS['PCF'][0]
-    host_addr = conf.HOSTS['PCF'][0]
+    host_addr = binding.pcf_ip_end_points[0].ipv4_address if binding is not None else conf.HOSTS['PCF'][0]
+    #host_addr = conf.HOSTS['PCF'][0]
     print(f"pcf address: {host_addr}")
 
     req_data = AppSessionContextReqData()

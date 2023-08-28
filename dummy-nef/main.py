@@ -142,10 +142,8 @@ async def ti_create(afId: str=None):
         res = await bsf_handler.bsf_management_discovery(bsf_params)
         if res['code'] != httpx.codes.OK:
             print("No binding")
-            #raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
-            pcf_binding = None
-        else:
-            pcf_binding = PcfBinding.from_dict(res['response'])
+            raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
+        pcf_binding = PcfBinding.from_dict(res['response'])
         
         res = await pcf_handler.pcf_policy_authorization_create_ti(pcf_binding, traffic_sub)
         if res.status_code == httpx.codes.CREATED:

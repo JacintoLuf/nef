@@ -6,7 +6,6 @@ from models.route_information import RouteInformation
 from models.flow_info import FlowInfo
 from models.snssai import Snssai
 from models.as_session_with_qo_s_subscription import AsSessionWithQoSSubscription
-from models.tsc_qos_requirement import TscQosRequirement
 from models.alternative_service_requirements_data import AlternativeServiceRequirementsData
 
 
@@ -21,7 +20,7 @@ def create_sub():
         dnn="internet",
         any_ue_ind=False,
         subscribed_events="UP_PATH_CHANGE",
-        ipv4_addr="10.45.0.4",
+        ipv4_addr="10.45.0.5",
         notification_destination=f"http://{conf.HOSTS['NEF'][0]}:7777/pcf-policy-authorization-callback",
         traffic_filters=[flow_info],
         request_test_notification=True,
