@@ -61,7 +61,7 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
         req_data.med_components = {'med_comp_1': MediaComponent(af_app_id=traffic_influ_sub.af_app_id,
                                                                 af_rout_req=rout_req,
                                                                 med_comp_n=1,
-                                                                f_status="DISABLED", #ENABLED
+                                                                f_status="ENABLED", #DISABLED
                                                                 med_type="AUDIO",
                                                                 med_sub_comps=med_sub_cmp)}
     req_data.af_rout_req = rout_req
