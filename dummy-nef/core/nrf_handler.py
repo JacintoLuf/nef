@@ -36,13 +36,13 @@ async def nrf_discovery():
     return 1
 
 async def nrf_get_access_token():
-    for key in conf.TOKEN_SCOPES.keys():
+    for key in conf.NF_SCOPES.keys():
         access_token_req = AccessTokenReq(
             grant_type="client_credentials",
             nf_instance_id=conf.API_UUID,
             nf_type="NEF",
             target_nf_type=key,
-            scope=conf.TOKEN_SCOPES[key],
+            scope=conf.NF_SCOPES[key],
         )
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.post(
@@ -103,26 +103,27 @@ async def nf_register_heart_beat():
             new_nef_profile = NFProfile.from_dict(response.json())
             print(f"new profile {json.dumps(new_nef_profile)}")
         elif response.status_code == httpx.codes.NOT_FOUND:
+            print(response.text)
             print("NEF instance not registered")
     return response.status_code
 
 async def nf_status_subscribe():
     nfTypes = [("BSF", "nbsf-management"), ("PCF", "npcf-policyauthorization"), ("UDR", "nudr-dr"), ("UDM", "nudm-sdm")]
     for nfType in nfTypes:
-        sub_cond = SubscrCond(nf_type=nfType[0], service_name=nfType[1])
         sub = SubscriptionData(
             nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}:7777/nnrf-nfm/v1/nf-status-notify",
             req_nf_instance_id=conf.NEF_PROFILE.nf_instance_id,
-            subscr_cond=sub_cond,
+            subscr_cond=SubscrCond(nf_type=nfType[0], service_name=nfType[1]),
             req_nf_type="NEF",
             requester_features="1"
         )
+        print(sub)
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.post(
                 f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/subscriptions",
                 headers={
-                    'accept': 'application/json,application/problem+json',
-                    'content-type': 'application/json-patch+json'
+                    'Accept': 'application/json,application/problem+json',
+                    'Content-Type': 'application/json'
                     },
                 data=json.dumps(sub.to_dict())
             )

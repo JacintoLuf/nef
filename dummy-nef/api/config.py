@@ -72,14 +72,12 @@ class Settings():
             nef_info=None
         )
 
-        self.TOKEN_SCOPES = {
+        self.NF_SCOPES = {
             "NRF": "nnrf-nfm nnrf-disc nnrf-oauth2",
             "BSF": "nbsf-management",
             "PCF": "npcf-policyauthorization",
             "UDR": "nudr-dr",
             "UDM": "nudm-sdm nudm-uecm nudm-ueau",
-            "SMF": "nsmf-event-exposure",
-            "AMF": "namf-evts",
         }
 
     def set_new_api_uuid(self):
