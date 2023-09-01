@@ -107,30 +107,33 @@ async def nf_register_heart_beat():
     return response.status_code
 
 async def nf_status_subscribe():
-    sub_cond = SubscrCond(nf_type="PCF")
-    sub = SubscriptionData(
-        nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}:7777/nfStatusNotification",
-        req_nf_instance_id=conf.NEF_PROFILE.nf_instance_id,
-        subscr_cond=sub_cond,
-        req_notif_events=['NF_REGISTERED','NF_PROFILE_CHANGED','NF_DEREGISTERED'],
-        req_nf_type="NEF"
-    )
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-        response = await client.post(
-            f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/subscriptions",
-            headers={
-                'accept': 'application/json,application/problem+json',
-                'content-type': 'application/json-patch+json'
-                },
-            data=json.dumps(sub.to_dict())
+    nfTypes = [("BSF", "nbsf-management"), ("PCF", "npcf-policyauthorization"), ("UDR", "nudr-dr"), ("UDM", "nudm-sdm")]
+    for nfType in nfTypes:
+        sub_cond = SubscrCond(nf_type=nfType[0], service_name=nfType[1])
+        sub = SubscriptionData(
+            nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}:7777/nnrf-nfm/v1/nf-status-notify",
+            req_nf_instance_id=conf.NEF_PROFILE.nf_instance_id,
+            subscr_cond=sub_cond,
+            req_nf_type="NEF",
+            requester_features="1"
         )
-        print("NF status notify res")
-        print(response.text)
-        if response.status_code == httpx.codes.CREATED:
-            res = subscriptionData.subscription_data_insert(sub, response.headers['location'])
-            if not res:
-                print("NF status not subscribed")
-    return response.status_code
+        async with httpx.AsyncClient(http1=False, http2=True) as client:
+            response = await client.post(
+                f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/subscriptions",
+                headers={
+                    'accept': 'application/json,application/problem+json',
+                    'content-type': 'application/json-patch+json'
+                    },
+                data=json.dumps(sub.to_dict())
+            )
+            print("NF status notify res")
+            print(response.text)
+            # if response.status_code == httpx.codes.CREATED:
+            # [fc5837fc-4753-41ee-a94f-1140a058385d] Subscription created until 2023-08-31T16:40:53.656179+00:00 [duration:86400,validity:86399.997793,patch:43199.998896]
+            #     res = subscriptionData.subscription_data_insert(sub, response.headers['location'])
+            #     if not res:
+            #         print("NF status not subscribed")
+    return 201
 
 async def nf_status_unsubscribe(subId):
     async with httpx.AsyncClient(http1=False, http2=True) as client:
