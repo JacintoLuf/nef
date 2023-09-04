@@ -229,11 +229,11 @@ async def qos_get(scsAsId: str, subscriptionId: str=None):
 
 # @app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
 # async def qos_create(scsAsId: str, data: Request):
-@app.get("/qos/{qci}")
-async def qos_create(qci: int = 1):
+@app.get("/qos")
+async def qos_create():
     scsAsId = "default"
     qos_sub: AsSessionWithQoSSubscription = qos_subscription #data
-    qos_sub.qos_reference = str(qci)
+    qos_sub.qos_reference = "1"
     if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
     if not ((qos_sub.flow_info is not None)^(qos_sub.eth_flow_info is not None)^(qos_sub.exter_app_id is not None)):
