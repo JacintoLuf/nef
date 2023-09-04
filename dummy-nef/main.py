@@ -223,9 +223,16 @@ async def dummy(x: str, data):
 async def qos_get(scsAsId: str, subscriptionId: str=None):
     res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId, subscriptionId)
     if not res:
-        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
-    return Response(content=res, status_code=httpx.codes.OK)
+        return {"subs": []}
+        #raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
+    return {'sub': res}
 
+@app.get("/qget")
+async def qget():
+    res = await asSessionWithQoSSub.as_session_with_qos_subscription_get()
+    if not res:
+        return {'subs': []}
+    return {'subs': res}
 
 # @app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
 # async def qos_create(scsAsId: str, data: Request):
