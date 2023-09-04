@@ -238,7 +238,7 @@ async def qos_create():
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
     if not ((qos_sub.flow_info is not None)^(qos_sub.eth_flow_info is not None)^(qos_sub.exter_app_id is not None)):
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of IP flow info, Ethernet flow info or External Application")
-    if qos_sub.ue_ipv4_addr or qos_sub.ue_ipv6_addr and not qos_sub.flow_info:
+    if (qos_sub.ue_ipv4_addr or qos_sub.ue_ipv6_addr) and not qos_sub.flow_info:
         print("stop 1")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if qos_sub.mac_addr and not qos_sub.eth_flow_info: 
