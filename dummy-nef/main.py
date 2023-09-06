@@ -239,7 +239,7 @@ async def qget():
 @app.get("/qos")
 async def qos_create():
     scsAsId = "default"
-    qos_sub: AsSessionWithQoSSubscription = qos_subscription #data
+    qos_sub: AsSessionWithQoSSubscription = any_qos_sub #data
     qos_sub.qos_reference = "1"
     if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
