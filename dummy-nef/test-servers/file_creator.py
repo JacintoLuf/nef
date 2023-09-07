@@ -17,7 +17,7 @@ if __name__ == "__main__":
     print(f"File '{filename}' created with size {size_in_bytes} bytes.")
 
     filename = "big_file.txt"
-    size_in_bytes = 1024 * 1024 * 1024
+    size_in_bytes = 1024 * 1024 * 100
 
     create_text_file(filename, size_in_bytes)
     print(f"File '{filename}' created with size {size_in_bytes} bytes.")
