@@ -300,23 +300,23 @@ async def pcf_callback(data):
     return httpx.codes.OK
 
 @app.put("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subscriptionId}")
-async def qos_put(afId, subId, data: Request):
+async def qos_put(scsAsId, subId, data: Request):
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
     #res code: 200
-    res = await asSessionWithQoSSub.as_session_with_qos_subscription_update(afId=afId, subId=subId, sub=data.json())
+    res = await asSessionWithQoSSub.as_session_with_qos_subscription_update(scsAsId=scsAsId, subId=subId, sub=data.json())
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
-@app.patch("/3gpp-as-session-with-qos/v1/{afId}/subscriptions/{subId}")
+@app.patch("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
 async def qos_patch(afId, subId, data: Request):
     #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
     #res code: 200 
-    res = await asSessionWithQoSSub.as_session_with_qos_subscription_update(afId=afId, subId=subId, sub=data.json(), partial=True)
+    res = await asSessionWithQoSSub.as_session_with_qos_subscription_update(scsAsId=afId, subId=subId, sub=data.json(), partial=True)
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
 @app.get("/qdelete/{subId}")
 async def qo_s_delete(subId: str):
-    afId = "default"
-    res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
+    scsAsId = "default"
+    res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId, subId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
     else:
@@ -327,14 +327,14 @@ async def qo_s_delete(subId: str):
         if res.status_code != httpx.codes.NO_CONTENT:
             print("Context not found!")
 
-        res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
+        res = await asSessionWithQoSSub.as_session_with_qos_subscription_delete(scsAsId, subId)
         if res == 1:
             return Response(status_code=httpx.codes.NO_CONTENT)
     raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
     
-@app.delete("/3gpp-as-session-with-qos/v1/{afId}/subscriptions/{subId}")
-async def qos_delete(afId: str, subId: str):
-    res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
+@app.delete("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
+async def qos_delete(scsAsId: str, subId: str):
+    res = await trafficInfluSub.traffic_influence_subscription_get(scsAsId, subId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
     else:
@@ -343,7 +343,7 @@ async def qos_delete(afId: str, subId: str):
         if res.status_code != httpx.codes.NO_CONTENT:
             print("Context not found!")
 
-        res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
+        res = await trafficInfluSub.individual_traffic_influence_subscription_delete(scsAsId, subId)
         if res == 1:
             return Response(status_code=httpx.codes.NO_CONTENT)
     raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
