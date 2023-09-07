@@ -96,8 +96,7 @@ def create_sub4():
         notification_destination="http://10.102.141.12:7777/pcf-policy-authorization-qos-callback",
         flow_info=[flow_info],
         alt_qos_reqs=alt_reqs,
-        ue_ipv4_addr="10.45.0.2",
-        #tsc_qos_req=TscQosRequirement(),
+        ue_ipv4_addr="10.45.0.3",
     )
     return qos_sub
 
