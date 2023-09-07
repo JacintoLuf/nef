@@ -253,6 +253,14 @@ async def qos_create():
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if (qos_sub.qos_reference and qos_sub.alt_qos_reqs) or (qos_sub.alt_qo_s_references and qos_sub.alt_qos_reqs):
         print("stop 3")
+        if qos_sub.qos_reference and qos_sub.alt_qos_reqs:
+            print("1")
+        if qos_sub.alt_qo_s_references and qos_sub.alt_qos_reqs:
+            print("2")
+        print(qos_sub.qos_reference)
+        print(qos_sub.alt_qos_reqs)
+        print(qos_sub.alt_qo_s_references)
+        print(qos_sub.alt_qos_reqs)
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if qos_sub.qos_mon_info and qos_sub.events and "QOS_MONITORING" not in qos_sub.events:
         print("stop 4")
