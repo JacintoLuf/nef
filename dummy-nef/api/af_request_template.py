@@ -56,7 +56,8 @@ def create_sub2():
 def create_sub3():
     snssai = Snssai(sst=1, sd="0x111111")
     flow_info = FlowInfo(flow_id=10,
-                         flow_descriptions=["permit out 17 from any to 10.255.32.132 80", "permit out 17 from 10.255.32.132 to 10.45.0.0/16"])
+                         flow_descriptions=["permit out 17 from 10.45.0.0/16 to 10.255.32.123 80", "permit out 17 from 10.255.32.123 to 10.45.0.0/16"])
+
     
     qos_sub = AsSessionWithQoSSubscription(
         dnn="internet",
@@ -66,7 +67,7 @@ def create_sub3():
         flow_info=[flow_info],
         qos_reference="1",
         alt_qo_s_references=["7","80"],
-        ue_ipv4_addr="10.45.0.2",
+        ue_ipv4_addr="10.45.0.4",
         # tsc_qos_req=TscQosRequirement(req_gbr_dl=100000000,
         #                               req_gbr_ul=1000000,
         #                               req_mbr_dl=10000000,
@@ -96,7 +97,7 @@ def create_sub4():
         notification_destination="http://10.102.141.12:7777/pcf-policy-authorization-qos-callback",
         flow_info=[flow_info],
         alt_qos_reqs=alt_reqs,
-        ue_ipv4_addr="10.45.0.3",
+        ue_ipv4_addr="10.45.0.4",
     )
     return qos_sub
 
