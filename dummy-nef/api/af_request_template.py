@@ -80,7 +80,7 @@ def create_sub3():
 def create_sub4():
     snssai = Snssai(sst=1, sd="0x111111")
     flow_info = FlowInfo(flow_id=10,
-                         flow_descriptions=["permit out 17 from any to 10.255.32.132 80", "permit out 17 from 10.255.32.132 to 10.45.0.0/16"])
+                         flow_descriptions=["permit out 17 from 10.45.0.0/16 to 10.255.32.123 80", "permit out 17 from 10.255.32.123 to 10.45.0.0/16"])
 
     alt_reqs =  AlternativeServiceRequirementsData(
         alt_qos_param_set_ref="big file dl",
