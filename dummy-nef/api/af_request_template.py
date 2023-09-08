@@ -84,8 +84,8 @@ def create_sub4():
 
     alt_reqs =  AlternativeServiceRequirementsData(
         alt_qos_param_set_ref="big file dl",
-        gbr_dl=4096,
-        gbr_ul=4096,
+        gbr_dl=1024,
+        gbr_ul=1024,
         pdb=1
     )
 

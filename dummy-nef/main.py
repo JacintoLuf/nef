@@ -246,26 +246,14 @@ async def qos_create():
     if not ((qos_sub.flow_info is not None)^(qos_sub.eth_flow_info is not None)^(qos_sub.exter_app_id is not None)):
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of IP flow info, Ethernet flow info or External Application")
     if (qos_sub.ue_ipv4_addr or qos_sub.ue_ipv6_addr) and not qos_sub.flow_info:
-        print("stop 1")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
-    if qos_sub.mac_addr and not qos_sub.eth_flow_info: 
-        print("stop 2")
+    if qos_sub.mac_addr and not qos_sub.eth_flow_info:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if (qos_sub.qos_reference and qos_sub.alt_qos_reqs) or (qos_sub.alt_qo_s_references and qos_sub.alt_qos_reqs):
-        print("stop 3")
-        if qos_sub.qos_reference and qos_sub.alt_qos_reqs:
-            print("1")
-        if qos_sub.alt_qo_s_references and qos_sub.alt_qos_reqs:
-            print("2")
-        print(qos_sub.qos_reference)
-        print(qos_sub.alt_qos_reqs)
-        print(qos_sub.alt_qo_s_references)
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if qos_sub.qos_mon_info and qos_sub.events and "QOS_MONITORING" not in qos_sub.events:
-        print("stop 4")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if qos_sub.alt_qo_s_references and not qos_sub.notification_destination:
-        print("stop 5")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     
     bsf_params = {}
@@ -334,7 +322,7 @@ async def qo_s_delete(subId: str):
     
 @app.delete("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
 async def qos_delete(scsAsId: str, subId: str):
-    res = await trafficInfluSub.traffic_influence_subscription_get(scsAsId, subId)
+    res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId, subId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
     else:
