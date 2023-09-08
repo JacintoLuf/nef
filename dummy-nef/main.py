@@ -320,10 +320,10 @@ async def qo_s_delete(subId: str):
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
     else:
-        #contextId = res['location'].split('/')[-1]
-        # res = await pcf_handler.pcf_policy_authorization_delete(contextId)
-        print(f"deleting at location: {res['location']}")
-        res :httpx.Response = await get_req(f"{res['location']}/delete", conf.GLOBAL_HEADERS)
+        contextId = res['location'].split('/')[-1]
+        res = await pcf_handler.pcf_policy_authorization_delete(contextId)
+        # print(f"deleting at location: {res['location']}")
+        # res :httpx.Response = await delete_req(f"{res['location']}/delete")
         if res.status_code != httpx.codes.NO_CONTENT:
             print("Context not found!")
 
