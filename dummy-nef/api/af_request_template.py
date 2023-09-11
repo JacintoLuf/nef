@@ -12,8 +12,8 @@ from models.alternative_service_requirements_data import AlternativeServiceRequi
 def create_sub():
     route_info = RouteInformation(ipv4_addr="10.255.32.123", port_number=80)
     route_to_loc = RouteToLocation(dnai="internet", route_info=route_info)
-    flow_info = FlowInfo(flow_id=1,
-                        flow_descriptions=["permit out ip from any to 10.255.32.132 80", "permit out ip from 10.255.32.132 to any"])
+    flow_info = FlowInfo(flow_id=1010,
+                        flow_descriptions=["permit in ip from 10.45.0.4 to 10.255.32.123 80", "permit out ip from 10.255.32.123 80 to 10.45.0.4"])
 
     traffic_influ = TrafficInfluSub(
         af_trans_id="1",
@@ -34,8 +34,8 @@ def create_sub2():
     snssai = Snssai(sst=1, sd="0x111111")
     route_info = RouteInformation(ipv4_addr="10.255.32.132", port_number=80)
     route_to_loc = RouteToLocation(dnai="internet", route_info=route_info)
-    flow_info = FlowInfo(flow_id=10,
-                         flow_descriptions=["permit out ip from any to 10.255.32.132 80", "permit out ip from 10.255.32.132 to 10.45.0.0/16"])
+    flow_info = FlowInfo(flow_id=1010,
+                         flow_descriptions=["permit in ip from 10.45.0.4 to 10.255.32.132 80", "permit out ip from 10.255.32.132 80 to 10.45.0.4"])
     
     traffic_influ = TrafficInfluSub(
         af_trans_id="2",
@@ -55,8 +55,8 @@ def create_sub2():
 
 def create_sub3():
     snssai = Snssai(sst=1, sd="0x111111")
-    flow_info = FlowInfo(flow_id=10,
-                         flow_descriptions=["permit out ip from 10.45.0.0/16 to 10.255.32.123 80", "permit out ip from 10.255.32.123 to 10.45.0.0/16"])
+    flow_info = FlowInfo(flow_id=1010,
+                         flow_descriptions=["permit in ip from 10.45.0.4 to 10.255.32.123 80", "permit out ip from 10.255.32.123 80 to 10.45.0.4"])
 
     
     qos_sub = AsSessionWithQoSSubscription(
@@ -80,14 +80,14 @@ def create_sub3():
 
 def create_sub4():
     snssai = Snssai(sst=1, sd="0x111111")
-    flow_info = FlowInfo(flow_id=10,
-                         flow_descriptions=["permit out ip from 10.45.0.0/16 to 10.255.32.123 80", "permit out ip from 10.255.32.123 to 10.45.0.0/16"])
+    flow_info = FlowInfo(flow_id=1010,
+                         flow_descriptions=["permit in ip from 10.45.0.4 to 10.255.32.123 80", "permit out ip from 10.255.32.123 80 to 10.45.0.4"])
 
     alt_reqs =  AlternativeServiceRequirementsData(
-        alt_qos_param_set_ref="big file dl",
+        alt_qos_param_set_ref="1",
         gbr_dl=1024,
         gbr_ul=1024,
-        pdb=1
+        #pdb=1
     )
 
     qos_sub = AsSessionWithQoSSubscription(
