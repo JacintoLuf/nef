@@ -20,7 +20,7 @@ def create_sub():
         dnn="internet",
         any_ue_ind=False,
         subscribed_events="UP_PATH_CHANGE",
-        ipv4_addr="10.45.0.5",
+        ipv4_addr="10.45.0.4",
         notification_destination=f"http://{conf.HOSTS['NEF'][0]}:7777/pcf-policy-authorization-callback",
         traffic_filters=[flow_info],
         request_test_notification=True,
@@ -96,7 +96,7 @@ def create_sub4():
         supported_features="18000",
         notification_destination="http://10.102.141.12:7777/pcf-policy-authorization-qos-callback",
         flow_info=[flow_info],
-        alt_qos_reqs=alt_reqs,
+        alt_qos_reqs=[alt_reqs],
         ue_ipv4_addr="10.45.0.4",
     )
     return qos_sub
