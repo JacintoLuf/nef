@@ -17,7 +17,7 @@ import core.udr_handler as udr_handler
 import crud.nfProfile as nfProfile
 import crud.trafficInfluSub as trafficInfluSub
 import crud.asSessionWithQoSSub as asSessionWithQoSSub
-from api.af_request_template import influ_sub, any_influ_sub, qos_subscription, any_qos_sub
+from api.af_request_template import influ_sub, any_influ_sub, qos_subscription, qos_subscription2, any_qos_sub
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
@@ -236,11 +236,13 @@ async def qget():
 
 # @app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
 # async def qos_create(scsAsId: str, data: Request):
-@app.get("/qos")
-async def qos_create():
+@app.get("/qos/{i}")
+async def qos_create(i: str):
     scsAsId = "default"
-    qos_sub: AsSessionWithQoSSubscription = any_qos_sub #data
-    #qos_sub.qos_reference = "1"
+    if i == "0":
+        qos_sub: AsSessionWithQoSSubscription = qos_subscription2 #data
+    else:
+        qos_sub: AsSessionWithQoSSubscription = qos_subscription #data
     if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
     if not ((qos_sub.flow_info is not None)^(qos_sub.eth_flow_info is not None)^(qos_sub.exter_app_id is not None)):

@@ -65,7 +65,7 @@ def create_sub3():
         supported_features="18000",
         notification_destination="http://10.102.141.12:7777/pcf-policy-authorization-qos-callback",
         flow_info=[flow_info],
-        qos_reference="1",
+        qos_reference="6",
         alt_qo_s_references=["7","80"],
         ue_ipv4_addr="10.45.0.4",
         # tsc_qos_req=TscQosRequirement(req_gbr_dl=100000000,
@@ -78,6 +78,24 @@ def create_sub3():
     )
     return qos_sub
 
+def create_sub34():
+    snssai = Snssai(sst=1, sd="0x111111")
+    flow_info = FlowInfo(flow_id=1010,
+                         flow_descriptions=["permit in ip from 10.45.0.4 to 10.255.32.123 80", "permit out ip from 10.255.32.123 80 to 10.45.0.4"])
+
+    
+    qos_sub = AsSessionWithQoSSubscription(
+        dnn="internet",
+        snssai=snssai,
+        supported_features="18000",
+        notification_destination="http://10.102.141.12:7777/pcf-policy-authorization-qos-callback",
+        flow_info=[flow_info],
+        qos_reference="1",
+        alt_qo_s_references=["7","80"],
+        ue_ipv4_addr="10.45.0.4",
+    )
+    return qos_sub
+
 def create_sub4():
     snssai = Snssai(sst=1, sd="0x111111")
     flow_info = FlowInfo(flow_id=1010,
@@ -87,7 +105,7 @@ def create_sub4():
         alt_qos_param_set_ref="1",
         gbr_dl="1024",
         gbr_ul="1024",
-        #pdb=1
+        #pdb=5000
     )
 
     qos_sub = AsSessionWithQoSSubscription(
@@ -104,4 +122,5 @@ def create_sub4():
 influ_sub = create_sub()
 any_influ_sub = create_sub2()
 qos_subscription = create_sub3()
+qos_subscription2 = create_sub34()
 any_qos_sub = create_sub4()
