@@ -56,7 +56,7 @@ def create_sub2():
 def create_sub3():
     snssai = Snssai(sst=1, sd="0x111111")
     flow_info = FlowInfo(flow_id=1010,
-                         flow_descriptions=["permit in ip from 10.45.0.4 to 10.255.32.123 80", "permit out ip from 10.255.32.123 80 to 10.45.0.4"])
+                         flow_descriptions=["permit in ip from 10.45.0.8 to 10.255.32.123 80", "permit out ip from 10.255.32.123 80 to 10.45.0.8"])
 
     
     qos_sub = AsSessionWithQoSSubscription(
@@ -67,7 +67,7 @@ def create_sub3():
         flow_info=[flow_info],
         qos_reference="6",
         alt_qo_s_references=["7","80"],
-        ue_ipv4_addr="10.45.0.4",
+        ue_ipv4_addr="10.45.0.8",
         # tsc_qos_req=TscQosRequirement(req_gbr_dl=100000000,
         #                               req_gbr_ul=1000000,
         #                               req_mbr_dl=10000000,
@@ -81,7 +81,7 @@ def create_sub3():
 def create_sub34():
     snssai = Snssai(sst=1, sd="0x111111")
     flow_info = FlowInfo(flow_id=1010,
-                         flow_descriptions=["permit in ip from 10.45.0.4 to 10.255.32.123 80", "permit out ip from 10.255.32.123 80 to 10.45.0.4"])
+                         flow_descriptions=["permit in ip from 10.45.0.9 to 10.255.32.123 80", "permit out ip from 10.255.32.123 80 to 10.45.0.9"])
 
     
     qos_sub = AsSessionWithQoSSubscription(
@@ -92,7 +92,7 @@ def create_sub34():
         flow_info=[flow_info],
         qos_reference="1",
         alt_qo_s_references=["7","80"],
-        ue_ipv4_addr="10.45.0.4",
+        ue_ipv4_addr="10.45.0.9",
     )
     return qos_sub
 
