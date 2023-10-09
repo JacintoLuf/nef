@@ -129,6 +129,7 @@ async def nf_status_subscribe():
                     },
                 data=json.dumps(sub.to_dict())
             )
+            print(response.json())
             res = SubscriptionData.from_dict(response.json())
             if response.status_code == httpx.codes.CREATED:
                 print(f"{nfType[0]} {nfType[1]} Subscription created until {res.validity_time}")
