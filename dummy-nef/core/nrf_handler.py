@@ -1,5 +1,7 @@
 import httpx
 import json
+import datetime
+from datetime import datetime, timezone, timedelta
 from api.config import conf
 from session import async_db
 from models.nf_profile import NFProfile
@@ -111,13 +113,13 @@ async def nf_status_subscribe():
     nfTypes = [("BSF", "nbsf-management"), ("PCF", "npcf-policyauthorization"), ("UDR", "nudr-dr"), ("UDM", "nudm-sdm")]
     for nfType in nfTypes:
         sub = SubscriptionData(
-            nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}:7777/nnrf-nfm/v1/nf-status-notify",
+            nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}:7777/nnrf-nfm/v1/subscriptions",
             req_nf_instance_id=conf.NEF_PROFILE.nf_instance_id,
             subscr_cond=SubscrCond(nf_type=nfType[0], service_name=nfType[1]),
+            validity_time=str(datetime.now(timezone.utc)+timedelta(days=1)),
             req_nf_type="NEF",
             requester_features="1"
         )
-        print(sub)
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.post(
                 f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/subscriptions",
@@ -128,6 +130,7 @@ async def nf_status_subscribe():
                 data=json.dumps(sub.to_dict())
             )
             print("NF status notify res")
+            print(response.status_code)
             print(response.text)
             # if response.status_code == httpx.codes.CREATED:
             # [fc5837fc-4753-41ee-a94f-1140a058385d] Subscription created until 2023-08-31T16:40:53.656179+00:00 [duration:86400,validity:86399.997793,patch:43199.998896]

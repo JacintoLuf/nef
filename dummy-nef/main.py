@@ -50,7 +50,7 @@ async def read_root():
     insts = await nfProfile.get_all()
     return {'nfs instances': str(insts)}
 
-@app.post("/nnrf-nfm/v1/nf-status-notify")
+@app.post("/nnrf-nfm/v1/subscriptions")
 async def nrf_notif(notif):
     print("--------------------------nrf callback notif-------------------------")
     print(type(notif))
