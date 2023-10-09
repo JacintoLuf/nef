@@ -17,6 +17,16 @@ async def nrf_discovery():
     profiles = []
     collection = async_db['nf_instances']
     collection.delete_many({})
+    nfs = ["BSF", "PCF", "UDR", "UDM"]
+    params = {"target-nf-type": "PCF", "requester-nf-type": "NEF"}
+    for nf in nfs:
+        async with httpx.AsyncClient(http1=False, http2=True) as client:
+            response = await client.get(
+                f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-disc/v1/nf-instances",
+                headers={'Accept': 'application/json,application/problem+json'},
+                params={"target-nf-type": nf, "requester-nf-type": "NEF"}
+            )
+            print(response.text)
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
             f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances",
@@ -132,13 +142,10 @@ async def nf_status_subscribe():
             )
             print(response.headers)
             print(response.json())
+            sub = SubscriptionData.from_dict(response.json())
             if response.status_code == httpx.codes.CREATED:
-                print(f"{nfType[0]} {nfType[1]} Subscription created until {response.json()['validityTime']}")
-                try:
-                    sub_res = SubscriptionData.from_dict(response.json())
-                except Exception as e:
-                    print(e)
-                res = subscriptionData.subscription_data_insert(sub_res, response.headers['location'])
+                print(f"{nfType[0]} {nfType[1]} Subscription created until {sub.validity_time}")
+                res = subscriptionData.subscription_data_insert(sub, response.headers['location'])
                 if not res:
                     print("Error saving subscription")
             else:
