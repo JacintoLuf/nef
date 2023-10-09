@@ -266,7 +266,8 @@ class SubscrCond(Model):
         :param nf_type: The nf_type of this SubscrCond.
         :type nf_type: str
         """
-        allowed_values = ["NRF", "UDM", "AMF", "SMF", "AUSF", "NEF", "PCF", "SMSF", "NSSF", "UDR", "LMF", "GMLC", "5G_EIR", "SEPP", "UPF", "N3IWF", "AF", "UDSF", "BSF", "CHF", "NWDAF", "PCSCF", "CBCF", "UCMF", "HSS", "SOR_AF", "SPAF", "MME", "SCSAS", "SCEF", "SCP", "NSSAAF", "ICSCF", "SCSCF" "AUSF", "UDR", "PCF", "CHF", "HSS"]  # noqa: E501
+        #allowed_values = ["NRF", "UDM", "AMF", "SMF", "AUSF", "NEF", "PCF", "SMSF", "NSSF", "UDR", "LMF", "GMLC", "5G_EIR", "SEPP", "UPF", "N3IWF", "AF", "UDSF", "BSF", "CHF", "NWDAF", "PCSCF", "CBCF", "UCMF", "HSS", "SOR_AF", "SPAF", "MME", "SCSAS", "SCEF", "SCP", "NSSAAF", "ICSCF", "SCSCF" "AUSF", "UDR", "PCF", "CHF", "HSS"]  # noqa: E501
+        allowed_values = ["UDM", "AUSF", "UDR", "PCF", "CHF", "HSS"]  # noqa: E501
         if nf_type not in allowed_values:
             raise ValueError(
                 "Invalid value for `nf_type` ({0}), must be one of {1}"

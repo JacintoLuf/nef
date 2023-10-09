@@ -12,20 +12,20 @@ import crud.nfProfile as nfProfile
 import crud.subscriptionData as subscriptionData
 
 async def nrf_discovery():
-    print("------------------disc-----------------------")
     uuids = []
     instances = []
     profiles = []
     collection = async_db['nf_instances']
     collection.delete_many({})
-    for nf in list(conf.HOSTS.keys()):
+    for nf in list(conf.NF_SCOPES.keys()):
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(
                 f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances",
                 headers={'Accept': 'application/json,application/problem+json'},
                 params={"nf-type": nf}
             )
-            print(response.text)
+            r = json.loads(response.text)
+            print(nf+": "+[i["href"].split('/')[-1] for i in r["_links"]["items"]])
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
             f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances",
@@ -66,8 +66,6 @@ async def nrf_get_access_token():
     return 200
 
 async def nf_register():
-    print(conf.HOSTS['NEF'])
-    print("--------------------register---------------------")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
             f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
@@ -121,13 +119,13 @@ async def nf_register_heart_beat():
     return response.status_code
 
 async def nf_status_subscribe():
-    nfTypes = [("BSF", "nbsf-management"), ("PCF", "npcf-policyauthorization"), ("UDR", "nudr-dr"), ("UDM", "nudm-sdm")]
+    nfTypes = list(conf.NF_SCOPES.keys())
     print("-------------------------------------------")
     for nfType in nfTypes:
         sub = SubscriptionData(
             nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}:7777/nnrf-nfm/v1/subscriptions",
             req_nf_instance_id=conf.NEF_PROFILE.nf_instance_id,
-            subscr_cond=SubscrCond(nf_type=nfType[0], service_name=nfType[1]),
+            subscr_cond=SubscrCond(nf_type=nfType),
             validity_time=str(datetime.now(timezone.utc)+timedelta(days=1)),
             req_nf_type="NEF",
             requester_features="1"
