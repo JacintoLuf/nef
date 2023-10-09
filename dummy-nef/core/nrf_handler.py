@@ -113,7 +113,6 @@ async def nf_status_subscribe():
     nfTypes = [("BSF", "nbsf-management"), ("PCF", "npcf-policyauthorization"), ("UDR", "nudr-dr"), ("UDM", "nudm-sdm")]
     print("-------------------------------------------")
     for nfType in nfTypes:
-        print(nfType)
         sub = SubscriptionData(
             nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}:7777/nnrf-nfm/v1/subscriptions",
             req_nf_instance_id=conf.NEF_PROFILE.nf_instance_id,
@@ -131,13 +130,14 @@ async def nf_status_subscribe():
                     },
                 data=json.dumps(sub.to_dict())
             )
-            print(response.status_code)
+            print(response.headers)
             print(response.json())
             if response.status_code == httpx.codes.CREATED:
-                print(f"{nfType[0]} {nfType[1]} Subscription created until ")
-            #     res = subscriptionData.subscription_data_insert(res, response.headers['location'])
-            #     if not res:
-            #         print("Error saving subscription")
+                print(f"{nfType[0]} {nfType[1]} Subscription created until {response.json()['validityTime']}")
+                sub_res = SubscriptionData.from_dict(response.json())
+                res = subscriptionData.subscription_data_insert(sub_res, response.headers['location'])
+                if not res:
+                    print("Error saving subscription")
             else:
                 print(f"{nfType[0]} {nfType[1]} Subscription not created")
 
