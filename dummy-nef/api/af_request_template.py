@@ -99,7 +99,7 @@ def create_sub34():
 def create_sub4():
     snssai = Snssai(sst=1, sd="0x111111")
     flow_info = FlowInfo(flow_id=1010,
-                         flow_descriptions=["permit in ip from 10.45.0.4 to 10.255.32.123 80", "permit out ip from 10.255.32.123 80 to 10.45.0.4"])
+                         flow_descriptions=["permit in ip from 10.45.0.9 to 10.255.32.123 80", "permit out ip from 10.255.32.123 80 to 10.45.0.9"])
 
     alt_reqs =  AlternativeServiceRequirementsData(
         alt_qos_param_set_ref="1",
@@ -115,7 +115,7 @@ def create_sub4():
         notification_destination="http://10.102.141.12:7777/pcf-policy-authorization-qos-callback",
         flow_info=[flow_info],
         alt_qos_reqs=[alt_reqs],
-        ue_ipv4_addr="10.45.0.4",
+        ue_ipv4_addr="10.45.0.9",
     )
     return qos_sub
 
