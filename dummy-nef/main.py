@@ -29,7 +29,7 @@ async def startup():
     res = await nrf_handler.nf_register()
     if res.status_code == httpx.codes.CREATED:
         await nrf_heartbeat()
-    res = await nrf_handler.nf_status_subscribe()
+    await status_subscribe()
     if res != httpx.codes.CREATED:
         print("NF status notify failed")
     # res = await nrf_handler.nrf_get_access_token()
@@ -39,11 +39,16 @@ async def startup():
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
 async def nrf_heartbeat():
     await nrf_handler.nf_register_heart_beat()
-    
+
+@repeat_every(seconds=86400)
+async def status_subscribe():
+    res = await nrf_handler.nf_status_subscribe()
+
 @app.on_event("shutdown")
 async def shutdown():
     print("shuting down...")
     await nrf_handler.nf_deregister()
+    await nrf_handler.nf_status_unsubscribe()
 
 @app.get("/")
 async def read_root():

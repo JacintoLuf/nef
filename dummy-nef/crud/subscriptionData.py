@@ -13,8 +13,7 @@ async def subscription_data_get():
 
 async def subscription_data_insert(sub: SubscriptionData, location: str):
     collection = db["subscription_data"]
-    subId = token_bytes(16)
-    document = {'_id': subId, 'sub': sub.to_dict(), 'location': location}
+    document = {'_id': sub.subscription_id, 'sub': sub.to_dict(), 'location': location}
     try:
         result = await collection.insert_one(document)
         print(result.inserted_id)

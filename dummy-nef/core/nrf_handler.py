@@ -129,24 +129,36 @@ async def nf_status_subscribe():
                     },
                 data=json.dumps(sub.to_dict())
             )
-            print("NF status notify res")
-            print(response.status_code)
-            print(response.text)
-            # if response.status_code == httpx.codes.CREATED:
-            # [fc5837fc-4753-41ee-a94f-1140a058385d] Subscription created until 2023-08-31T16:40:53.656179+00:00 [duration:86400,validity:86399.997793,patch:43199.998896]
-            #     res = subscriptionData.subscription_data_insert(sub, response.headers['location'])
-            #     if not res:
-            #         print("NF status not subscribed")
-    return 201
+            res = SubscriptionData.from_dict(response.json())
+            if response.status_code == httpx.codes.CREATED:
+                print(f"{nfType[0]} {nfType[1]} Subscription created until {res.validity_time}")
+                res = subscriptionData.subscription_data_insert(res, response.headers['location'])
+                if not res:
+                    print("Error saving subscription")
+            else:
+                print(f"{nfType[0]} {nfType[1]} Subscription not created")
 
-async def nf_status_unsubscribe(subId):
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-        response = await client.delete(
-            f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/subscriptions/{subId}",
-            headers={
-                'Accept': 'application/json,application/problem+json',
-                'Content-Type': 'application/json-patch+json'
-                }
-        )
+async def nf_status_unsubscribe(subId=None):
+    if not subId:
+        subs = subscriptionData.subscription_data_get()
+        for sub in subs:
+            async with httpx.AsyncClient(http1=False, http2=True) as client:
+                response = await client.delete(
+                    f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/subscriptions/{sub['subscription_id']}",
+                    headers={
+                        'Accept': 'application/json,application/problem+json',
+                        'Content-Type': 'application/json-patch+json'
+                        }
+                )
         print(response.text)
+    else:
+        async with httpx.AsyncClient(http1=False, http2=True) as client:
+            response = await client.delete(
+                f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/subscriptions/{subId}",
+                headers={
+                    'Accept': 'application/json,application/problem+json',
+                    'Content-Type': 'application/json-patch+json'
+                    }
+            )
+            print(response.text)
     return 1
