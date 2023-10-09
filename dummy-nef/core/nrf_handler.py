@@ -110,7 +110,7 @@ async def nf_register_heart_beat():
     return response.status_code
 
 async def nf_status_subscribe():
-    nfTypes = [("PCF", "npcf-policyauthorization"), ("UDR", "nudr-dr"), ("UDM", "nudm-sdm")] #("BSF", "nbsf-management"), 
+    nfTypes = [("BSF", "nbsf-management"), ("PCF", "npcf-policyauthorization"), ("UDR", "nudr-dr"), ("UDM", "nudm-sdm")]
     for nfType in nfTypes:
         sub = SubscriptionData(
             nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}:7777/nnrf-nfm/v1/subscriptions",
