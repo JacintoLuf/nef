@@ -29,7 +29,7 @@ async def startup():
     res = await nrf_handler.nf_register()
     if res.status_code == httpx.codes.CREATED:
         await nrf_heartbeat()
-    await status_subscribe()
+    #await status_subscribe()
     # res = await nrf_handler.nrf_get_access_token()
     # if res != httpx.codes.OK:
     #     print("Tokens denied")

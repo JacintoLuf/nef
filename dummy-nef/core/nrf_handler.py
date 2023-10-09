@@ -17,15 +17,6 @@ async def nrf_discovery():
     profiles = []
     collection = async_db['nf_instances']
     collection.delete_many({})
-    nfs = ["BSF", "PCF", "UDR", "UDM"]
-    for nf in nfs:
-        async with httpx.AsyncClient(http1=False, http2=True) as client:
-            response = await client.get(
-                f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-disc/v1/nf-instances",
-                headers={'Accept': 'application/json,application/problem+json'},
-                params={"target-nf-type": nf, "requester-nf-type": "NEF"}
-            )
-            print(response.text)
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
             f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances",
@@ -139,7 +130,6 @@ async def nf_status_subscribe():
                     },
                 data=json.dumps(sub.to_dict())
             )
-            print(response.headers)
             print(response.json())
             sub = SubscriptionData.from_dict(response.json())
             if response.status_code == httpx.codes.CREATED:
