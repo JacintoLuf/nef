@@ -25,7 +25,7 @@ async def nrf_discovery():
                 params={"nf-type": nf}
             )
             r = json.loads(response.text)
-            print(nf+": "+[i["href"].split('/')[-1] for i in r["_links"]["items"]])
+            print(nf+": "+list([i["href"].split('/')[-1] for i in r["_links"]["items"]]))
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
             f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances",
