@@ -18,6 +18,14 @@ async def nrf_discovery():
     profiles = []
     collection = async_db['nf_instances']
     collection.delete_many({})
+    for nf in conf.HOSTS.keys:
+        async with httpx.AsyncClient(http1=False, http2=True) as client:
+            response = await client.get(
+                f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances",
+                headers={'Accept': 'application/json,application/problem+json'},
+                params={"nf-type": nf}
+            )
+            print(response.text)
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
             f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances",
@@ -58,6 +66,7 @@ async def nrf_get_access_token():
     return 200
 
 async def nf_register():
+    print(conf.HOSTS['NEF'])
     print("--------------------register---------------------")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(

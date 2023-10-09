@@ -18,7 +18,6 @@ class Settings():
             v1 = client.CoreV1Api()
             
             namespace = "open5gs"
-            #mongodb_svc_name = "nef-mongodb"
             mongodb_svc_name = "open5gs-mongodb"
             nef_svc_name = "nef"
             nrf_svc_name = "open5gs-nrf-sbi"
@@ -54,13 +53,6 @@ class Settings():
             else:
                 self.HOSTS["NRF"] = "10.102.176.115:7777"
                 print("NRFs manually resolved: "+self.HOSTS["NRF"])
-
-
-
-        #MONGO_URI = "mongodb://root:pass@nef-mongodb.open5gs.svc.cluster.local:27017/admin?authSource=admin"
-        #self.MONGO_URI = "mongodb://"+self.MONGO_IP+"/nef"
-        self.FIRST_SUPERUSER = "admin@it.av.pt"
-        self.FIRST_SUPERUSER_PASSWORD = "1234"    
 
         self.NEF_PROFILE = NFProfile(
             nf_instance_id=self.API_UUID,
