@@ -18,7 +18,6 @@ async def nrf_discovery():
     collection = async_db['nf_instances']
     collection.delete_many({})
     nfs = ["BSF", "PCF", "UDR", "UDM"]
-    params = {"target-nf-type": "PCF", "requester-nf-type": "NEF"}
     for nf in nfs:
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(
