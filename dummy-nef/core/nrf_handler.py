@@ -18,7 +18,7 @@ async def nrf_discovery():
     profiles = []
     collection = async_db['nf_instances']
     collection.delete_many({})
-    for nf in list(conf.HOSTS.keys):
+    for nf in list(conf.HOSTS.keys()):
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(
                 f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances",
