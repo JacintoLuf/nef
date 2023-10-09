@@ -12,6 +12,7 @@ import crud.nfProfile as nfProfile
 import crud.subscriptionData as subscriptionData
 
 async def nrf_discovery():
+    print("------------------disc-----------------------")
     uuids = []
     instances = []
     profiles = []
@@ -57,6 +58,7 @@ async def nrf_get_access_token():
     return 200
 
 async def nf_register():
+    print("--------------------register---------------------")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.put(
             f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
