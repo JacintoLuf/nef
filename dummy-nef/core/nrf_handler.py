@@ -12,7 +12,7 @@ import crud.nfProfile as nfProfile
 import crud.subscriptionData as subscriptionData
 
 async def nrf_discovery():
-    uuids = []
+    hrefs = []
     instances = []
     profiles = []
     collection = async_db['nf_instances']
@@ -25,20 +25,12 @@ async def nrf_discovery():
                 params={"nf-type": nf}
             )
             r = json.loads(response.text)
-            print([i["href"] for i in r["_links"]["items"]])
-            uuids += [i["href"].split('/')[-1] for i in r["_links"]["items"]]
-    # async with httpx.AsyncClient(http1=False, http2=True) as client:
-    #     response = await client.get(
-    #         f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances",
-    #         headers={'Accept': 'application/json,application/problem+json'},
-    #     )
-    #     j = json.loads(response.text)
-    #     uuids = [i["href"].split('/')[-1] for i in j["_links"]["items"]]
-
+            for i in r["_links"]["items"]:
+                hrefs += i["href"]
     async with httpx.AsyncClient(http1=False, http2=True) as client:
-        for id in uuids:
+        for href in hrefs:
             response = await client.get(
-                f"http://{conf.HOSTS['NRF'][0]}:7777/nnrf-nfm/v1/nf-instances/"+id,
+                href,
                 headers={'Accept': 'application/json,application/problem+json'}
             )
             profiles.append(NFProfile.from_dict(response.json()))
