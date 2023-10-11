@@ -57,7 +57,8 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: pods-list
+  name: pods-list-nef
+  namespace: open5gs
 rules:
 - apiGroups: [""]
   resources: ["pods", "services"]
@@ -67,12 +68,13 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: pods-list
+  name: pods-list-nef
+  namespace: open5gs
 subjects:
 - kind: ServiceAccount
   name: nef-account
   namespace: open5gs
 roleRef:
   kind: ClusterRole
-  name: pods-list
+  name: pods-list-nef
   apiGroup: rbac.authorization.k8s.io
