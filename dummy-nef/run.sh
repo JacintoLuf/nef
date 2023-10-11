@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # Delete previous existing deployment and service
-kubectl delete deployment -n open5gs nef
-kubectl delete service -n open5gs nef
+kubectl delete -n open5gs -f nef-deployment.yaml
+#kubectl delete deployment -n open5gs nef
+#kubectl delete service -n open5gs nef
 # Uncomment on first run
 #kubectl delete clusterrole pods-list
 #kubectl delete clusterrolebinding pods-list
@@ -26,7 +27,7 @@ docker tag nef:latest jacintoluf/nef:v1
 docker push jacintoluf/nef:v1
 
 # Deploy the app to Kubernetes
-kubectl apply -n open5gs -f nef-deployment.yml
+kubectl apply -n open5gs -f nef-deployment.yaml
 
 # Port forward to service
 #kubectl port-forward -n open5gs svc/nef 9000:80
