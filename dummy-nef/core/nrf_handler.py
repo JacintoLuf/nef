@@ -25,11 +25,7 @@ async def nrf_discovery():
                 params={"nf-type": nf}
             )
             r = json.loads(response.text)
-            print("items")
-            print(r["_links"]["items"])
-            for i in r["_links"]["items"]:
-                print(i['href'])
-                hrefs += i["href"]
+            hrefs += [item["href"] for item in r["_links"]["items"]]
     print("list")
     print(hrefs)
     print(len(hrefs))
