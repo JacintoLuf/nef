@@ -27,10 +27,12 @@ async def nrf_discovery():
             r = json.loads(response.text)
             print("items")
             print(r["_links"]["items"])
+            print(len(r["_links"]["items"]))
             for i in r["_links"]["items"]:
                 hrefs += i["href"]
     print("list")
     print(href)
+    print(len(list))
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         for href in hrefs:
             response = await client.get(
