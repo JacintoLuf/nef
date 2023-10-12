@@ -26,8 +26,6 @@ async def nrf_discovery():
             )
             r = json.loads(response.text)
             hrefs += [item["href"] for item in r["_links"]["items"]]
-    print("list")
-    print(hrefs)
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         for href in hrefs:
             response = await client.get(
@@ -103,7 +101,6 @@ async def nf_register_heart_beat():
                 },
             data = json.dumps([{ "op": "replace", "path": "/nfStatus", "value": "REGISTERED" }])
         )
-        print(response.text)
         if response.status_code == httpx.codes.OK:
             new_nef_profile = NFProfile.from_dict(response.json())
             print(f"new profile {json.dumps(new_nef_profile)}")
@@ -114,7 +111,6 @@ async def nf_register_heart_beat():
 
 async def nf_status_subscribe():
     nfTypes = list(conf.NF_SCOPES.keys())
-    print("-------------------------------------------")
     for nfType in nfTypes:
         sub = SubscriptionData(
             nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}:7777/nnrf-nfm/v1/subscriptions",
@@ -133,7 +129,6 @@ async def nf_status_subscribe():
                     },
                 data=json.dumps(sub.to_dict())
             )
-            print(response.json())
             sub = SubscriptionData.from_dict(response.json())
             if response.status_code == httpx.codes.CREATED:
                 print(f"{nfType[0]} {nfType[1]} Subscription created until {sub.validity_time}")
