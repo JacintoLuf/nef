@@ -6,10 +6,12 @@ default_core=free5gc
 if [ $# -eq 0 ]; then
   # No arguments provided, use default value
   export 5G_CORE=$default_core
+  export NAMESPACE=$default_core
   echo Using default core $5G_CORE
 else
   # Argument provided, assign it to a variable
   export 5G_CORE=$1
+  export NAMESPACE=$1
   echo Using $5G_CORE core
 fi
 
