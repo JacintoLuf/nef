@@ -20,7 +20,7 @@ class Settings():
             
             print("##############")
             service_list = v1.list_namespaced_service(namespace=self.CORE)
-            filtered_services = [service for service in service_list.items if "nrf" in service.metadata.name]
+            filtered_services = [service for service in service_list.items if "smf" or "mongodb" in service.metadata.name]
             if filtered_services:
                 for service in filtered_services:
                     print(f"Service Name: {service.metadata.name}")
