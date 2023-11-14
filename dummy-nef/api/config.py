@@ -1,6 +1,5 @@
 import os
 import uuid
-#from datetime import datetime, timedelta
 from typing import List
 from models.nf_profile import NFProfile
 from models.nf_service import NFService
@@ -8,6 +7,8 @@ from kubernetes import client, config
 
 class Settings():
     def __init__(self):
+        self.CORE = os.environ['5G_CORE']
+        print(f"core: {self.CORE}")
         self.HOSTS = {}
         self.MONGO_URI = ""
         self.API_UUID = str(uuid.uuid4())
@@ -17,6 +18,20 @@ class Settings():
             config.load_incluster_config()
             v1 = client.CoreV1Api()
             
+            print("##############")
+            service_list = v1.list_namespaced_service(namespace=namespace)
+            filtered_services = [service for service in service_list.items if "nrf" in service.metadata.name]
+            if filtered_services:
+                for service in filtered_services:
+                    print(f"Service Name: {service.metadata.name}")
+                    print(f"ClusterIP: {service.spec.cluster_ip}")
+                    if service.spec.ports:
+                        print("Ports:")
+                        for port in service.spec.ports:
+                            print(f"  - Port Name: {port.name}, Port: {port.port}, Target Port: {port.target_port}")
+                    print("--------------------")
+            print("##############")
+
             namespace = "open5gs"
             mongodb_svc_name = "open5gs-mongodb"
             nef_svc_name = "nef"
@@ -37,6 +52,7 @@ class Settings():
             self.HOSTS["NRF"] = [svc.spec.cluster_ip]
             self.MONGO_IP = svc.spec.cluster_ip+":7777"
             #print(f"NRF service IP: {svc.spec.cluster_ip}")
+        
         except client.ApiException as e:
             print(e)
             if os.getenv('MONGO_IP') is not None:
