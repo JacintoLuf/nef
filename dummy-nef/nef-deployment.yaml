@@ -21,6 +21,9 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 7777
+          env:
+            - name: CORE_5G
+              value: ${CORE_5G}
       imagePullSecrets:
         - name: dockerhub-secret
 

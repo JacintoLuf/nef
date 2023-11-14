@@ -5,19 +5,19 @@ default_core=free5gc
 
 if [ $# -eq 0 ]; then
   # No arguments provided, use default value
-  export 5G_CORE=$default_core
+  export CORE_5G=$default_core
   export NAMESPACE=$default_core
-  echo Using default core $5G_CORE
+  echo Using default core $CORE_5G
 else
   # Argument provided, assign it to a variable
-  export 5G_CORE=$1
+  export CORE_5G=$1
   export NAMESPACE=$1
-  echo Using $5G_CORE core
+  echo Using $CORE_5G core
 fi
 
 # Delete previous existing deployment and service
 kubectl delete -n open5gs -f nef-deployment.yaml
-#kubectl delete -n $5g_core -f nef-deployment.yaml
+#kubectl delete -n $CORE_5G -f nef-deployment.yaml
 
 # Find and delete the Docker image by name
 IMAGE_ID=$(docker images -q nef)
@@ -37,9 +37,9 @@ docker tag nef:latest jacintoluf/nef:v1
 docker push jacintoluf/nef:v1
 
 # Deploy the app to Kubernetes
-#kubectl apply -n open5gs -f nef-deployment.yaml --env=5G_CORE=$5G_CORE
+#kubectl apply -n open5gs -f nef-deployment.yaml --env=CORE_5G=$CORE_5G
 envsubst < nef-deployment.yaml | kubectl apply -n open5gs -f -
-#kubectl apply -n $5G_CORE -f nef-deployment.yaml
+#kubectl apply -n $CORE_5G -f nef-deployment.yaml
 
 # Port forward to service
 #kubectl port-forward -n open5gs svc/nef 9000:80

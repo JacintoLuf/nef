@@ -7,7 +7,7 @@ from kubernetes import client, config
 
 class Settings():
     def __init__(self):
-        self.CORE = os.environ['5G_CORE']
+        self.CORE = os.environ['CORE_5G']
         print(f"core: {self.CORE}")
         self.HOSTS = {}
         self.MONGO_URI = ""
