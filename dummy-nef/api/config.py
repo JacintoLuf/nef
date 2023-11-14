@@ -19,7 +19,7 @@ class Settings():
             v1 = client.CoreV1Api()
             
             print("##############")
-            service_list = v1.list_namespaced_service(namespace=namespace)
+            service_list = v1.list_namespaced_service(namespace=self.CORE)
             filtered_services = [service for service in service_list.items if "nrf" in service.metadata.name]
             if filtered_services:
                 for service in filtered_services:
