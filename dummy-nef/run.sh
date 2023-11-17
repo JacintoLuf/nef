@@ -18,7 +18,7 @@ else
 fi
 
 # Delete previous existing deployment and service
-kubectl delete -n open5gs -f nef-deployment.yaml
+kubectl delete -n $NAMESPACE -f nef-deployment.yaml
 #kubectl delete -n $CORE_5G -f nef-deployment.yaml
 
 # Find and delete the Docker image by name
@@ -40,7 +40,7 @@ docker push jacintoluf/nef:v1
 
 # Deploy the app to Kubernetes
 #kubectl apply -n open5gs -f nef-deployment.yaml --env=CORE_5G=$CORE_5G
-envsubst < nef-deployment.yaml | kubectl apply -n open5gs -f -
+envsubst < nef-deployment.yaml | kubectl apply -n $NAMESPACE -f -
 #kubectl apply -n $CORE_5G -f nef-deployment.yaml
 
 # Port forward to service
