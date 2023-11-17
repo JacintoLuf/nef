@@ -24,6 +24,8 @@ spec:
           env:
             - name: CORE_5G
               value: ${CORE_5G}
+            - name: NAMESPACE
+              value: ${NAMESPACE}
       imagePullSecrets:
         - name: dockerhub-secret
 

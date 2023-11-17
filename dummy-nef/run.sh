@@ -4,15 +4,17 @@
 default_core=free5gc
 
 if [ $# -eq 0 ]; then
-  # No arguments provided, use default value
   export CORE_5G=$default_core
   export NAMESPACE=$default_core
-  echo Using default core $CORE_5G
+  echo Using default core $CORE_5G in default namespace: $NAMESPACE 
 else
-  # Argument provided, assign it to a variable
   export CORE_5G=$1
-  export NAMESPACE=$1
-  echo Using $CORE_5G core
+  if [ -n "$2" ]; then
+    export NAMESPACE=$2
+  else
+    export NAMESPACE=$1
+  fi
+  echo Using $CORE_5G core in namespace: $NAMESPACE
 fi
 
 # Delete previous existing deployment and service
