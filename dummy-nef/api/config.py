@@ -33,8 +33,8 @@ class Settings():
                 for svc in nrf_svc:
                     print(f"Service Name: {svc.metadata.name}")
                     print(f"ClusterIP: {svc.spec.cluster_ip}")
-                    print(svc.spec.ports.port)
-                    #self.HOSTS["NRF"] = [(svc.spec.cluster_ip, svc.spec.ports.port)]
+                    print(svc.spec.ports.port[0])
+                    #self.HOSTS["NRF"] = [(svc.spec.cluster_ip, svc.spec.ports.port[0])]
                     if svc.spec.ports:
                         print("Ports:")
                         for port in svc.spec.ports:
