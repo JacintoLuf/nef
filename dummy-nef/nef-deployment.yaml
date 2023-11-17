@@ -37,9 +37,6 @@ metadata:
   labels:
     app: nef
 spec:
-  # clusterIP: 10.102.141.12
-  # clusterIPs:
-  #   - 10.102.141.12
   ports:
   - port: 7777
     protocol: TCP

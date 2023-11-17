@@ -33,8 +33,7 @@ class Settings():
                 for svc in nrf_svc:
                     print(f"Service Name: {svc.metadata.name}")
                     print(f"ClusterIP: {svc.spec.cluster_ip}")
-                    print(svc.spec.ports[0].port)
-                    #self.HOSTS["NRF"] = [(svc.spec.cluster_ip, svc.spec.ports[0].port)]
+                    #self.HOSTS["NRF"] = [(svc.spec.cluster_ip, "80" if self.NAMESPACE=="free5gc" else "7777")]
                     if svc.spec.ports:
                         print("Ports:")
                         for port in svc.spec.ports:
@@ -104,8 +103,8 @@ class Settings():
     def set_nf_endpoints(self, profiles: List[NFProfile]):
         for profile in profiles:
             if profile.nf_type in self.HOSTS:
-                self.HOSTS[profile.nf_type].append(profile.ipv4_addresses)
+                self.HOSTS[profile.nf_type].append(profile.ipv4_addresses) #(profile.ipv4_addresses, "80" if conf.NAMESPACE=="free5gc" else "7777")
             else:
-                self.HOSTS[profile.nf_type] = profile.ipv4_addresses
+                self.HOSTS[profile.nf_type] = profile.ipv4_addresses #(profile.ipv4_addresses, "80" if conf.NAMESPACE=="free5gc" else "7777")
 
 conf = Settings()
