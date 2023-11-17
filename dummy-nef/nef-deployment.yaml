@@ -37,9 +37,9 @@ metadata:
   labels:
     app: nef
 spec:
-  clusterIP: 10.102.141.12
-  clusterIPs:
-    - 10.102.141.12
+  # clusterIP: 10.102.141.12
+  # clusterIPs:
+  #   - 10.102.141.12
   ports:
   - port: 7777
     protocol: TCP
@@ -47,15 +47,15 @@ spec:
     targetPort: 7777
   selector:
     app: nef
-  type: NodePort
-  #type: ClusterIP
+  #type: NodePort
+  type: ClusterIP
 
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: nef-account
-  namespace: ${NAMESPACE} #open5gs
+  namespace: ${NAMESPACE}
 #automountServiceAccountToken: true
 
 ---
@@ -63,7 +63,6 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: pods-list-nef
-#  namespace: ${NAMESPACE} open5gs
 rules:
 - apiGroups: [""]
   resources: ["pods", "services"]
@@ -74,11 +73,10 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: pods-list-nef
-#  namespace: ${NAMESPACE} open5gs
 subjects:
 - kind: ServiceAccount
   name: nef-account
-  namespace: ${NAMESPACE} #open5gs
+  namespace: ${NAMESPACE}
 roleRef:
   kind: ClusterRole
   name: pods-list-nef

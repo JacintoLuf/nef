@@ -41,7 +41,3 @@ docker push jacintoluf/nef:v1
 # Deploy the app to Kubernetes
 #kubectl apply -n open5gs -f nef-deployment.yaml --env=CORE_5G=$CORE_5G
 envsubst < nef-deployment.yaml | kubectl apply -n $NAMESPACE -f -
-#kubectl apply -n $CORE_5G -f nef-deployment.yaml
-
-# Port forward to service
-#kubectl port-forward -n open5gs svc/nef 9000:80
