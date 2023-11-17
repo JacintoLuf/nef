@@ -21,18 +21,28 @@ class Settings():
             v1 = client.CoreV1Api()
             
             print("##############")
-            service_list = v1.list_namespaced_service(namespace=self.NAMESPACE)
-            filtered_services = [service for service in service_list.items if "smf" in service.metadata.name]
-            if filtered_services:
-                for service in filtered_services:
-                    print(f"Service Name: {service.metadata.name}")
-                    print(f"ClusterIP: {service.spec.cluster_ip}")
-                    if service.spec.ports:
+            svc_list = v1.list_namespaced_service(namespace=self.NAMESPACE)
+            nrf_svc = []
+            mongo_svc = [svc for svc in svc_list.items if "mongodb" in svc.metadata.name]
+            #self.MONGO_URI = "mongodb://"+mongo_svc[0].spec.cluster_ip+"/nef"
+            if self.CORE == "open5gs":
+                nrf_svc = [svc for svc in svc_list.items if "nrf-sbi" in svc.metadata.name]
+            else:
+                nrf_svc = [svc for svc in svc_list.items if "nrf" in svc.metadata.name]
+            if nrf_svc:
+                for svc in nrf_svc:
+                    print(f"Service Name: {svc.metadata.name}")
+                    print(f"ClusterIP: {svc.spec.cluster_ip}")
+                    print(svc.spec.ports.port)
+                    #self.HOSTS["NRF"] = [(svc.spec.cluster_ip, svc.spec.ports.port)]
+                    if svc.spec.ports:
                         print("Ports:")
-                        for port in service.spec.ports:
+                        for port in svc.spec.ports:
                             print(f"  - Port Name: {port.name}, Port: {port.port}, Target Port: {port.target_port}")
                     print("--------------------")
             print("##############")
+
+            
 
             namespace = "open5gs"
             mongodb_svc_name = "open5gs-mongodb"
@@ -43,17 +53,13 @@ class Settings():
             svc = v1.read_namespaced_service(mongodb_svc_name, namespace)
             self.HOSTS["MONGODB"] = svc.spec.cluster_ip
             self.MONGO_IP = svc.spec.cluster_ip
-            self.MONGO_URI = "mongodb://"+svc.spec.cluster_ip+"/nef"    
-            #print(f"MONGODB service IP: {svc.spec.cluster_ip}")
+            self.MONGO_URI = "mongodb://"+svc.spec.cluster_ip+"/nef"
             # Get nef service ip
             svc = v1.read_namespaced_service(nef_svc_name, namespace)
             self.HOSTS["NEF"] = [svc.spec.cluster_ip]
-            #print(f"NEF service IP: {svc.spec.cluster_ip}")
-            # Get nef service ip
+            # Get nrf service ip
             svc = v1.read_namespaced_service(nrf_svc_name, namespace)
             self.HOSTS["NRF"] = [svc.spec.cluster_ip]
-            self.MONGO_IP = svc.spec.cluster_ip+":7777"
-            #print(f"NRF service IP: {svc.spec.cluster_ip}")
         
         except client.ApiException as e:
             print(e)

@@ -36,6 +36,7 @@ async def nrf_discovery():
             res = await nfProfile.insert_one(response.json())
             instances.append(response.json())
     conf.set_nf_endpoints(profiles)
+    print(profiles)
     return 1
 
 async def nrf_get_access_token():
