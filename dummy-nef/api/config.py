@@ -10,6 +10,7 @@ class Settings():
         self.CORE = os.environ['CORE_5G']
         self.NAMESPACE = os.environ['NAMESPACE']
         print(f"core: {self.CORE}")
+        print(f'namespace: {self.NAMESPACE}')
 
         self.HOSTS = {}
         self.MONGO_URI = ""
@@ -25,20 +26,22 @@ class Settings():
             nrf_svc = []
             mongo_svc = [svc for svc in svc_list.items if "mongodb" in svc.metadata.name]
             #self.MONGO_URI = "mongodb://"+mongo_svc[0].spec.cluster_ip+"/nef"
+            print(mongo_svc)
             if self.CORE == "open5gs":
                 nrf_svc = [svc for svc in svc_list.items if "nrf-sbi" in svc.metadata.name]
             else:
                 nrf_svc = [svc for svc in svc_list.items if "nrf" in svc.metadata.name]
-            if nrf_svc:
-                for svc in nrf_svc:
-                    print(f"Service Name: {svc.metadata.name}")
-                    print(f"ClusterIP: {svc.spec.cluster_ip}")
-                    #self.HOSTS["NRF"] = [(svc.spec.cluster_ip, "80" if self.NAMESPACE=="free5gc" else "7777")]
-                    if svc.spec.ports:
-                        print("Ports:")
-                        for port in svc.spec.ports:
-                            print(f"  - Port Name: {port.name}, Port: {port.port}, Target Port: {port.target_port}")
-                    print("--------------------")
+            print(nrf_svc)
+            # if nrf_svc:
+            #     for svc in nrf_svc:
+            #         print(f"Service Name: {svc.metadata.name}")
+            #         print(f"ClusterIP: {svc.spec.cluster_ip}")
+            #         #self.HOSTS["NRF"] = [(svc.spec.cluster_ip, "80" if self.NAMESPACE=="free5gc" else "7777")]
+            #         if svc.spec.ports:
+            #             print("Ports:")
+            #             for port in svc.spec.ports:
+            #                 print(f"  - Port Name: {port.name}, Port: {port.port}, Target Port: {port.target_port}")
+            #         print("--------------------")
             print("##############")
 
             
