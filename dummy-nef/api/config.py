@@ -48,17 +48,17 @@ class Settings():
             nef_svc_name = "nef"
             nrf_svc_name = "open5gs-nrf-sbi"
 
-            # Get mongodb service ip
-            svc = v1.read_namespaced_service(mongodb_svc_name, namespace)
-            self.HOSTS["MONGODB"] = svc.spec.cluster_ip
-            self.MONGO_IP = svc.spec.cluster_ip
-            self.MONGO_URI = "mongodb://"+svc.spec.cluster_ip+"/nef"
-            # Get nef service ip
-            svc = v1.read_namespaced_service(nef_svc_name, namespace)
-            self.HOSTS["NEF"] = [svc.spec.cluster_ip]
-            # Get nrf service ip
-            svc = v1.read_namespaced_service(nrf_svc_name, namespace)
-            self.HOSTS["NRF"] = [svc.spec.cluster_ip]
+            # # Get mongodb service ip
+            # svc = v1.read_namespaced_service(mongodb_svc_name, namespace)
+            # self.HOSTS["MONGODB"] = svc.spec.cluster_ip
+            # self.MONGO_IP = svc.spec.cluster_ip
+            # self.MONGO_URI = "mongodb://"+svc.spec.cluster_ip+"/nef"
+            # # Get nef service ip
+            # svc = v1.read_namespaced_service(nef_svc_name, namespace)
+            # self.HOSTS["NEF"] = [svc.spec.cluster_ip]
+            # # Get nrf service ip
+            # svc = v1.read_namespaced_service(nrf_svc_name, namespace)
+            # self.HOSTS["NRF"] = [svc.spec.cluster_ip]
         
         except client.ApiException as e:
             print(e)
