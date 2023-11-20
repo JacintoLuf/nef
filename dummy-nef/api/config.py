@@ -25,8 +25,9 @@ class Settings():
             svc_list = v1.list_namespaced_service(namespace=self.NAMESPACE)
             nrf_svc = []
             mongo_svc = [svc for svc in svc_list.items if "mongodb" in svc.metadata.name]
-            self.MONGO_URI = "mongodb://"+mongo_svc[0].spec.cluster_ip+"/nef"
             print(mongo_svc)
+            self.HOSTS["MONGODB"] = mongo_svc[0]
+            self.MONGO_URI = "mongodb://"+mongo_svc[0].spec.cluster_ip+"/nef"
             if self.CORE == "open5gs":
                 nrf_svc = [svc for svc in svc_list.items if "nrf-sbi" in svc.metadata.name]
             else:
