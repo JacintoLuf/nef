@@ -5,6 +5,8 @@ metadata:
   labels:
     app: nef
 spec:
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: nef

@@ -43,10 +43,10 @@ class Settings():
 
             
 
-            namespace = "open5gs"
-            mongodb_svc_name = "open5gs-mongodb"
-            nef_svc_name = "nef"
-            nrf_svc_name = "open5gs-nrf-sbi"
+            # namespace = "open5gs"
+            # mongodb_svc_name = "open5gs-mongodb"
+            # nef_svc_name = "nef"
+            # nrf_svc_name = "open5gs-nrf-sbi"
 
             # # Get mongodb service ip
             # svc = v1.read_namespaced_service(mongodb_svc_name, namespace)
