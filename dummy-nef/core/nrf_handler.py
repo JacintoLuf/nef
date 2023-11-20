@@ -18,7 +18,7 @@ async def nrf_discovery():
     collection = async_db['nf_instances']
     collection.delete_many({})
     for nf in list(conf.NF_SCOPES.keys()):
-        async with httpx.AsyncClient(http1=False, http2=True) as client:
+        async with httpx.AsyncClient(http1=True) as client:
             response = await client.get(
                 f"http://{conf.HOSTS['NRF'][0][0]}:{conf.HOSTS['NRF'][0][1]}/nnrf-nfm/v1/nf-instances",
                 headers={'Accept': 'application/json,application/problem+json'},
