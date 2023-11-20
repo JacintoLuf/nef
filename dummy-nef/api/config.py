@@ -21,7 +21,6 @@ class Settings():
             config.load_incluster_config()
             v1 = client.CoreV1Api()
             
-            print("##############")
             svc_list = v1.list_namespaced_service(namespace=self.NAMESPACE)
             nrf_svc = []
             mongo_svc = [svc for svc in svc_list.items if "mongodb" in svc.metadata.name]
@@ -34,15 +33,9 @@ class Settings():
             if nrf_svc:
                 for svc in nrf_svc:
                     if "NRF" in self.HOSTS:
-                        self.HOSTS["NRF"].append(svc.spec.cluster_ip)
+                        self.HOSTS["NRF"].append((svc.spec.cluster_ip, svc.spec.ports[0].port))
                     else:
-                        self.HOSTS["NRF"] = [svc.spec.cluster_ip]
-                    if svc.spec.ports:
-                        print("Port:")
-                        for port in svc.spec.ports:
-                            print(f"  - Port Name: {svc.spec.ports[0].name}, Port: {svc.spec.ports[0].port}")
-                    print("--------------------")
-            print("##############")
+                        self.HOSTS["NRF"] = [(svc.spec.cluster_ip, svc.spec.ports[0].port)]
 
             print(self.HOSTS)
 
@@ -106,8 +99,8 @@ class Settings():
     def set_nf_endpoints(self, profiles: List[NFProfile]):
         for profile in profiles:
             if profile.nf_type in self.HOSTS:
-                self.HOSTS[profile.nf_type].append(profile.ipv4_addresses) #(profile.ipv4_addresses, "80" if conf.NAMESPACE=="free5gc" else "7777")
+                self.HOSTS[profile.nf_type].append((profile.ipv4_addresses, "80" if conf.NAMESPACE=="free5gc" else "7777"))
             else:
-                self.HOSTS[profile.nf_type] = profile.ipv4_addresses #(profile.ipv4_addresses, "80" if conf.NAMESPACE=="free5gc" else "7777")
+                self.HOSTS[profile.nf_type] = [(profile.ipv4_addresses, "80" if conf.NAMESPACE=="free5gc" else "7777")]
 
 conf = Settings()
