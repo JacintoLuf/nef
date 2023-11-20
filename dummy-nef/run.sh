@@ -35,8 +35,8 @@ git pull
 docker build -t nef .
 
 # Tag the image and push it to the repository
-docker tag nef:latest jacintoluf/nef:v1
-docker push jacintoluf/nef:v1
+docker tag nef:latest jacintoluf/nef:$CORE_5G
+docker push jacintoluf/nef:$CORE_5G
 
 # Deploy the app to Kubernetes
 #kubectl apply -n open5gs -f nef-deployment.yaml --env=CORE_5G=$CORE_5G

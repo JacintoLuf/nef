@@ -17,7 +17,7 @@ spec:
       serviceAccountName: nef-account
       containers:
         - name: nef
-          image: jacintoluf/nef:v1
+          image: jacintoluf/nef:${CORE_5G}
           imagePullPolicy: Always
           ports:
             - containerPort: 7777
