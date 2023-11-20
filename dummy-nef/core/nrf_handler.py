@@ -25,18 +25,19 @@ async def nrf_discovery():
                 params={"nf-type": nf}
             )
             r = json.loads(response.text)
-            hrefs += [item["href"] for item in r["_links"]["items"]]
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-        for href in hrefs:
-            response = await client.get(
-                href,
-                headers={'Accept': 'application/json,application/problem+json'}
-            )
-            profiles.append(NFProfile.from_dict(response.json()))
-            res = await nfProfile.insert_one(response.json())
-            instances.append(response.json())
-    conf.set_nf_endpoints(profiles)
-    print(profiles)
+            print(response.text)
+            #hrefs += [item["href"] for item in r["_links"]["items"]]
+    # async with httpx.AsyncClient(http1=False, http2=True) as client:
+    #     for href in hrefs:
+    #         response = await client.get(
+    #             href,
+    #             headers={'Accept': 'application/json,application/problem+json'}
+    #         )
+    #         profiles.append(NFProfile.from_dict(response.json()))
+    #         res = await nfProfile.insert_one(response.json())
+    #         instances.append(response.json())
+    # conf.set_nf_endpoints(profiles)
+    # print(profiles)
     return 1
 
 async def nrf_get_access_token():
