@@ -3,7 +3,7 @@ import logging
 from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi_utils.tasks import repeat_every
 from fastapi.responses import JSONResponse
-from session import async_db, clean_db
+#from session import async_db, clean_db
 from api.config import conf
 from api.sbi_req import get_req, delete_req
 from models.pcf_binding import PcfBinding
@@ -348,7 +348,7 @@ async def qos_delete(scsAsId: str, subId: str):
 #
 @app.get("/clean")
 async def clean():
-    res = clean_db()
+    res = ""#clean_db()
     if res:
         return {"result": "Database cleaned."}
     else:
