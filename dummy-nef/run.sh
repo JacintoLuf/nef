@@ -21,7 +21,7 @@ fi
 kubectl delete -n $NAMESPACE -f nef-deployment.yaml
 #kubectl delete -n $CORE_5G -f nef-deployment.yaml
 
-# Find and delete the Docker image by name
+# Find and delete the local Docker image by name
 IMAGE_ID=$(docker images -q nef)
 if [ ! -z "$IMAGE_ID" ]; then
   echo $IMAGE_ID
