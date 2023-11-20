@@ -44,7 +44,7 @@ class Settings():
                     print("--------------------")
             print("##############")
 
-            
+            print(self.HOSTS)
 
             # namespace = "open5gs"
             # mongodb_svc_name = "open5gs-mongodb"
