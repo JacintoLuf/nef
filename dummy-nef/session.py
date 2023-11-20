@@ -20,3 +20,9 @@
 #     except Exception as e:
 #         print("Error cleaning database!")
 #         return False
+
+
+client = ""
+async_client = ""
+async_db = ""
+db = ""
