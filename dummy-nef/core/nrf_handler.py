@@ -12,6 +12,7 @@ import crud.nfProfile as nfProfile
 import crud.subscriptionData as subscriptionData
 
 async def nrf_discovery():
+    h_refs = []
     hrefs = []
     instances = []
     profiles = []
@@ -24,20 +25,16 @@ async def nrf_discovery():
                 headers={'Accept': 'application/json,application/problem+json'},
                 params={"nf-type": nf, "limit": 100}
             )
-        print(response.json())
         if response.json():
             r = response.json() #json.loads(response.text)
             if conf.CORE == "free5gc":
-                print(r['_link'])
                 if r["_link"]["item"]:
-                    hrefs += [item["href"] for item in r["_link"]["item"]]
+                    h_refs += [item["href"] for item in r["_link"]["item"]]
             else:
                 hrefs += [item["href"] for item in r["_links"]["items"]]
-                # if r["_link"]["item"]
-                # if "_link" in r and "items" in r["_link"]:
     if conf.CORE == "free5gc":
-        for href in hrefs:
-            href = href.replace("nrf-nnrf:8000", f"{conf.HOSTS['NRF'][0][0]}:{conf.HOSTS['NRF'][0][1]}")
+        for href in h_refs:
+            hrefs += href.replace("nrf-nnrf:8000", f"{conf.HOSTS['NRF'][0][0]}:{conf.HOSTS['NRF'][0][1]}")
     print(hrefs)
     # for href in hrefs:
     #     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
