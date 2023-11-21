@@ -27,7 +27,8 @@ async def nrf_discovery():
         print(response.json())
         if response.json():
             r = response.json() #json.loads(response.text)
-            hrefs += [item["href"] for item in r["_link"]["items"]]
+            if "_link" in r and "items" in r["_link"]:
+                hrefs += [item["href"] for item in r["_link"]["items"]]
     print(hrefs)
     for href in hrefs:
         async with httpx.AsyncClient(http1=False, http2=True) as client:
