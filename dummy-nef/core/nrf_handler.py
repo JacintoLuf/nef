@@ -36,16 +36,16 @@ async def nrf_discovery():
     if conf.CORE == "free5gc":
         hrefs = [href.replace("nrf-nnrf:8000", f"{conf.HOSTS['NRF'][0][0]}:{conf.HOSTS['NRF'][0][1]}") for href in h_refs]
     print(hrefs)
-    # for href in hrefs:
-    #     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
-    #         response = await client.get(
-    #             href,
-    #             headers={'Accept': 'application/json,application/problem+json'}
-    #         )
-    #         profiles.append(NFProfile.from_dict(response.json()))
-    #         res = await nfProfile.insert_one(response.json())
-    #         instances.append(response.json())
-    # conf.set_nf_endpoints(profiles)
+    for href in hrefs:
+        async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
+            response = await client.get(
+                href,
+                headers={'Accept': 'application/json,application/problem+json'}
+            )
+            profiles.append(NFProfile.from_dict(response.json()))
+            res = await nfProfile.insert_one(response.json())
+            instances.append(response.json())
+    conf.set_nf_endpoints(profiles)
     print(profiles)
     return 1
 

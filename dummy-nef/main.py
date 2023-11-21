@@ -26,14 +26,14 @@ logger = logging.getLogger(__name__)
 @app.on_event("startup")
 async def startup():
     res = await nrf_handler.nrf_discovery()
-    # res = await nrf_handler.nf_register()
-    # if res.status_code == httpx.codes.CREATED:
-    #     await nrf_heartbeat()
-    # await status_subscribe()
+    res = await nrf_handler.nf_register()
+    if res.status_code == httpx.codes.CREATED:
+        await nrf_heartbeat()
+    await status_subscribe()
 
-    # res = await nrf_handler.nrf_get_access_token()
-    # if res != httpx.codes.OK:
-    #     print("Tokens denied")
+    res = await nrf_handler.nrf_get_access_token()
+    if res != httpx.codes.OK:
+        print("Tokens denied")
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
 async def nrf_heartbeat():
@@ -120,7 +120,7 @@ async def ti_create(afId: str=None):
         if res.status_code == httpx.codes.CREATED:
             sub_id = trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
             if sub_id:
-                traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:7777/3gpp-trafficInfluence/v1/{afId}/subscriptions/{sub_id}"
+                traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0][0]}:{conf.HOSTS['NEF'][0][1]}/3gpp-trafficInfluence/v1/{afId}/subscriptions/{sub_id}"
                 traffic_sub.supp_feat = "0"
                 headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
@@ -132,16 +132,17 @@ async def ti_create(afId: str=None):
         
     #------------------------ipv4, ipv6 or eth---------------------------
     else:
-        bsf_params = {}
-        # bsf_params = {'gpsi': traffic_sub.gpsi,
-        #               'dnn': traffic_sub.dnn,
-        #               'snssai': traffic_sub.snssai}
-        if traffic_sub.ipv4_addr:
-            bsf_params['ipv4Addr'] = traffic_sub.ipv4_addr
-        elif traffic_sub.ipv6_addr:
-            bsf_params['ipv6Prefix'] = traffic_sub.ipv6_addr
-        elif traffic_sub.mac_addr:
-            bsf_params['macAddr48'] = traffic_sub.mac_addr
+        if conf.CORE != "free5gc":
+            bsf_params = {}
+            bsf_params['gpsi'] = traffic_sub.gpsi
+            bsf_params['dnn'] = traffic_sub.dnn,
+            bsf_params['snssai'] = traffic_sub.snssai
+            if traffic_sub.ipv4_addr:
+                bsf_params['ipv4Addr'] = traffic_sub.ipv4_addr
+            elif traffic_sub.ipv6_addr:
+                bsf_params['ipv6Prefix'] = traffic_sub.ipv6_addr
+            elif traffic_sub.mac_addr:
+                bsf_params['macAddr48'] = traffic_sub.mac_addr
 
         res = await bsf_handler.bsf_management_discovery(bsf_params)
         if res['code'] != httpx.codes.OK:
@@ -153,7 +154,7 @@ async def ti_create(afId: str=None):
         if res.status_code == httpx.codes.CREATED:
             sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
             if sub_id:
-                traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:7777/3gpp-traffic-influence/v1/{afId}/subscriptions/{sub_id}"
+                traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0][0]}:{conf.HOSTS['NEF'][0][1]}/3gpp-traffic-influence/v1/{afId}/subscriptions/{sub_id}"
                 headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
@@ -280,7 +281,7 @@ async def qos_create(i: str):
     if response.status_code == httpx.codes.CREATED:
         sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
         if sub_id:
-            qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}:7777/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
+            qos_sub.__self = f"http://{conf.HOSTS['NEF'][0][0]}:{conf.HOSTS['NEF'][0][1]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
             headers={'location': qos_sub.__self, 'content-type': 'application/json'}
             return JSONResponse(status_code=httpx.codes.CREATED, content=qos_sub.to_dict(), headers=headers)
         else:
