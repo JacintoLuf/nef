@@ -23,7 +23,7 @@ async def nrf_discovery():
             response = await client.get(
                 f"http://{conf.HOSTS['NRF'][0][0]}:{conf.HOSTS['NRF'][0][1]}/nnrf-disc/v1/nf-instances",
                 headers={'Accept': 'application/json,application/problem+json'},
-                params={"target-nf-type": nf, "requester-nf-type": "NEF", "limit": 100}
+                params={"target-nf-type": nf, "requester-nf-type": "NEF"}
             )
             print(response.text)
     #     if response.json():
