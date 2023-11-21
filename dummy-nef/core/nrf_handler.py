@@ -42,11 +42,12 @@ async def nrf_discovery():
                 href,
                 headers={'Accept': 'application/json,application/problem+json'}
             )
-            profiles.append(NFProfile.from_dict(response.json()))
-            res = await nfProfile.insert_one(response.json())
-            instances.append(response.json())
-    conf.set_nf_endpoints(profiles)
-    print(profiles)
+            print(response.json())
+    #         profiles.append(NFProfile.from_dict(response.json()))
+    #         res = await nfProfile.insert_one(response.json())
+    #         instances.append(response.json())
+    # conf.set_nf_endpoints(profiles)
+    # print(profiles)
     return 1
 
 async def nrf_get_access_token():

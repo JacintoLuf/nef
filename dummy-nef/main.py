@@ -26,14 +26,14 @@ logger = logging.getLogger(__name__)
 @app.on_event("startup")
 async def startup():
     res = await nrf_handler.nrf_discovery()
-    res = await nrf_handler.nf_register()
-    if res.status_code == httpx.codes.CREATED:
-        await nrf_heartbeat()
-    await status_subscribe()
+    # res = await nrf_handler.nf_register()
+    # if res.status_code == httpx.codes.CREATED:
+    #     await nrf_heartbeat()
+    # await status_subscribe()
 
-    res = await nrf_handler.nrf_get_access_token()
-    if res != httpx.codes.OK:
-        print("Tokens denied")
+    # res = await nrf_handler.nrf_get_access_token()
+    # if res != httpx.codes.OK:
+    #     print("Tokens denied")
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
 async def nrf_heartbeat():
