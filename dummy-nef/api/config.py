@@ -39,7 +39,7 @@ class Settings():
 
             # Get nef service ip
             svc = v1.read_namespaced_service("nef", self.NAMESPACE)
-            self.HOSTS["NEF"] = [svc.spec.cluster_ip]
+            self.HOSTS["NEF"] = [(svc.spec.cluster_ip, svc.spec.ports[0].port)]
 
             print(self.HOSTS)
         
