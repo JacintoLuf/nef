@@ -40,8 +40,6 @@ class Settings():
             # Get nef service ip
             svc = v1.read_namespaced_service("nef", self.NAMESPACE)
             self.HOSTS["NEF"] = [(svc.spec.cluster_ip, svc.spec.ports[0].port)]
-
-            print(self.HOSTS)
         
         except client.ApiException as e:
             print(e)
@@ -72,8 +70,10 @@ class Settings():
 
         self.NF_SCOPES = {
             "NRF": "nnrf-nfm nnrf-disc nnrf-oauth2",
+            "AMF": "namf-evts",
+            "SMF": "event-exposure",
             "BSF": "nbsf-management",
-            "PCF": "npcf-policyauthorization",
+            "PCF": "npcf-policyauthorization npcf-eventexposure",
             "UDR": "nudr-dr",
             "UDM": "nudm-sdm nudm-uecm nudm-ueau",
         }
@@ -89,6 +89,5 @@ class Settings():
                 self.HOSTS[profile.nf_type].append((profile.ipv4_addresses, "80" if conf.NAMESPACE=="free5gc" else "7777"))
             else:
                 self.HOSTS[profile.nf_type] = [(profile.ipv4_addresses, "80" if conf.NAMESPACE=="free5gc" else "7777")]
-        print(self.HOSTS)
-
+                
 conf = Settings()
