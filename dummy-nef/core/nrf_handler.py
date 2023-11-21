@@ -28,11 +28,11 @@ async def nrf_discovery():
         if response.json():
             r = response.json() #json.loads(response.text)
             if conf.CORE == "free5gc":
-                if "item" in r["_link"]:
+                # print(r['_link'])
+                if r["_link"]["item"]:
                     hrefs += [item["href"] for item in r["_link"]["item"]]
             else:
                 hrefs += [item["href"] for item in r["_links"]["items"]]
-                # print(r['_link'])
                 # if r["_link"]["item"]
                 # if "_link" in r and "items" in r["_link"]:
     print(hrefs)
