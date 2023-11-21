@@ -27,8 +27,13 @@ async def nrf_discovery():
         print(response.json())
         if response.json():
             r = response.json() #json.loads(response.text)
-            if "_link" in r and "items" in r["_link"]:
-                hrefs += [item["href"] for item in r["_link"]["items"]]
+            if conf.CORE == "open5gs":
+                hrefs += [item["href"] for item in r["_links"]["items"]]
+            else:
+                # print(r['_link'])
+                # if r["_link"]["item"]
+                # if "_link" in r and "items" in r["_link"]:
+                hrefs += [item["href"] for item in r["_link"]["item"]]
     print(hrefs)
     for href in hrefs:
         async with httpx.AsyncClient(http1=False, http2=True) as client:
