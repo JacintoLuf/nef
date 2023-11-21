@@ -18,16 +18,19 @@ async def nrf_discovery():
     profiles = []
     collection = async_db['nf_instances']
     collection.delete_many({})
+
+
+
     for nf in list(conf.NF_SCOPES.keys()):
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.get(
                 f"http://{conf.HOSTS['NRF'][0][0]}:{conf.HOSTS['NRF'][0][1]}/nnrf-disc/v1/nf-instances",
                 headers={'Accept': 'application/json,application/problem+json'},
-                params={"target-nf-type": nf, "requester-nf-type": "NEF"}
+                params={"target-nf-type": nf, "requester-nf-type": "AMF"}
             )
             print(response.text)
     #     if response.json():
-    #         r = response.json() #json.loads(response.text)
+    #         r = response.json()
     #         if conf.CORE == "free5gc":
     #             if r["_link"]["item"]:
     #                 h_refs += [item["href"] for item in r["_link"]["item"]]

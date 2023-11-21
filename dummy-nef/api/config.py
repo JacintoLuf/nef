@@ -89,5 +89,5 @@ class Settings():
                 self.HOSTS[profile.nf_type].append((profile.ipv4_addresses, "80" if conf.NAMESPACE=="free5gc" else "7777"))
             else:
                 self.HOSTS[profile.nf_type] = [(profile.ipv4_addresses, "80" if conf.NAMESPACE=="free5gc" else "7777")]
-                
+
 conf = Settings()
