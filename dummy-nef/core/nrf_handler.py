@@ -20,7 +20,7 @@ async def nrf_discovery():
     #for nf in list(conf.NF_SCOPES.keys()):
     async with httpx.AsyncClient(http1=True) as client:
         response = await client.get(
-            f"http://{conf.HOSTS['NRF'][0][0]}:{conf.HOSTS['NRF'][0][1]}/nnrf-nfm/nf-instances", #/v1/nf-instances
+            f"http://{conf.HOSTS['NRF'][0][0]}:{conf.HOSTS['NRF'][0][1]}/nnrf-disc/nf-instances", #/v1/nf-instances
             headers={'Accept': 'application/json,application/problem+json'},
             #params={"nf-type": nf}
         )
