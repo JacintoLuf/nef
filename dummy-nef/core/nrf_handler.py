@@ -32,7 +32,7 @@ async def nrf_discovery():
                     h_refs += [item["href"] for item in r["_link"]["item"]]
             else:
                 hrefs += [item["href"] for item in r["_links"]["items"]]
-    print(hrefs)
+    print(h_refs)
     if conf.CORE == "free5gc":
         for href in h_refs:
             hrefs += str(href.replace("nrf-nnrf:8000", f"{conf.HOSTS['NRF'][0][0]}:{conf.HOSTS['NRF'][0][1]}"))
