@@ -19,42 +19,46 @@ async def nrf_discovery():
     collection = async_db['nf_instances']
     collection.delete_many({})
 
+    if conf.CORE == "free5gc":
+        for nf in list(conf.NF_SCOPES.keys()):
+            async with httpx.AsyncClient(http1=True) as client:
+                response = await client.get(
+                    f"http://{conf.HOSTS['NRF'][0][0]}:{conf.HOSTS['NRF'][0][1]}/nnrf-disc/v1/nf-instances",
+                    headers={'Accept': 'application/json,application/problem+json'},
+                    params={"target-nf-type": nf, "requester-nf-type": "NEF"}
+                )
+            if response.json():
+                r = response.json()
+                print(r)
+                profiles.append(NFProfile.from_dict(r["nfInstances"]))
+                res = await nfProfile.insert_one(r["nfInstances"])
 
+    else:
+        for nf in list(conf.NF_SCOPES.keys()):
+            async with httpx.AsyncClient(http1=False, http2=True) as client:
+                response = await client.get(
+                    f"http://{conf.HOSTS['NRF'][0][0]}:{conf.HOSTS['NRF'][0][1]}/nnrf-nfm/v1/nf-instances",
+                    headers={'Accept': 'application/json,application/problem+json'},
+                    params={"target-nf-type": nf}
+                )
+                print(response.text)
+            if response.json():
+                r = response.json()
+                hrefs += [item["href"] for item in r["_links"]["items"]]
 
-    for nf in list(conf.NF_SCOPES.keys()):
-        async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
-            response = await client.get(
-                f"http://{conf.HOSTS['NRF'][0][0]}:{conf.HOSTS['NRF'][0][1]}/nnrf-disc/v1/nf-instances",
-                headers={'Accept': 'application/json,application/problem+json'},
-                params={"target-nf-type": nf, "requester-nf-type": "AMF"}
-            )
-            print(response.text)
-    #     if response.json():
-    #         r = response.json()
-    #         if conf.CORE == "free5gc":
-    #             if r["_link"]["item"]:
-    #                 h_refs += [item["href"] for item in r["_link"]["item"]]
-    #         else:
-    #             hrefs += [item["href"] for item in r["_links"]["items"]]
+        for href in hrefs:
+            async with httpx.AsyncClient(http1=False, http2=True) as client:
+                response = await client.get(
+                    href,
+                    headers={'Accept': 'application/json,application/problem+json'}
+                )
+                if response.json():
+                    r = response.json()
+                    profiles.append(NFProfile.from_dict(r))
+                    res = await nfProfile.insert_one(r)
+                    #instances.append(response.json())
     
-    # if conf.CORE == "free5gc":
-    #     hrefs = [href.replace("nrf-nnrf:8000", f"{conf.HOSTS['NRF'][0][0]}:{conf.HOSTS['NRF'][0][1]}") for href in h_refs]
-
-    # for href in hrefs:
-    #     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
-    #         response = await client.get(
-    #             href,
-    #             headers={'Accept': 'application/json,application/problem+json'}
-    #         )
-    #         print(href)
-    #         print("-----------------------")
-    #         print(response.json())
-    #         print("#######################")
-    #         profiles.append(NFProfile.from_dict(response.json()))
-    #         res = await nfProfile.insert_one(response.json())
-    #         instances.append(response.json())
-    # conf.set_nf_endpoints(profiles)
-    # print(profiles)
+    conf.set_nf_endpoints(profiles)
     return 1
 
 async def nrf_get_access_token():
