@@ -36,16 +36,16 @@ async def nrf_discovery():
                 # if r["_link"]["item"]
                 # if "_link" in r and "items" in r["_link"]:
     print(hrefs)
-    for href in hrefs:
-        async with httpx.AsyncClient(http1=False, http2=True) as client:
-            response = await client.get(
-                href,
-                headers={'Accept': 'application/json,application/problem+json'}
-            )
-            profiles.append(NFProfile.from_dict(response.json()))
-            res = await nfProfile.insert_one(response.json())
-            instances.append(response.json())
-    conf.set_nf_endpoints(profiles)
+    # for href in hrefs:
+    #     async with httpx.AsyncClient(http1=False, http2=True) as client:
+    #         response = await client.get(
+    #             href,
+    #             headers={'Accept': 'application/json,application/problem+json'}
+    #         )
+    #         profiles.append(NFProfile.from_dict(response.json()))
+    #         res = await nfProfile.insert_one(response.json())
+    #         instances.append(response.json())
+    # conf.set_nf_endpoints(profiles)
     print(profiles)
     return 1
 
