@@ -13,7 +13,7 @@ from models.tsn_qos_container import TsnQosContainer
 
 async def pcf_policy_authorization_get(app_session_id: str=None):
     if app_session_id:
-        async with httpx.AsyncClient(http1=False, http2=True) as client:
+        async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.get(
                 f"http://{conf.HOSTS['PCF'][0]}:7777/npcf-policyauthorization/v1/app-sessions/{app_session_id}",
                 headers={'Accept': 'application/json,application/problem+json'}
@@ -68,7 +68,7 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
     print("---------------------------------------------")
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
+    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
             f"http://{host_addr}:{conf.HOSTS['PCF'][0][1]}/npcf-policyauthorization/v1/app-sessions",
             headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
@@ -120,7 +120,7 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
     print("---------------------------------------------")
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
+    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
             f"http://{host_addr}:{conf.HOSTS['PCF'][0][1]}/npcf-policyauthorization/v1/app-sessions",
             headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
@@ -130,7 +130,7 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
     return response
 
 async def pcf_policy_authorization_delete(subId: str=None):
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
+    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
             f"http://{conf.HOSTS['PCF'][0][0]}:{conf.HOSTS['PCF'][0][1]}/npcf-policyauthorization/v1/app-sessions/{subId}/delete",
             headers={'Accept': 'application/json,application/problem+json'},
