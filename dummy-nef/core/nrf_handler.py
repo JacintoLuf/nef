@@ -34,8 +34,7 @@ async def nrf_discovery():
                 hrefs += [item["href"] for item in r["_links"]["items"]]
     print(h_refs)
     if conf.CORE == "free5gc":
-        for href in h_refs:
-            hrefs += str(href.replace("nrf-nnrf:8000", f"{conf.HOSTS['NRF'][0][0]}:{conf.HOSTS['NRF'][0][1]}"))
+        hrefs = [href.replace("nrf-nnrf:8000", f"{conf.HOSTS['NRF'][0][0]}:{conf.HOSTS['NRF'][0][1]}") for href in h_refs]
     print(hrefs)
     # for href in hrefs:
     #     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
