@@ -68,7 +68,7 @@ async def nrf_discovery():
     for p in profiles:
         for key in p.keys():
             print(f"key: {key} | val: {p[key] if p[key] else None}")
-            print("##################################")
+        print("##################################")
     return 1
 
 async def nrf_get_access_token():
