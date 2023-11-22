@@ -61,6 +61,7 @@ async def nrf_discovery():
                     #instances.append(response.json())
     
     #conf.set_nf_endpoints(profiles)
+    print("----------------------------------")
     for p in profiles:
         print(p)
     return 1
