@@ -29,8 +29,9 @@ async def nrf_discovery():
                 )
             r = response.json()
             if r:
-                if r["nfInstances"]:
-                    profiles.append(NFProfile.from_dict(r["nfInstances"]))
+                profiles.append(r)
+                # if r["nfInstances"]:
+                #     profiles.append(NFProfile.from_dict(r["nfInstances"]))
                     #res = await nfProfile.insert_one(r["nfInstances"])
 
     else:
