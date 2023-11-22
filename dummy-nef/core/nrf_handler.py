@@ -27,11 +27,11 @@ async def nrf_discovery():
                     headers={'Accept': 'application/json,application/problem+json'},
                     params={"target-nf-type": nf, "requester-nf-type": "NEF"}
                 )
-            print(response.text)
-            if response.json():
-                r = response.json()
-                profiles.append(NFProfile.from_dict(r))
-                #res = await nfProfile.insert_one(r["nfInstances"])
+            r = response.json()
+            if r:
+                if r["nfInstances"]:
+                    profiles.append(NFProfile.from_dict(r["nfInstances"]))
+                    #res = await nfProfile.insert_one(r["nfInstances"])
 
     else:
         for nf in list(conf.NF_SCOPES.keys()):
@@ -59,7 +59,7 @@ async def nrf_discovery():
                     #instances.append(response.json())
     
     conf.set_nf_endpoints(profiles)
-    #print(profiles)
+    print(profiles)
     return 1
 
 async def nrf_get_access_token():
