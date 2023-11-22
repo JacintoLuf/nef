@@ -66,8 +66,8 @@ async def nrf_discovery():
         print(p)
     print("----------------------------------")
     for p in profiles:
-        for key, val in p.iteritems():
-            print(f"key: {key} | val: {val}")
+        for key in p.keys():
+            print(f"key: {key} | val: {p[key] if p[key]}")
             print("##################################")
     return 1
 
