@@ -33,9 +33,9 @@ class Settings():
             if nrf_svc:
                 for svc in nrf_svc:
                     if "NRF" in self.HOSTS:
-                        self.HOSTS["NRF"].append((svc.spec.cluster_ip, svc.spec.ports[0].port))
+                        self.HOSTS["NRF"].append(f"{svc.metadata.name}:{svc.spec.ports[0].port}")
                     else:
-                        self.HOSTS["NRF"] = [(svc.spec.cluster_ip, svc.spec.ports[0].port)]
+                        self.HOSTS["NRF"] = [f"{svc.metadata.name}:{svc.spec.ports[0].port}"]
 
             # Get nef service ip
             svc = v1.read_namespaced_service("nef", self.NAMESPACE)
@@ -83,11 +83,19 @@ class Settings():
        
         return self.API_UUID
     
-    def set_nf_endpoints(self, profiles: List[NFProfile]):
-        for profile in profiles:
-            if profile.nf_type in self.HOSTS:
-                self.HOSTS[profile.nf_type].append((profile.ipv4_addresses, "80" if conf.NAMESPACE=="free5gc" else "7777"))
-            else:
-                self.HOSTS[profile.nf_type] = [(profile.ipv4_addresses, "80" if conf.NAMESPACE=="free5gc" else "7777")]
+    def set_nf_endpoints(self, profiles: List[NFProfile] = None, instances = None):
+        if profiles:
+            for profile in profiles:
+                if profile.nf_type in self.HOSTS:
+                    self.HOSTS[profile.nf_type].append(f"{profile.ipv4_addresses}:7777")
+                else:
+                    self.HOSTS[profile.nf_type] = [f"{profile.ipv4_addresses}:7777"]
+        elif instances:
+            for instance in instances:
+                if instance['nfType'] in self.HOSTS:
+                    self.HOSTS[instance['nfType']].append(instance['ipv4Addresses'])
+                else:
+                    self.HOSTS[instance['nfType']] = [instance['ipv4Addresses']]
+
 
 conf = Settings()
