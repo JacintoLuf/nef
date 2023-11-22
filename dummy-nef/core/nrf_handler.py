@@ -59,7 +59,7 @@ async def nrf_discovery():
                     res = await nfProfile.insert_one(r)
                     #instances.append(response.json())
     
-    conf.set_nf_endpoints(profiles)
+    #conf.set_nf_endpoints(profiles)
     for p in profiles:
         print(p)
     return 1
