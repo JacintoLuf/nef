@@ -132,6 +132,8 @@ async def ti_create(afId: str=None):
         
     #------------------------ipv4, ipv6 or eth---------------------------
     else:
+        if "BSF" in conf.HOSTS.keys():
+            print("Temos BSF!")
         if conf.CORE != "free5gc":
             bsf_params = {}
             bsf_params['gpsi'] = traffic_sub.gpsi
