@@ -29,11 +29,11 @@ async def nrf_discovery():
                 )
             r = response.json()
             print(r)
-            profiles.append(r)
-            # if r:
-            #     if r["nfInstances"]:
-            #         profiles.append(NFProfile.from_dict(r["nfInstances"]))
-            #         res = await nfProfile.insert_one(r["nfInstances"])
+            if r["nfInstances"] != None:
+                instances.append(r["nfInstances"])
+                profiles.append(r)
+                # profiles.append(NFProfile.from_dict(r["nfInstances"]))
+                # res = await nfProfile.insert_one(r["nfInstances"])
 
     else:
         for nf in list(conf.NF_SCOPES.keys()):
@@ -65,10 +65,8 @@ async def nrf_discovery():
     for p in profiles:
         print(p)
     print("----------------------------------")
-    for p in profiles:
-        for key in p.keys():
-            print(f"key: {key} | val: {p[key] if p[key] else None}")
-        print("##################################")
+    for i in instances:
+        print(i)
     return 1
 
 async def nrf_get_access_token():
