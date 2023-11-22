@@ -28,6 +28,7 @@ async def nrf_discovery():
                     params={"target-nf-type": nf, "requester-nf-type": "NEF"}
                 )
             r = response.json()
+            print(r)
             if r:
                 profiles.append(r)
                 # if r["nfInstances"]:
