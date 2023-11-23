@@ -83,8 +83,6 @@ class Settings():
         return self.API_UUID
     
     def set_nf_endpoints(self, profiles: List[NFProfile] = None, instances = None):
-        print("printing instances")
-        print(profiles or instances)
         if profiles:
             for profile in profiles:
                 if profile.nf_type in self.HOSTS:

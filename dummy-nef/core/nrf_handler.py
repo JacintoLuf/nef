@@ -28,7 +28,6 @@ async def nrf_discovery():
                     params={"target-nf-type": nf, "requester-nf-type": "NEF"}
                 )
             r = response.json()
-            print(r)
             if r["nfInstances"] != None:
                 instances += r["nfInstances"]
                 for i in r["nfInstances"]:
