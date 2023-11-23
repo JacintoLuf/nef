@@ -107,7 +107,7 @@ class Settings():
                         self.update_values(item)
             elif isinstance(value, dict):
                 self.update_values(value)
-            elif  key == "ipv4Addresses":
+            if  key == "ipv4Addresses":
                 for i, addr in enumerate(profile[key]):
                     svc = v1.read_namespaced_service(addr, self.NAMESPACE)
                     profile[key][i] = svc.spec.cluster_ip
