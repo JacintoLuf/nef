@@ -23,7 +23,7 @@ async def nrf_discovery():
         for nf in list(conf.NF_SCOPES.keys()):
             async with httpx.AsyncClient(http1=True) as client:
                 response = await client.get(
-                    f"http://{conf.HOSTS['NRF'][0][0]}:{conf.HOSTS['NRF'][0][1]}/nnrf-disc/v1/nf-instances",
+                    f"http://{conf.HOSTS['NRF'][0]}/nnrf-disc/v1/nf-instances",
                     headers={'Accept': 'application/json,application/problem+json'},
                     params={"target-nf-type": nf, "requester-nf-type": "NEF"}
                 )
@@ -37,7 +37,7 @@ async def nrf_discovery():
         for nf in list(conf.NF_SCOPES.keys()):
             async with httpx.AsyncClient(http1=False, http2=True) as client:
                 response = await client.get(
-                    f"http://{conf.HOSTS['NRF'][0][0]}:{conf.HOSTS['NRF'][0][1]}/nnrf-nfm/v1/nf-instances",
+                    f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/nf-instances",
                     headers={'Accept': 'application/json,application/problem+json'},
                     params={"target-nf-type": nf}
                 )
@@ -71,7 +71,7 @@ async def nrf_get_access_token():
         )
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.post(
-                f"http://{conf.HOSTS['NRF'][0]}:{conf.HOSTS['NRF'][0][1]}/nnrf-nfm/v1/nf-instances",
+                f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/nf-instances",
                 headers={'Accept': 'application/json,application/problem+json'},
                 data=json.dumps(access_token_req.to_dict())
             )
@@ -82,7 +82,7 @@ async def nrf_get_access_token():
 async def nf_register():
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.put(
-            f"http://{conf.HOSTS['NRF'][0]}:{conf.HOSTS['NRF'][0][1]}/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
+            f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
             headers={
                 'Accept': 'application/json,application/problem+json',
                 'Content-Type': 'application/json'
@@ -102,7 +102,7 @@ async def nf_update(profile):
 async def nf_deregister():
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.delete(
-            f"http://{conf.HOSTS['NRF'][0]}:{conf.HOSTS['NRF'][0][1]}/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
+            f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
             headers={'Accept': 'application/json,application/problem+json'}
         )
         print(response.text)
@@ -116,7 +116,7 @@ async def nf_deregister():
 async def nf_register_heart_beat():
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.patch(
-            f"http://{conf.HOSTS['NRF'][0]}:{conf.HOSTS['NRF'][0][1]}/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
+            f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
             headers={
                 'Accept': 'application/json,application/problem+json',
                 'Content-Type': 'application/json-patch+json'
@@ -144,7 +144,7 @@ async def nf_status_subscribe():
         )
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.post(
-                f"http://{conf.HOSTS['NRF'][0]}:{conf.HOSTS['NRF'][0][1]}/nnrf-nfm/v1/subscriptions",
+                f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/subscriptions",
                 headers={
                     'Accept': 'application/json,application/problem+json',
                     'Content-Type': 'application/json'
@@ -166,7 +166,7 @@ async def nf_status_unsubscribe(subId=None):
         for sub in subs:
             async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
                 response = await client.delete(
-                    f"http://{conf.HOSTS['NRF'][0]}:{conf.HOSTS['NRF'][0][1]}/nnrf-nfm/v1/subscriptions/{sub['subscription_id']}",
+                    f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/subscriptions/{sub['subscription_id']}",
                     headers={
                         'Accept': 'application/json,application/problem+json',
                         'Content-Type': 'application/json-patch+json'
@@ -176,7 +176,7 @@ async def nf_status_unsubscribe(subId=None):
     else:
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.delete(
-                f"http://{conf.HOSTS['NRF'][0]}:{conf.HOSTS['NRF'][0][1]}/nnrf-nfm/v1/subscriptions/{subId}",
+                f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/subscriptions/{subId}",
                 headers={
                     'Accept': 'application/json,application/problem+json',
                     'Content-Type': 'application/json-patch+json'

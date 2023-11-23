@@ -37,9 +37,8 @@ class Settings():
                     else:
                         self.HOSTS["NRF"] = [f"{svc.metadata.name}:{svc.spec.ports[0].port}"]
 
-            # Get nef service ip
             svc = v1.read_namespaced_service("nef", self.NAMESPACE)
-            self.HOSTS["NEF"] = [(svc.spec.cluster_ip, svc.spec.ports[0].port)]
+            self.HOSTS["NEF"] = [f"{svc.spec.cluster_ip}:{svc.spec.ports[0].port}"]
         
         except client.ApiException as e:
             print(e)
