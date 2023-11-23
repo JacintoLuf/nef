@@ -32,7 +32,7 @@ async def nrf_discovery():
             if r["nfInstances"] != None:
                 instances += r["nfInstances"]
                 for i in r["nfInstances"]:
-                    profiles.append(conf.update_values(i))
+                    profiles.append(NFProfile.from_dict(conf.update_values(i)))
         conf.set_nf_endpoints(profiles=profiles)
 
     else:
