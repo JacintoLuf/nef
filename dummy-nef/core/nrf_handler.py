@@ -30,7 +30,7 @@ async def nrf_discovery():
             r = response.json()
             print(r)
             if r["nfInstances"] != None:
-                instances.append(r["nfInstances"])
+                instances += r["nfInstances"]
         conf.set_nf_endpoints(instances=instances)
 
     else:

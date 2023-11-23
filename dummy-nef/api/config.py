@@ -91,12 +91,12 @@ class Settings():
                     self.HOSTS[profile.nf_type].append(f"{profile.ipv4_addresses}:7777")
                 else:
                     self.HOSTS[profile.nf_type] = [f"{profile.ipv4_addresses}:7777"]
-        # elif instances:
-        #     for instance in instances:
-        #         if instance['nfType'] in self.HOSTS:
-        #             self.HOSTS[instance['nfType']].append(instance['ipv4Addresses'])
-        #         else:
-        #             self.HOSTS[instance['nfType']] = [instance['ipv4Addresses']]
+        elif instances:
+            for instance in instances:
+                if instance['nfType'] in self.HOSTS:
+                    self.HOSTS[instance['nfType']].append(instance['ipv4Addresses'])
+                else:
+                    self.HOSTS[instance['nfType']] = [instance['ipv4Addresses']]
 
 
 conf = Settings()
