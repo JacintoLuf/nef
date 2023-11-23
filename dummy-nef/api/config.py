@@ -68,7 +68,7 @@ class Settings():
         )
 
         self.NF_SCOPES = {
-            "NRF": "nnrf-nfm nnrf-disc nnrf-oauth2",
+            #"NRF": "nnrf-nfm nnrf-disc nnrf-oauth2",
             "AMF": "namf-evts",
             "SMF": "event-exposure",
             "BSF": "nbsf-management",

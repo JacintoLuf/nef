@@ -31,6 +31,7 @@ async def nrf_discovery():
             if r["nfInstances"] != None:
                 for i in r["nfInstances"]:
                     p = conf.update_values(i)
+                    print(p)
                     profiles.append(NFProfile.from_dict(p))
                     res = await nfProfile.insert_one(p)
 
@@ -71,13 +72,13 @@ async def nrf_get_access_token():
         )
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.post(
-                f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/nf-instances",
+                f"http://{conf.HOSTS['NRF'][0]}/oauth2/token",
                 headers={'Accept': 'application/json,application/problem+json'},
                 data=json.dumps(access_token_req.to_dict())
             )
             print(response.status_code)
             print(response.text)
-    return 200
+    return response.status_code
 
 async def nf_register():
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
