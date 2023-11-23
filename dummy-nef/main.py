@@ -25,8 +25,8 @@ logger = logging.getLogger(__name__)
 
 @app.on_event("startup")
 async def startup():
-    res = await nrf_handler.nrf_discovery()
     res = await nrf_handler.nf_register()
+    res = await nrf_handler.nrf_discovery()
     if res.status_code == httpx.codes.CREATED:
         await nrf_heartbeat()
     await status_subscribe()

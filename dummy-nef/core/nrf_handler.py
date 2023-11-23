@@ -33,7 +33,7 @@ async def nrf_discovery():
                 instances += r["nfInstances"]
                 for i in r["nfInstances"]:
                     profiles.append(conf.update_values(i))
-        conf.set_nf_endpoints(instances=instances)
+        conf.set_nf_endpoints(profiles=profiles)
 
     else:
         for nf in list(conf.NF_SCOPES.keys()):
@@ -137,7 +137,7 @@ async def nf_status_subscribe():
     nfTypes = list(conf.NF_SCOPES.keys())
     for nfType in nfTypes:
         sub = SubscriptionData(
-            nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}:{conf.HOSTS['NRF'][0][1]}/nnrf-nfm/v1/subscriptions",
+            nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}/nnrf-nfm/v1/subscriptions",
             req_nf_instance_id=conf.NEF_PROFILE.nf_instance_id,
             subscr_cond=SubscrCond(nf_type=nfType),
             validity_time=str(datetime.now(timezone.utc)+timedelta(days=1)),
@@ -153,14 +153,15 @@ async def nf_status_subscribe():
                     },
                 data=json.dumps(sub.to_dict())
             )
+            print(response.text)
             sub = SubscriptionData.from_dict(response.json())
             if response.status_code == httpx.codes.CREATED:
-                print(f"{nfType[0]} {nfType[1]} Subscription created until {sub.validity_time}")
+                print(f"{nfType} Subscription created until {sub.validity_time}")
                 res = subscriptionData.subscription_data_insert(sub, response.headers['location'])
                 if not res:
                     print("Error saving subscription")
             else:
-                print(f"{nfType[0]} {nfType[1]} Subscription not created")
+                print(f"{nfType} Subscription not created")
 
 async def nf_status_unsubscribe(subId=None):
     if not subId:

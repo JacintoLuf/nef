@@ -15,7 +15,7 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
     if app_session_id:
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.get(
-                f"http://{conf.HOSTS['PCF'][0]}:7777/npcf-policyauthorization/v1/app-sessions/{app_session_id}",
+                f"http://{conf.HOSTS['PCF'][0]}/npcf-policyauthorization/v1/app-sessions/{app_session_id}",
                 headers={'Accept': 'application/json,application/problem+json'}
             )
             print(response.text)
@@ -23,7 +23,7 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
     return None
 
 async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_influ_sub: TrafficInfluSub=None):
-    host_addr = binding.pcf_ip_end_points[0].ipv4_address if binding is not None else conf.HOSTS['PCF'][0]
+    host_addr = f"{binding.pcf_ip_end_points[0].ipv4_address}:7777" if binding is not None else conf.HOSTS['PCF'][0]
     #host_addr = conf.HOSTS['PCF'][0]
     print(f"pcf address: {host_addr}")
 
@@ -44,7 +44,7 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
             setattr(req_data, attr_name, attr_val)
 
     #evts_notif = EventsNotification(ev_subs_uri=f"http://{conf.HOSTS['NEF'][0]}:7777/pcf-policy-authorization-callback")
-    req_data.notif_uri = "http://10.102.141.12:7777/pcf-policy-authorization-callback"
+    req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}/pcf-policy-authorization-callback"
     req_data.supp_feat = "FFFFFF"#"1"
     rout_req = AfRoutingRequirement(
             app_reloc=not traffic_influ_sub.app_relo_ind,
@@ -70,7 +70,7 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
     print("---------------------------------------------")
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
-            f"http://{host_addr}:{conf.HOSTS['PCF'][0][1]}/npcf-policyauthorization/v1/app-sessions",
+            f"http://{host_addr}/npcf-policyauthorization/v1/app-sessions",
             headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
             data=json.dumps(app_session_context.to_dict())
         )
@@ -78,7 +78,7 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
     return response
 
 async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_session_qos_sub: AsSessionWithQoSSubscription=None):
-    host_addr = binding.pcf_ip_end_points[0].ipv4_address or conf.HOSTS['PCF'][0][0]
+    host_addr = binding.pcf_ip_end_points[0].ipv4_address or conf.HOSTS['PCF'][0]
 
     req_data = AppSessionContextReqData()
     for attr_name in as_session_qos_sub.attribute_map.keys():
@@ -96,7 +96,7 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
         elif hasattr(req_data, attr_name) and attr_val:
             setattr(req_data, attr_name, attr_val)
 
-    req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0][0]}:{conf.HOSTS['NEF'][0][1]}/pcf-policy-authorization-qos-callback"
+    req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}/pcf-policy-authorization-qos-callback"
     req_data.supp_feat = "FFFFFF"#"18000"
     tsn_qos_c = None
     if as_session_qos_sub.tsc_qos_req:
@@ -122,7 +122,7 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
     print("---------------------------------------------")
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
-            f"http://{host_addr}:{conf.HOSTS['PCF'][0][1]}/npcf-policyauthorization/v1/app-sessions",
+            f"http://{host_addr}/npcf-policyauthorization/v1/app-sessions",
             headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
             data=json.dumps(app_session_context.to_dict())
         )
@@ -132,7 +132,7 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
 async def pcf_policy_authorization_delete(subId: str=None):
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
-            f"http://{conf.HOSTS['PCF'][0][0]}:{conf.HOSTS['PCF'][0][1]}/npcf-policyauthorization/v1/app-sessions/{subId}/delete",
+            f"http://{conf.HOSTS['PCF'][0]}/npcf-policyauthorization/v1/app-sessions/{subId}/delete",
             headers={'Accept': 'application/json,application/problem+json'},
         )
         print(response.text)
