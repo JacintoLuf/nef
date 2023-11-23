@@ -86,15 +86,9 @@ class Settings():
         if profiles:
             for profile in profiles:
                 if profile.nf_type in self.HOSTS:
-                    self.HOSTS[profile.nf_type].append(f"{profile.ipv4_addresses}:7777")
+                    self.HOSTS[profile.nf_type].append(f"{profile.ipv4_addresses}:{'80' if self.CORE=='free5gc' else '7777'}")
                 else:
-                    self.HOSTS[profile.nf_type] = [f"{profile.ipv4_addresses}:7777"]
-        elif instances:
-            for instance in instances:
-                if instance['nfType'] in self.HOSTS:
-                    self.HOSTS[instance['nfType']].append(instance['ipv4Addresses'])
-                else:
-                    self.HOSTS[instance['nfType']] = [instance['ipv4Addresses']]
+                    self.HOSTS[profile.nf_type] = [f"{profile.ipv4_addresses}:{'80' if self.CORE=='free5gc' else '7777'}"]
 
     def update_values(self, profile):
         config.load_incluster_config()

@@ -29,10 +29,10 @@ async def nrf_discovery():
                 )
             r = response.json()
             if r["nfInstances"] != None:
-                instances += r["nfInstances"]
                 for i in r["nfInstances"]:
-                    profiles.append(NFProfile.from_dict(conf.update_values(i)))
-        conf.set_nf_endpoints(profiles=profiles)
+                    p = conf.update_values(i)
+                    profiles.append(NFProfile.from_dict(p))
+                    res = await nfProfile.insert_one(p)
 
     else:
         for nf in list(conf.NF_SCOPES.keys()):
@@ -57,9 +57,8 @@ async def nrf_discovery():
                     r = response.json()
                     profiles.append(NFProfile.from_dict(r))
                     res = await nfProfile.insert_one(r)
-        conf.set_nf_endpoints(profiles=profiles)
-
-    return 1
+    
+    conf.set_nf_endpoints(profiles)
 
 async def nrf_get_access_token():
     for key in conf.NF_SCOPES.keys():
@@ -134,12 +133,15 @@ async def nf_register_heart_beat():
 
 async def nf_status_subscribe():
     nfTypes = list(conf.NF_SCOPES.keys())
+    current_time = datetime.now(timezone.utc)
+    validity_time = current_time + timedelta(days=1)
+    formatted_time = validity_time.strftime("%Y-%m-%dT%H:%M:%SZ")
     for nfType in nfTypes:
         sub = SubscriptionData(
             nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}/nnrf-nfm/v1/subscriptions",
             req_nf_instance_id=conf.NEF_PROFILE.nf_instance_id,
             subscr_cond=SubscrCond(nf_type=nfType),
-            validity_time=str(datetime.now(timezone.utc)+timedelta(days=1)),
+            validity_time=formatted_time,
             req_nf_type="NEF",
             requester_features="1"
         )
