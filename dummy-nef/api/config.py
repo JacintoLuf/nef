@@ -101,12 +101,16 @@ class Settings():
         v1 = client.CoreV1Api()
 
         for key, value in profile.items():
-            if isinstance(value, dict):
+            if isinstance(value, list):
+                for item in value:
+                    if isinstance(item, dict):
+                        self.update_values(item)
+            elif isinstance(value, dict):
                 self.update_values(value)
             elif  key == "ipv4Addresses":
                 for i, addr in enumerate(profile[key]):
                     svc = v1.read_namespaced_service(addr, self.NAMESPACE)
-                    profile[key][i] = [svc.spec.cluster_ip]
+                    profile[key][i] = svc.spec.cluster_ip
             elif key == "ipv4Address":
                 svc = v1.read_namespaced_service(profile[key], self.NAMESPACE)
                 profile[key] = svc.spec.cluster_ip
