@@ -12,9 +12,7 @@ import crud.nfProfile as nfProfile
 import crud.subscriptionData as subscriptionData
 
 async def nrf_discovery():
-    h_refs = []
     hrefs = []
-    instances = []
     profiles = []
     collection = async_db['nf_instances']
     collection.delete_many({})
@@ -43,7 +41,6 @@ async def nrf_discovery():
                     headers={'Accept': 'application/json,application/problem+json'},
                     params={"target-nf-type": nf}
                 )
-                print(response.text)
             if response.json():
                 r = response.json()
                 hrefs += [item["href"] for item in r["_links"]["items"]]
@@ -62,13 +59,14 @@ async def nrf_discovery():
     conf.set_nf_endpoints(profiles)
 
 async def nrf_get_access_token():
-    for key in conf.NF_SCOPES.keys():
+    for key, scope in conf.NF_SCOPES.keys():
         access_token_req = AccessTokenReq(
             grant_type="client_credentials",
             nf_instance_id=conf.API_UUID,
             nf_type="NEF",
             target_nf_type=key,
-            scope=conf.NF_SCOPES[key],
+            target_nf_set_id="", # SEE SPECIFICATIONS
+            scope=scope,
         )
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.post(
