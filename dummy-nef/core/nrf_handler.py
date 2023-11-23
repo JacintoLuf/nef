@@ -31,6 +31,8 @@ async def nrf_discovery():
             print(r)
             if r["nfInstances"] != None:
                 instances += r["nfInstances"]
+                for i in r["nfInstances"]:
+                    profiles.append(conf.update_values(i))
         conf.set_nf_endpoints(instances=instances)
 
     else:
