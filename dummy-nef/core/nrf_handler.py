@@ -59,7 +59,7 @@ async def nrf_discovery():
     conf.set_nf_endpoints(profiles)
 
 async def nrf_get_access_token():
-    for key, scope in conf.NF_SCOPES.keys():
+    for key, scope in conf.NF_SCOPES.items():
         access_token_req = AccessTokenReq(
             grant_type="client_credentials",
             nf_instance_id=conf.API_UUID,
