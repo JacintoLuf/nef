@@ -89,6 +89,7 @@ class Settings():
                     self.HOSTS[profile.nf_type].append(f"{profile.ipv4_addresses}:{'80' if self.CORE=='free5gc' else '7777'}")
                 else:
                     self.HOSTS[profile.nf_type] = [f"{profile.ipv4_addresses}:{'80' if self.CORE=='free5gc' else '7777'}"]
+        print(self.HOSTS)
 
     def update_values(self, profile):
         config.load_incluster_config()
