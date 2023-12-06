@@ -144,13 +144,15 @@ async def ti_create(afId: str=None):
             elif traffic_sub.mac_addr:
                 bsf_params['macAddr48'] = traffic_sub.mac_addr
 
-        res = await bsf_handler.bsf_management_discovery(bsf_params)
-        if res['code'] != httpx.codes.OK:
-            print("No binding")
-            raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
-        pcf_binding = PcfBinding.from_dict(res['response'])
+            res = await bsf_handler.bsf_management_discovery(bsf_params)
+            if res['code'] != httpx.codes.OK:
+                print("No binding")
+                raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
+            pcf_binding = PcfBinding.from_dict(res['response'])
         
-        res = await pcf_handler.pcf_policy_authorization_create_ti(pcf_binding, traffic_sub)
+            res = await pcf_handler.pcf_policy_authorization_create_ti(pcf_binding, traffic_sub)
+
+        res = await pcf_handler.pcf_policy_authorization_create_ti(traffic_influ_sub=traffic_sub)
         if res.status_code == httpx.codes.CREATED:
             sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
             if sub_id:
@@ -263,21 +265,27 @@ async def qos_create(i: str):
     if qos_sub.alt_qo_s_references and not qos_sub.notification_destination:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     
-    bsf_params = {}
-    if qos_sub.ue_ipv4_addr:
-        bsf_params['ipv4Addr'] = qos_sub.ue_ipv4_addr
-    elif qos_sub.ue_ipv6_addr:
-        bsf_params['ipv6Prefix'] = qos_sub.ue_ipv6_addr
-    elif qos_sub.mac_addr:
-        bsf_params['macAddr48'] = qos_sub.mac_addr
+    if "BSF" in conf.HOSTS.keys():
+            print("Temos BSF!")
+    if conf.CORE != "free5gc":
+        bsf_params = {}
+        if qos_sub.ue_ipv4_addr:
+            bsf_params['ipv4Addr'] = qos_sub.ue_ipv4_addr
+        elif qos_sub.ue_ipv6_addr:
+            bsf_params['ipv6Prefix'] = qos_sub.ue_ipv6_addr
+        elif qos_sub.mac_addr:
+            bsf_params['macAddr48'] = qos_sub.mac_addr
 
-    res = await bsf_handler.bsf_management_discovery(bsf_params)
-    if res['code'] != httpx.codes.OK:
-        print("No binding")
-        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
-    pcf_binding = PcfBinding.from_dict(res['response'])
+        res = await bsf_handler.bsf_management_discovery(bsf_params)
+        if res['code'] != httpx.codes.OK:
+            print("No binding")
+            raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
+        pcf_binding = PcfBinding.from_dict(res['response'])
     
-    response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
+        response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
+
+
+    response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
     if response.status_code == httpx.codes.CREATED:
         sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
         if sub_id:
