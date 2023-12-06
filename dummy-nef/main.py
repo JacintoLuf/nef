@@ -29,7 +29,7 @@ async def startup():
     if res.status_code == httpx.codes.CREATED:
         await nrf_heartbeat()
     await nrf_handler.nrf_discovery()
-    await status_subscribe()
+    #await status_subscribe()
 
     res = await nrf_handler.nrf_get_access_token()
 
