@@ -13,14 +13,14 @@ def create_sub():
     route_info = RouteInformation(ipv4_addr="10.255.32.123", port_number=80)
     route_to_loc = RouteToLocation(dnai="internet", route_info=route_info)
     flow_info = FlowInfo(flow_id=1010,
-                        flow_descriptions=["permit in ip from 10.45.0.4 to 10.255.32.123 80", "permit out ip from 10.255.32.123 80 to 10.45.0.4"])
+                        flow_descriptions=["permit in ip from 10.1.0.2 to 10.255.32.123 80", "permit out ip from 10.255.32.123 80 to 10.1.0.2"])
 
     traffic_influ = TrafficInfluSub(
         af_trans_id="1",
         dnn="internet",
         any_ue_ind=False,
         subscribed_events="UP_PATH_CHANGE",
-        ipv4_addr="10.45.0.4",
+        ipv4_addr="10.1.0.2",
         notification_destination=f"http://{conf.HOSTS['NEF'][0]}:7777/pcf-policy-authorization-callback",
         traffic_filters=[flow_info],
         request_test_notification=True,
@@ -35,7 +35,7 @@ def create_sub2():
     route_info = RouteInformation(ipv4_addr="10.255.32.132", port_number=80)
     route_to_loc = RouteToLocation(dnai="internet", route_info=route_info)
     flow_info = FlowInfo(flow_id=1010,
-                         flow_descriptions=["permit in ip from 10.45.0.4 to 10.255.32.132 80", "permit out ip from 10.255.32.132 80 to 10.45.0.4"])
+                         flow_descriptions=["permit in ip from 10.1.0.2 to 10.255.32.132 80", "permit out ip from 10.255.32.132 80 to 10.1.0.2"])
     
     traffic_influ = TrafficInfluSub(
         af_trans_id="2",
@@ -56,7 +56,7 @@ def create_sub2():
 def create_sub3():
     snssai = Snssai(sst=1, sd="0x111111")
     flow_info = FlowInfo(flow_id=1010,
-                         flow_descriptions=["permit in ip from 10.45.0.8 to 10.255.32.123 80", "permit out ip from 10.255.32.123 80 to 10.45.0.8"])
+                         flow_descriptions=["permit in ip from 10.1.0.2 to 10.255.32.123 80", "permit out ip from 10.255.32.123 80 to 10.1.0.2"])
 
     
     qos_sub = AsSessionWithQoSSubscription(
@@ -67,7 +67,7 @@ def create_sub3():
         flow_info=[flow_info],
         qos_reference="6",
         alt_qo_s_references=["7","80"],
-        ue_ipv4_addr="10.45.0.8",
+        ue_ipv4_addr="10.1.0.2",
         # tsc_qos_req=TscQosRequirement(req_gbr_dl=100000000,
         #                               req_gbr_ul=1000000,
         #                               req_mbr_dl=10000000,
@@ -81,7 +81,7 @@ def create_sub3():
 def create_sub34():
     snssai = Snssai(sst=1, sd="0x111111")
     flow_info = FlowInfo(flow_id=1010,
-                         flow_descriptions=["permit in ip from 10.45.0.9 to 10.255.32.123 80", "permit out ip from 10.255.32.123 80 to 10.45.0.9"])
+                         flow_descriptions=["permit in ip from 10.1.0.2 to 10.255.32.123 80", "permit out ip from 10.255.32.123 80 to 10.1.0.2"])
 
     
     qos_sub = AsSessionWithQoSSubscription(
@@ -92,14 +92,14 @@ def create_sub34():
         flow_info=[flow_info],
         qos_reference="1",
         alt_qo_s_references=["7","80"],
-        ue_ipv4_addr="10.45.0.9",
+        ue_ipv4_addr="10.1.0.2",
     )
     return qos_sub
 
 def create_sub4():
     snssai = Snssai(sst=1, sd="0x111111")
     flow_info = FlowInfo(flow_id=1010,
-                         flow_descriptions=["permit in ip from 10.45.0.9 to 10.255.32.123 80", "permit out ip from 10.255.32.123 80 to 10.45.0.9"])
+                         flow_descriptions=["permit in ip from 10.1.0.2 to 10.255.32.123 80", "permit out ip from 10.255.32.123 80 to 10.1.0.2"])
 
     alt_reqs =  AlternativeServiceRequirementsData(
         alt_qos_param_set_ref="1",
@@ -115,7 +115,7 @@ def create_sub4():
         notification_destination="http://10.102.141.12:7777/pcf-policy-authorization-qos-callback",
         flow_info=[flow_info],
         alt_qos_reqs=[alt_reqs],
-        ue_ipv4_addr="10.45.0.9",
+        ue_ipv4_addr="10.1.0.2",
     )
     return qos_sub
 
