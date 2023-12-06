@@ -104,7 +104,6 @@ async def nf_deregister():
             f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
             headers={'Accept': 'application/json,application/problem+json'}
         )
-        print(response.text)
         if response.status_code == httpx.codes.NO_CONTENT:
             print(f"[{conf.NEF_PROFILE.nf_instance_id}] NF de-registered")
         if response.status_code == httpx.codes.NOT_FOUND:

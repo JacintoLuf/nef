@@ -83,14 +83,12 @@ class Settings():
         return self.API_UUID
     
     def set_nf_endpoints(self, profiles: List[NFProfile] = None, instances = None):
-        print(profiles)
         if profiles:
             for profile in profiles:
                 if profile.nf_type in self.HOSTS:
                     self.HOSTS[profile.nf_type].append(f"{profile.ipv4_addresses[0]}:{'80' if self.CORE=='free5gc' else '7777'}")
                 else:
                     self.HOSTS[profile.nf_type] = [f"{profile.ipv4_addresses[0]}:{'80' if self.CORE=='free5gc' else '7777'}"]
-        print(self.HOSTS)
 
     def update_values(self, profile):
         config.load_incluster_config()
