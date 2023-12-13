@@ -94,16 +94,7 @@ async def ti_get(afId: str, subId: str=None):
 async def ti_create(afId: str=None):
     if not afId:
         afId = "default"
-    # try:
-    #     traffic_sub = TrafficInfluSub.from_dict(data.json())
-    # except:
-    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
-    
-    # if traffic_sub.notification_destination and not traffic_sub.subscribed_events:
-    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
-    
-    # if traffic_sub.tfc_corr_ind and not traffic_sub.external_group_id:
-    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse HTTP message")
+
     traffic_sub = influ_sub
     if not ((traffic_sub.af_app_id is not None)^(traffic_sub.traffic_filters is not None)^(traffic_sub.eth_traffic_filters is not None)):
         print(f"app id: {type(traffic_sub.af_app_id)}, traffic filters: {type(traffic_sub.traffic_filters)}, eth traffic filters: {type(traffic_sub.eth_traffic_filters)}")
@@ -111,6 +102,7 @@ async def ti_create(afId: str=None):
     if not ((traffic_sub.ipv4_addr is not None)^(traffic_sub.ipv6_addr is not None)^(traffic_sub.mac_addr is not None)^(traffic_sub.gpsi is not None)^(traffic_sub.external_group_id is not None)^(traffic_sub.any_ue_ind)):
         print(f"ipv4: {type(traffic_sub.ipv4_addr)}, any ue: {type(traffic_sub.any_ue_ind)}")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr, macAddr, gpsi, externalGroupId or anyUeInd")
+   
     #---------------------------any ue, gpsi or ext group id------------------------
     if traffic_sub.any_ue_ind or traffic_sub.gpsi or traffic_sub.external_group_id:
         if traffic_sub.any_ue_ind and not traffic_sub.dnn or not traffic_sub.snssai:
@@ -225,13 +217,8 @@ async def pcf_callback(data):
     print("-------------------------smf callback msg--------------------")
     print(data)
     return httpx.codes.OK
-#--------------------------dummy---------------------------------
-@app.post("/dummy/{x}")
-async def dummy(x: str, data):
-    return f"dummy data: {data} at location {x}"
+
 #---------------------as-session-with-qos------------------------
-#
-#
 @app.get("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subscriptionId}")
 async def qos_get(scsAsId: str, subscriptionId: str=None):
     res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId, subscriptionId)
@@ -256,6 +243,8 @@ async def qos_create(i: str):
         qos_sub: AsSessionWithQoSSubscription = qos_subscription2 #data
     else:
         qos_sub: AsSessionWithQoSSubscription = qos_subscription #data
+
+
     if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
     if not ((qos_sub.flow_info is not None)^(qos_sub.eth_flow_info is not None)^(qos_sub.exter_app_id is not None)):
@@ -271,6 +260,8 @@ async def qos_create(i: str):
     if qos_sub.alt_qo_s_references and not qos_sub.notification_destination:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     
+    print("control")
+
     if "BSF" in conf.HOSTS.keys():
         bsf_params = {}
         if qos_sub.ue_ipv4_addr:
@@ -286,8 +277,10 @@ async def qos_create(i: str):
             raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
         pcf_binding = PcfBinding.from_dict(res['response'])
     
+        print("control 2")
         response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
     else:
+        print("control 3")
         response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
     
     if response.status_code == httpx.codes.CREATED:
