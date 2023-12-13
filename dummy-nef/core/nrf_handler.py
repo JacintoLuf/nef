@@ -29,7 +29,6 @@ async def nrf_discovery():
             if r["nfInstances"] != None:
                 for i in r["nfInstances"]:
                     p = conf.update_values(i)
-                    print(p)
                     profiles.append(NFProfile.from_dict(p))
                     res = await nfProfile.insert_one(p)
 
@@ -74,6 +73,7 @@ async def nrf_get_access_token():
                 headers={'Accept': 'application/json,application/problem+json'},
                 data=json.dumps(access_token_req.to_dict())
             )
+            print(f"{key} access token response")
             print(response.status_code)
             print(response.text)
     return response.status_code
@@ -121,10 +121,10 @@ async def nf_register_heart_beat():
                 },
             data = json.dumps([{ "op": "replace", "path": "/nfStatus", "value": "REGISTERED" }])
         )
-        if response.status_code == httpx.codes.OK:
-            new_nef_profile = NFProfile.from_dict(response.json())
-            print(f"new profile {json.dumps(new_nef_profile)}")
-        elif response.status_code == httpx.codes.NOT_FOUND:
+        # if response.status_code == httpx.codes.OK:
+        #     new_nef_profile = NFProfile.from_dict(response.json())
+        #     print(f"new profile {json.dumps(new_nef_profile)}")
+        if response.status_code == httpx.codes.NOT_FOUND:
             print(response.text)
             print("NEF instance not registered")
     return response.status_code

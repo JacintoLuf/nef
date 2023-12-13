@@ -25,13 +25,17 @@ logger = logging.getLogger(__name__)
 
 @app.on_event("startup")
 async def startup():
+    print("Registering NEF...")
     res = await nrf_handler.nf_register()
     if res.status_code == httpx.codes.CREATED:
         await nrf_heartbeat()
+    print("NF discovery...")
     await nrf_handler.nrf_discovery()
+    print("Status subscribe...")
     await status_subscribe()
+    print("Getting access token...")
     res = await nrf_handler.nrf_get_access_token()
-    print("################INITIATED################")
+    print("################ NEF INITIATED ################")
 
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
@@ -267,8 +271,6 @@ async def qos_create(i: str):
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     
     if "BSF" in conf.HOSTS.keys():
-            print("Temos BSF!")
-    if conf.CORE != "free5gc":
         bsf_params = {}
         if qos_sub.ue_ipv4_addr:
             bsf_params['ipv4Addr'] = qos_sub.ue_ipv4_addr
@@ -284,9 +286,9 @@ async def qos_create(i: str):
         pcf_binding = PcfBinding.from_dict(res['response'])
     
         response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
-
-
-    response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
+    else:
+        response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
+    
     if response.status_code == httpx.codes.CREATED:
         sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
         if sub_id:
