@@ -142,7 +142,6 @@ async def ti_create(afId: str=None):
 
             res = await bsf_handler.bsf_management_discovery(bsf_params)
             if res['code'] != httpx.codes.OK:
-                print("No binding")
                 raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
             pcf_binding = PcfBinding.from_dict(res['response'])
         
@@ -258,8 +257,6 @@ async def qos_create(i: str):
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if qos_sub.alt_qo_s_references and not qos_sub.notification_destination:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
-    
-    print("control")
 
     if "BSF" in conf.HOSTS.keys():
         bsf_params = {}
@@ -272,7 +269,6 @@ async def qos_create(i: str):
 
         res = await bsf_handler.bsf_management_discovery(bsf_params)
         if res['code'] != httpx.codes.OK:
-            print("No binding")
             raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
         pcf_binding = PcfBinding.from_dict(res['response'])
 
