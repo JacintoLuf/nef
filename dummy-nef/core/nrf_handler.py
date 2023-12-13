@@ -60,12 +60,14 @@ async def nrf_discovery():
 
 async def nrf_get_access_token():
     for key, scope in conf.NF_SCOPES.items():
+        mcc = conf.PLMN[0:3]
+        mnc = conf.PLMN[3:] if len(conf.PLMN[3:] == 3) else "0"+conf.PLMN[3:]
         access_token_req = AccessTokenReq(
             grant_type="client_credentials",
             nf_instance_id=conf.API_UUID,
             nf_type="NEF",
             target_nf_type=key,
-            target_nf_set_id=f"set<Set ID>.<nftype>set.5gc.mnc<MNC>.mcc<MCC>", # SEE SPECIFICATIONS
+            target_nf_set_id=f"set<Set ID>.{key.lower()}set.5gc.mnc{mnc}.mcc{mcc}", # st id in NF profiles
             scope=scope,
         )
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
