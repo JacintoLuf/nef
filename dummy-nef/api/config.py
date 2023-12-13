@@ -9,7 +9,7 @@ class Settings():
     def __init__(self):
         self.CORE = os.environ['CORE_5G']
         self.NAMESPACE = os.environ['NAMESPACE']
-        self.PLMN = os.environ['PLMN'] if os.environ['PLMN'] is not None else '20899'
+        self.PLMN = '20899' #os.environ['PLMN']
         print(f"core: {self.CORE}")
         print(f'namespace: {self.NAMESPACE}')
 
