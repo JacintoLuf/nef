@@ -129,8 +129,6 @@ async def ti_create(afId: str=None):
     #------------------------ipv4, ipv6 or eth---------------------------
     else:
         if "BSF" in conf.HOSTS.keys():
-            print("Temos BSF!")
-        if conf.CORE != "free5gc":
             bsf_params = {}
             bsf_params['gpsi'] = traffic_sub.gpsi
             bsf_params['dnn'] = traffic_sub.dnn,
@@ -149,8 +147,9 @@ async def ti_create(afId: str=None):
             pcf_binding = PcfBinding.from_dict(res['response'])
         
             res = await pcf_handler.pcf_policy_authorization_create_ti(pcf_binding, traffic_sub)
-
-        res = await pcf_handler.pcf_policy_authorization_create_ti(traffic_influ_sub=traffic_sub)
+        else:
+            res = await pcf_handler.pcf_policy_authorization_create_ti(traffic_influ_sub=traffic_sub)
+        
         if res.status_code == httpx.codes.CREATED:
             sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
             if sub_id:
@@ -276,11 +275,9 @@ async def qos_create(i: str):
             print("No binding")
             raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
         pcf_binding = PcfBinding.from_dict(res['response'])
-    
-        print("control 2")
+
         response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
     else:
-        print("control 3")
         response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
     
     if response.status_code == httpx.codes.CREATED:
