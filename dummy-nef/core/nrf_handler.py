@@ -8,6 +8,7 @@ from models.nf_profile import NFProfile
 from models.subscription_data import SubscriptionData
 from models.subscr_cond import SubscrCond
 from models.access_token_req import AccessTokenReq
+from models.access_token_err import AccessTokenErr
 import crud.nfProfile as nfProfile
 import crud.subscriptionData as subscriptionData
 
@@ -64,18 +65,18 @@ async def nrf_get_access_token():
             nf_instance_id=conf.API_UUID,
             nf_type="NEF",
             target_nf_type=key,
-            target_nf_set_id="", # SEE SPECIFICATIONS
+            target_nf_set_id=f"set<Set ID>.<nftype>set.5gc.mnc<MNC>.mcc<MCC>", # SEE SPECIFICATIONS
             scope=scope,
         )
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.post(
                 f"http://{conf.HOSTS['NRF'][0]}/oauth2/token",
-                headers={'Accept': 'application/json,application/problem+json'},
+                headers={'Accept': 'application/json,application/problem+json', 'Content-Type': 'application/x-www-form-urlencoded'},
                 data=json.dumps(access_token_req.to_dict())
             )
-            print(f"{key} access token response")
-            print(response.status_code)
-            print(response.text)
+            if response.status_code == httpx.codes.BAD_REQUEST:
+                err = AccessTokenErr.from_dict(response.json())
+                print(err)
     return response.status_code
 
 async def nf_register():

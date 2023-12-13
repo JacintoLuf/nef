@@ -77,7 +77,10 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
     return response
 
 async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_session_qos_sub: AsSessionWithQoSSubscription=None):
+    print("########################QOS####################")
+    print(binding)
     host_addr = f"{binding.pcf_ip_end_points[0].ipv4_address}:7777" if binding is not None else conf.HOSTS['PCF'][0]
+    print(host_addr)
 
     req_data = AppSessionContextReqData()
     for attr_name in as_session_qos_sub.attribute_map.keys():

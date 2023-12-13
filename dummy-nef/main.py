@@ -33,8 +33,9 @@ async def startup():
     await nrf_handler.nrf_discovery()
     print("Status subscribe...")
     await status_subscribe()
-    print("Getting access token...")
-    res = await nrf_handler.nrf_get_access_token()
+    # TLS dependant
+    # print("Getting access token...")
+    # res = await nrf_handler.nrf_get_access_token()
     print("################ NEF INITIATED ################")
 
 
