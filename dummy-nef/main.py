@@ -31,7 +31,7 @@ async def startup():
         await nrf_heartbeat()
     print("NF discovery...")
     await nrf_handler.nrf_discovery()
-    print("Status subscribe...")
+    print("NF status subscribe...")
     await status_subscribe()
     # TLS dependant
     # print("Getting access token...")
