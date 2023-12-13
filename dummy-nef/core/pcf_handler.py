@@ -126,7 +126,7 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
             data=json.dumps(app_session_context.to_dict())
         )
         print(response.status_code)
-        print(response.text)
+        #print(response.text)
     return response
 
 async def pcf_policy_authorization_delete(subId: str=None):
