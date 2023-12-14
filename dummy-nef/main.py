@@ -273,20 +273,29 @@ async def qos_create(i: str):
         pcf_binding = PcfBinding.from_dict(res['response'])
 
         response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
+        if response.status_code == httpx.codes.INTERNAL_SERVER_ERROR:
+            print("SERVER ERROR!")
+        if response.status_code == httpx.codes.CREATED:
+            sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
+            if sub_id:
+                qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
+                headers={'location': qos_sub.__self, 'content-type': 'application/json'}
+                return JSONResponse(status_code=httpx.codes.CREATED, content=qos_sub.to_dict(), headers=headers)
+            else:
+                return Response(status_code=500, content="Error creating resource")
     else:
         response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
-    print(response.text)
-    if response.status_code == httpx.codes.INTERNAL_SERVER_ERROR:
-        print("SERVER ERROR!")
-    if response.status_code == httpx.codes.CREATED:
-        sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
-        if sub_id:
-            qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
-            headers={'location': qos_sub.__self, 'content-type': 'application/json'}
-            return JSONResponse(status_code=httpx.codes.CREATED, content=qos_sub.to_dict(), headers=headers)
-        else:
-            return Response(status_code=500, content="Error creating resource")
-    print("still!")
+        if response.status_code == httpx.codes.INTERNAL_SERVER_ERROR:
+            print("SERVER ERROR!")
+        if response.status_code == httpx.codes.CREATED:
+            sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
+            if sub_id:
+                qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
+                headers={'location': qos_sub.__self, 'content-type': 'application/json'}
+                return JSONResponse(status_code=httpx.codes.CREATED, content=qos_sub.to_dict(), headers=headers)
+            else:
+                return Response(status_code=500, content="Error creating resource")
+            
     return response
 
 @app.post("/pcf-policy-authorization-qos-callback")
