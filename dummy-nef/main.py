@@ -36,7 +36,6 @@ async def startup():
     # TLS dependant
     # print("Getting access token...")
     # res = await nrf_handler.nrf_get_access_token()
-    print("################ NEF INITIATED ################")
 
 
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
