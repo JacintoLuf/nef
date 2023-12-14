@@ -276,6 +276,8 @@ async def qos_create(i: str):
     else:
         response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
     print(response.text)
+    if response.status_code == httpx.codes.INTERNAL_SERVER_ERROR:
+        print("SERVER ERROR!")
     if response.status_code == httpx.codes.CREATED:
         sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
         if sub_id:
