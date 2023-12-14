@@ -279,7 +279,6 @@ async def qos_create(i: str):
     if response.status_code == httpx.codes.INTERNAL_SERVER_ERROR:
         print("SERVER ERROR!")
     if response.status_code == httpx.codes.CREATED:
-        print("still")
         sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
         if sub_id:
             qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
@@ -287,6 +286,7 @@ async def qos_create(i: str):
             return JSONResponse(status_code=httpx.codes.CREATED, content=qos_sub.to_dict(), headers=headers)
         else:
             return Response(status_code=500, content="Error creating resource")
+    print("still!")
     return response
 
 @app.post("/pcf-policy-authorization-qos-callback")
