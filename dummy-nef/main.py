@@ -52,6 +52,7 @@ async def shutdown():
     print("shuting down...")
     await nrf_handler.nf_deregister()
     await nrf_handler.nf_status_unsubscribe()
+    clean_db()
 
 @app.get("/")
 async def read_root():
