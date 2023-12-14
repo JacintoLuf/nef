@@ -275,7 +275,13 @@ async def qos_create(i: str):
         response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
         if response.status_code == httpx.codes.INTERNAL_SERVER_ERROR:
             print("SERVER ERROR!")
-        if response.status_code == httpx.codes.CREATED:
+            try:
+                r = response.json()
+                print(r)
+            except Exception as e:
+                print(response.text)
+                print(e)
+        elif response.status_code == httpx.codes.CREATED:
             sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
             if sub_id:
                 qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
@@ -287,7 +293,13 @@ async def qos_create(i: str):
         response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
         if response.status_code == httpx.codes.INTERNAL_SERVER_ERROR:
             print("SERVER ERROR!")
-        if response.status_code == httpx.codes.CREATED:
+            try:
+                r = response.json()
+                print(r)
+            except Exception as e:
+                print(response.text)
+                print(e)
+        elif response.status_code == httpx.codes.CREATED:
             sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
             if sub_id:
                 qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
