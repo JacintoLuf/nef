@@ -1,4 +1,5 @@
 import json
+from fastapi import Response
 import httpx
 from api.config import conf
 from models.pcf_binding import PcfBinding
@@ -126,7 +127,7 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
             data=json.dumps(app_session_context.to_dict())
         )
         print(response.status_code)
-    return response
+    return Response(status_code=response.status_code, content=response.json())
 
 async def pcf_policy_authorization_delete(subId: str=None):
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
