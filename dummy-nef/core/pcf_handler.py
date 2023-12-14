@@ -119,6 +119,7 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
     print("---------------------------------------------")
+    print(app_session_context.to_dict())
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
             f"http://{host_addr}/npcf-policyauthorization/v1/app-sessions",
