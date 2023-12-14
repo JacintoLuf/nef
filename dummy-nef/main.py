@@ -279,6 +279,7 @@ async def qos_create(i: str):
     if response.status_code == httpx.codes.INTERNAL_SERVER_ERROR:
         print("SERVER ERROR!")
     if response.status_code == httpx.codes.CREATED:
+        print("still")
         sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
         if sub_id:
             qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
