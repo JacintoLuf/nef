@@ -10,7 +10,7 @@ async_db = async_client["nef"]
 db = client["nef"]
 
 def clean_db():
-    collections = ['traffic_influ_sub', 'as_session_with_qos_sub']
+    collections = ['nf_instances', 'traffic_influ_sub', 'as_session_with_qos_sub', 'subscription_data', ]
     try:
         for i in collections:
             print(f"cleaning {i} collection docs")

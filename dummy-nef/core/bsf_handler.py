@@ -1,6 +1,5 @@
 import httpx
 from api.config import conf
-from models.traffic_influ_sub import TrafficInfluSub
 
 async def bsf_management_discovery(params):
     async with httpx.AsyncClient(http1=False, http2=True) as client:
