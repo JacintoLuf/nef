@@ -277,8 +277,7 @@ async def qos_create(i: str):
         if response.status_code == httpx.codes.INTERNAL_SERVER_ERROR:
             print("SERVER ERROR!")
             try:
-                r = response.json()
-                print(r)
+                print(response.text)
             except Exception as e:
                 print(response.text)
                 print(e)
