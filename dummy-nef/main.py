@@ -276,11 +276,6 @@ async def qos_create(i: str):
     try:
         if response.status_code == httpx.codes.INTERNAL_SERVER_ERROR:
             print("SERVER ERROR!")
-            try:
-                print(response.text)
-            except Exception as e:
-                print(response.text)
-                print(e)
         elif response.status_code == httpx.codes.CREATED:
             sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
             if sub_id:

@@ -3,6 +3,15 @@
 # Default open source core
 default_core=free5gc
 default_plmn=20899
+prune=false
+
+# Iterate through the arguments
+for arg in "$@"; do
+  if [ "$arg" = "-dp" ]; then
+    prune=true
+    break
+  fi
+done
 
 if [ $# -eq 0 ]; then
   export CORE_5G=$default_core
@@ -40,6 +49,10 @@ docker build -t nef .
 # Tag the image and push it to the repository
 docker tag nef:latest jacintoluf/nef:$CORE_5G
 docker push jacintoluf/nef:$CORE_5G
+
+if [ "$prune" = true ]; then
+  docker system prune
+fi
 
 # Deploy the app to Kubernetes
 #kubectl apply -n open5gs -f nef-deployment.yaml --env=CORE_5G=$CORE_5G
