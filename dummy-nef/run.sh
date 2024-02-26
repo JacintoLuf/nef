@@ -47,8 +47,8 @@ git pull
 docker build -t nef .
 
 # Tag the image and push it to the repository
-docker tag nef:latest jacintoluf/nef:$CORE_5G
-docker push jacintoluf/nef:$CORE_5G
+docker tag nef:latest jacintoluf/nf-nef:$CORE_5G
+docker push jacintoluf/nf-nef:$CORE_5G
 
 if [ "$prune" = true ]; then
   docker system prune
