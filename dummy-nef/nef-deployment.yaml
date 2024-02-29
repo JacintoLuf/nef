@@ -44,8 +44,8 @@ spec:
     targetPort: 7777
   selector:
     app: nef
-  #type: NodePort
-  type: ClusterIP
+  type: NodePort
+  #type: ClusterIP
 
 ---
 apiVersion: v1
