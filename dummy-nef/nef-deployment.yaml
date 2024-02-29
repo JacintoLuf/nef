@@ -70,10 +70,10 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: pods-list-nef
+  namespace: ${NAMESPACE}
 subjects:
 - kind: ServiceAccount
   name: nef-account
-  namespace: ${NAMESPACE}
 roleRef:
   kind: ClusterRole
   name: pods-list-nef
