@@ -105,9 +105,9 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
             tsc_prio_level=as_session_qos_sub.tsc_qos_req.priority,
         )
 
-    med_sub_cmp = {}
-    for idx, f in enumerate(as_session_qos_sub.flow_info):
-        med_sub_cmp[f"{idx}"] = MediaSubComponent(f_num=f.flow_id, f_descs=f.flow_descriptions)
+    # med_sub_cmp = {}
+    # for idx, f in enumerate(as_session_qos_sub.flow_info):
+    #     med_sub_cmp[f"{idx}"] = MediaSubComponent(f_num=f.flow_id, f_descs=f.flow_descriptions)
     # req_data.med_components = {'med_comp_1': MediaComponent(qos_reference=as_session_qos_sub.qos_reference,
     #                                                         alt_ser_reqs=as_session_qos_sub.alt_qo_s_references,
     #                                                         alt_ser_reqs_data=as_session_qos_sub.alt_qos_reqs,
