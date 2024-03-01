@@ -42,9 +42,10 @@ spec:
     protocol: TCP
     name: nef
     targetPort: 7777
+    nodePort: 7777
   selector:
     app: nef
-  type: NodePort
+  #type: NodePort
   #type: ClusterIP
 
 ---
