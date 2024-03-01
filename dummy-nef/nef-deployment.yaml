@@ -75,6 +75,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: nef-account
+  namespace: ${NAMESPACE}
 roleRef:
   kind: ClusterRole
   name: pods-list-nef
