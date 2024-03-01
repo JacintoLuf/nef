@@ -53,7 +53,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: nef-account
-  namespace: ${NAMESPACE}
+  #namespace: ${NAMESPACE}
 #automountServiceAccountToken: true
 
 ---
