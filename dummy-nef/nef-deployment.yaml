@@ -38,9 +38,9 @@ metadata:
     app: nef
 spec:
   ports:
-  - port: 7777
+  - name: nef
     protocol: TCP
-    name: nef
+    port: 80
     targetPort: 7777
     nodePort: 7777
   selector:
