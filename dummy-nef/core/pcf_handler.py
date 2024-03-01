@@ -120,14 +120,26 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
 
     print(app_session_context.to_dict())
 
-    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
-        response = await client.post(
-            f"http://{host_addr}/npcf-policyauthorization/v1/app-sessions",
-            headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
-            data=json.dumps(app_session_context.to_dict())
-        )
-    print(response)
-    return response
+    try:
+        c = json.dumps(app_session_context.to_dict())
+        print("success")
+        print()
+        print()
+        print(c)
+    except Exception as e:
+        print("error")
+        print()
+        print()
+        print(e)
+
+    # async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
+    #     response = await client.post(
+    #         f"http://{host_addr}/npcf-policyauthorization/v1/app-sessions",
+    #         headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
+    #         data=json.dumps(app_session_context.to_dict())
+    #     )
+    # print(response)
+    # return response
 
 async def pcf_policy_authorization_delete(subId: str=None):
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
