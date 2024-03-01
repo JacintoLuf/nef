@@ -108,25 +108,23 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
     med_sub_cmp = {}
     for idx, f in enumerate(as_session_qos_sub.flow_info):
         med_sub_cmp[f"{idx}"] = MediaSubComponent(f_num=f.flow_id, f_descs=f.flow_descriptions)
-    req_data.med_components = {'med_comp_1': MediaComponent(qos_reference=as_session_qos_sub.qos_reference,
-                                                            alt_ser_reqs=as_session_qos_sub.alt_qo_s_references,
-                                                            alt_ser_reqs_data=as_session_qos_sub.alt_qos_reqs,
-                                                            med_comp_n=1,
-                                                            f_status="ENABLED",
-                                                            med_type="AUDIO",
-                                                            med_sub_comps=med_sub_cmp,
-                                                            tsn_qos=tsn_qos_c)}
+    # req_data.med_components = {'med_comp_1': MediaComponent(qos_reference=as_session_qos_sub.qos_reference,
+    #                                                         alt_ser_reqs=as_session_qos_sub.alt_qo_s_references,
+    #                                                         alt_ser_reqs_data=as_session_qos_sub.alt_qos_reqs,
+    #                                                         med_comp_n=1,
+    #                                                         f_status="ENABLED",
+    #                                                         med_type="AUDIO",
+    #                                                         med_sub_comps=med_sub_cmp,
+    #                                                         tsn_qos=tsn_qos_c)}
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
     print(app_session_context.to_dict())
-
-    c = json.dumps(app_session_context.to_dict())
 
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
             f"http://{host_addr}/npcf-policyauthorization/v1/app-sessions",
             headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
-            data=json.dumps(c)
+            data=json.dumps(app_session_context.to_dict())
         )
     print(response.text)
     # return response
