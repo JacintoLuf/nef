@@ -119,8 +119,8 @@ def create_sub4(ip):
     )
     return qos_sub
 
-influ_sub = create_sub()
-any_influ_sub = create_sub2()
-qos_subscription = create_sub3()
-qos_subscription2 = create_sub34()
-any_qos_sub = create_sub4()
+# influ_sub = create_sub()
+# any_influ_sub = create_sub2()
+# qos_subscription = create_sub3()
+# qos_subscription2 = create_sub34()
+# any_qos_sub = create_sub4()
