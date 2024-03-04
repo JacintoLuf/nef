@@ -90,12 +90,17 @@ async def ti_get(afId: str, subId: str=None):
 
 # @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 # async def ti_create(afId, data: Request):
-@app.get("/create")
-async def ti_create(afId: str=None):
+@app.get("/create/{ip}")
+async def ti_create(ip: str, afId: str=None):
     if not afId:
         afId = "default"
 
     traffic_sub = influ_sub
+
+    if ip:
+        new_ip = ip.replace("-", ".")
+        traffic_sub.ipv4_addr = new_ip
+
     if not ((traffic_sub.af_app_id is not None)^(traffic_sub.traffic_filters is not None)^(traffic_sub.eth_traffic_filters is not None)):
         print(f"app id: {type(traffic_sub.af_app_id)}, traffic filters: {type(traffic_sub.traffic_filters)}, eth traffic filters: {type(traffic_sub.eth_traffic_filters)}")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of afAppId, trafficFilters or ethTrafficFilters")
@@ -233,13 +238,17 @@ async def qget():
 
 # @app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
 # async def qos_create(scsAsId: str, data: Request):
-@app.get("/qos/{i}")
-async def qos_create(i: str):
+@app.get("/qos/{i}/{ip}")
+async def qos_create(i: int, ip: str):
     scsAsId = "default"
-    if i == "0":
+    if i == 0:
         qos_sub: AsSessionWithQoSSubscription = qos_subscription2 #data
     else:
         qos_sub: AsSessionWithQoSSubscription = qos_subscription #data
+
+    if ip:
+        new_ip = ip.replace("-", ".")
+        qos_sub.ue_ipv4_addr = new_ip
 
     if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
