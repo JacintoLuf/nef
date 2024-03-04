@@ -17,7 +17,7 @@ import core.udr_handler as udr_handler
 import crud.nfProfile as nfProfile
 import crud.trafficInfluSub as trafficInfluSub
 import crud.asSessionWithQoSSub as asSessionWithQoSSub
-from api.af_request_template import influ_sub, any_influ_sub, qos_subscription, qos_subscription2, any_qos_sub
+from api.af_request_template import create_sub, create_sub2, create_sub3, create_sub34, create_sub4
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
@@ -95,11 +95,11 @@ async def ti_create(ip: str, afId: str=None):
     if not afId:
         afId = "default"
 
-    traffic_sub = influ_sub
-
     if ip:
         new_ip = ip.replace("-", ".")
-        traffic_sub.ipv4_addr = new_ip
+        traffic_sub = create_sub(new_ip)
+    else:
+        return("no ip")
 
     if not ((traffic_sub.af_app_id is not None)^(traffic_sub.traffic_filters is not None)^(traffic_sub.eth_traffic_filters is not None)):
         print(f"app id: {type(traffic_sub.af_app_id)}, traffic filters: {type(traffic_sub.traffic_filters)}, eth traffic filters: {type(traffic_sub.eth_traffic_filters)}")
@@ -241,15 +241,15 @@ async def qget():
 @app.get("/qos/{i}/{ip}")
 async def qos_create(i: int, ip: str):
     scsAsId = "default"
-    if i == 0:
-        qos_sub: AsSessionWithQoSSubscription = qos_subscription2 #data
-    else:
-        qos_sub: AsSessionWithQoSSubscription = qos_subscription #data
-
     if ip:
         new_ip = ip.replace("-", ".")
-        qos_sub.ue_ipv4_addr = new_ip
-
+        if i == 0:
+            qos_sub = create_sub34(new_ip)
+        else:
+            qos_sub = create_sub3(new_ip)
+    else:
+        return("no ip")
+    
     if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
     if not ((qos_sub.flow_info is not None)^(qos_sub.eth_flow_info is not None)^(qos_sub.exter_app_id is not None)):
