@@ -32,10 +32,10 @@ def create_sub(ip):
 
 def create_sub2(ip):
     snssai = Snssai(sst=1, sd="0x010203")
-    route_info = RouteInformation(ipv4_addr="10.255.32.132", port_number=80)
+    route_info = RouteInformation(ipv4_addr="10.255.32.123", port_number=80)
     route_to_loc = RouteToLocation(dnai="internet", route_info=route_info)
     flow_info = FlowInfo(flow_id=1010,
-                         flow_descriptions=[f"permit in ip from {ip} to 10.255.32.132", f"permit out ip from 10.255.32.132 to {ip}"])
+                         flow_descriptions=["permit in ip from any to 10.255.32.132", "permit out ip from 10.255.32.132 to any"])
     
     traffic_influ = TrafficInfluSub(
         af_trans_id="2",
