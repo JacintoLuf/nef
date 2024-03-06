@@ -245,6 +245,8 @@ async def qos_create(i: int, ip: str):
         new_ip = ip.replace("-", ".")
         if i == 0:
             qos_sub = create_sub34(new_ip)
+        elif i == 1:
+            qos_sub = create_sub4(new_ip)
         else:
             qos_sub = create_sub3(new_ip)
     else:
