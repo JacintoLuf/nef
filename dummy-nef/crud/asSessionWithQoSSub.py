@@ -52,7 +52,6 @@ async def as_session_with_qos_subscription_update(scsAsId: str, subId: str, sub,
     else:
         as_session_with_qos_sub = AsSessionWithQoSSubscription.from_dict(sub)
         res = await collection.update_one(as_session_with_qos_sub)
-    return 1
 
 async def as_session_with_qos_subscription_delete(scsAsId: str, subId: str=None):
     collection = db["as_session_with_qos_sub"]

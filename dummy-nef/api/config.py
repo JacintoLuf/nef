@@ -16,7 +16,11 @@ class Settings():
         self.HOSTS = {}
         self.MONGO_URI = ""
         self.API_UUID = str(uuid.uuid4())
-        self.GLOBAL_HEADERS = {'Accept': 'application/json,application/problem+json'}
+        self.GLOBAL_HEADERS = {
+            'Accept': 'application/json,application/problem+json',
+            'Content-Type': 'application/json',
+            'charsets': 'utf-8',
+        }
 
         try:
             config.load_incluster_config()

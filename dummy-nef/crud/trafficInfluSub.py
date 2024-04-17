@@ -15,11 +15,11 @@ async def traffic_influence_subscription_get(afId: str=None, subId: str=None):
         async for doc in collection.find({'afId': afId}):
             docs.append(doc)
         return None if not docs else docs
-    else:
-        docs = []
-        async for doc in collection.find({}):
-            docs.append(doc)
-        return None if not docs else docs
+    # else:
+    #     docs = []
+    #     async for doc in collection.find({}):
+    #         docs.append(doc)
+    #     return None if not docs else docs
 
 async def traffic_influence_subscription_insert(afId: str, sub: TrafficInfluSub, location: str):
     collection = db["traffic_influ_sub"]
@@ -52,7 +52,6 @@ async def individual_traffic_influence_subscription_update(afId: str, subId: str
     else:
         traffic_influ_sub = TrafficInfluSub.from_dict(sub)
         res = await collection.update_one(traffic_influ_sub)
-    return 1
 
 async def individual_traffic_influence_subscription_delete(afId: str, subId: str=None):
     collection = db["traffic_influ_sub"]

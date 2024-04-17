@@ -8,6 +8,7 @@ from api.config import conf
 from api.sbi_req import get_req, delete_req
 from models.pcf_binding import PcfBinding
 from models.traffic_influ_sub import TrafficInfluSub
+from models.traffic_influ_sub_patch import TrafficInfluSubPatch
 from models.as_session_with_qo_s_subscription import AsSessionWithQoSSubscription
 import core.nrf_handler as nrf_handler
 import core.bsf_handler as bsf_handler
@@ -84,22 +85,26 @@ async def get():
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_get(afId: str, subId: str=None):
     res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
-    if not res:
-        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
+    # if not res:
+    #     raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
     return Response(content=res, status_code=httpx.codes.OK)
 
-# @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
-# async def ti_create(afId, data: Request):
-@app.get("/create/{ip}")
-async def ti_create(ip: str, afId: str=None):
-    if not afId:
-        afId = "default"
+@app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
+async def ti_create(afId: str, data: Request):
+# @app.get("/create/{ip}")
+# async def ti_create(ip: str, afId: str=None):
+    # if not afId:
+    #     afId = "default"
 
-    if ip:
-        new_ip = ip.replace("-", ".")
-        traffic_sub = create_sub(new_ip)
-    else:
-        return("no ip")
+    # if ip:
+    #     new_ip = ip.replace("-", ".")
+    #     traffic_sub = create_sub(new_ip)
+    # else:
+    #     return("no ip")
+    try:
+        traffic_sub = TrafficInfluSub().from_dict(data.json())
+    except Exception as e:
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to parse message'
 
     if not ((traffic_sub.af_app_id is not None)^(traffic_sub.traffic_filters is not None)^(traffic_sub.eth_traffic_filters is not None)):
         print(f"app id: {type(traffic_sub.af_app_id)}, traffic filters: {type(traffic_sub.traffic_filters)}, eth traffic filters: {type(traffic_sub.eth_traffic_filters)}")
@@ -166,53 +171,42 @@ async def ti_create(ip: str, afId: str=None):
     return res.status_code
 
 @app.put("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
-async def ti_put(afId, subId, data: Request):
-    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
-    #res code: 200
-    res = await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=data.json())
+async def ti_put(afId: str, subId: str, data: Request):
+    try:
+        traffic_sub = TrafficInfluSub.from_dict(data.json())
+        await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=traffic_sub.to_dict())
+    except Exception as e:
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to update subscription'
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
 @app.patch("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
-async def ti_patch(afId, subId, data: Request):
-    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
-    #res code: 200 
-    res = await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=data.json(), partial=True)
+async def ti_patch(afId: str, subId: str, data: Request):
+    try:
+        traffic_sub = TrafficInfluSubPatch.from_dict(data.json())
+        await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=traffic_sub.to_dict(), partial=True)
+    except Exception as e:
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to update subscription'
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
-@app.get("/delete/{subId}")
-async def delete_ti(subId: str):
-    afId = "default"
-    res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
-    if not res:
-        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
-    else:
-        contextId = res['location'].split('/')[-1]
-        res = await pcf_handler.pcf_policy_authorization_delete(contextId)
-        # print(f"deleting at location: {res['location']}")
-        # res :httpx.Response = await delete_req(f"{res['location']}/delete", conf.GLOBAL_HEADERS)
-        if res.status_code != httpx.codes.NO_CONTENT:
-            print("Context not found!")
+# @app.get("/delete/{subId}")
+@app.delete("/3gpp-trafficInfluence/v1/{afId}/subscriptions/{subId}")
+async def delete_ti(afId: str, subId: str):
+    try:
+        res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
+        if not res:
+            raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
+        else:
+            contextId = res['location'].split('/')[-1]
+            res = await pcf_handler.pcf_policy_authorization_delete(contextId)
+            if res.status_code != httpx.codes.NO_CONTENT:
+                print("Context not found!")
+                raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
 
-        res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
-        if res == 1:
-            return Response(status_code=httpx.codes.NO_CONTENT)
-    raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
-    
-@app.delete("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
-async def ti_delete(afId: str, subId: str):
-    res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
-    if not res:
-        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
-    else:
-        print(f"deleting at location: {res['location']}")
-        res :httpx.Response = await get_req(f"{res['location']}/delete", conf.GLOBAL_HEADERS)
-        if res.status_code != httpx.codes.NO_CONTENT:
-            print("Context not found!")
-
-        res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
-        if res == 1:
-            return Response(status_code=httpx.codes.NO_CONTENT)
-    raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
+            res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
+            if res == 1:
+                return Response(status_code=httpx.codes.NO_CONTENT)
+    except Exception as e:
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # "Failed to delete subscription"
 
 @app.post("/pcf-policy-authorization-callback")
 async def pcf_callback(data):
@@ -221,13 +215,10 @@ async def pcf_callback(data):
     return httpx.codes.OK
 
 #---------------------as-session-with-qos------------------------
-@app.get("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subscriptionId}")
-async def qos_get(scsAsId: str, subscriptionId: str=None):
-    res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId, subscriptionId)
-    if not res:
-        return {"subs": []}
-        #raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
-    return {'sub': res}
+@app.get("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
+async def qos_get(scsAsId: str, subId: str=None):
+    res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId, subId)
+    return Response(content=res, status_code=httpx.codes.OK)
 
 @app.get("/qget")
 async def qget():
@@ -236,21 +227,23 @@ async def qget():
         return {'subs': []}
     return {'subs': res}
 
-# @app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
-# async def qos_create(scsAsId: str, data: Request):
-@app.get("/qos/{i}/{ip}")
-async def qos_create(i: int, ip: str):
-    scsAsId = "default"
-    if ip:
-        new_ip = ip.replace("-", ".")
-        if i == 0:
-            qos_sub = create_sub34(new_ip)
-        elif i == 1:
-            qos_sub = create_sub4(new_ip)
-        else:
-            qos_sub = create_sub3(new_ip)
-    else:
-        return("no ip")
+@app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
+async def qos_create(scsAsId: str, data: Request):
+# @app.get("/qos/{i}/{ip}")
+# async def qos_create(i: int, ip: str):
+    # scsAsId = "default"
+    # if ip:
+    #     new_ip = ip.replace("-", ".")
+    #     if i == 0:
+    #         qos_sub = create_sub34(new_ip)
+    #     elif i == 1:
+    #         qos_sub = create_sub4(new_ip)
+    #     else:
+    #         qos_sub = create_sub3(new_ip)
+    # else:
+    #     return("no ip")
+
+    qos_sub = AsSessionWithQoSSubscription().from_dict(data.json())
     
     if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
@@ -307,18 +300,22 @@ async def pcf_callback(data):
     print(data)
     return httpx.codes.OK
 
-@app.put("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subscriptionId}")
-async def qos_put(scsAsId, subId, data: Request):
-    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
-    #res code: 200
-    res = await asSessionWithQoSSub.as_session_with_qos_subscription_update(scsAsId=scsAsId, subId=subId, sub=data.json())
+@app.put("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
+async def qos_put(scsAsId: str, subId: str, data: Request):
+    try:
+        qosSub = AsSessionWithQoSSubscription.from_dict(data.json())
+        await asSessionWithQoSSub.as_session_with_qos_subscription_update(scsAsId=scsAsId, subId=subId, sub=qosSub.to_dict())
+    except Exception as e:
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # "Failed to update subscription"
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
 @app.patch("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
-async def qos_patch(afId, subId, data: Request):
-    #uri: /3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}
-    #res code: 200 
-    res = await asSessionWithQoSSub.as_session_with_qos_subscription_update(scsAsId=afId, subId=subId, sub=data.json(), partial=True)
+async def qos_patch(scAsId: str, subId: str, data: Request):
+    try:
+        qosSub = AsSessionWithQoSSubscription.from_dict(data.json())
+        await asSessionWithQoSSub.as_session_with_qos_subscription_update(scsAsId=scAsId, subId=subId, sub=qosSub.to_dict(), partial=True)
+    except Exception as e:
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # "Failed to update subscription"
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
 @app.get("/qdelete/{subId}")
@@ -346,12 +343,12 @@ async def qos_delete(scsAsId: str, subId: str):
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
     else:
-        print(f"deleting at location: {res['location']}")
-        res :httpx.Response = await get_req(f"{res['location']}/delete", conf.GLOBAL_HEADERS)
+        contextId = res['location'].split('/')[-1]
+        res = await pcf_handler.pcf_policy_authorization_delete(contextId)
         if res.status_code != httpx.codes.NO_CONTENT:
             print("Context not found!")
-
-        res = await trafficInfluSub.individual_traffic_influence_subscription_delete(scsAsId, subId)
+            raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
+        res = await asSessionWithQoSSub.as_session_with_qos_subscription_delete(scsAsId, subId)
         if res == 1:
             return Response(status_code=httpx.codes.NO_CONTENT)
     raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
