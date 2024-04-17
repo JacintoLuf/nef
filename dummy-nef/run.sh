@@ -31,29 +31,39 @@ fi
 
 # Delete previous existing deployment and service
 kubectl delete -n $NAMESPACE -f nef-deployment.yaml
-#kubectl delete -n $CORE_5G -f nef-deployment.yaml
-
-# Find and delete the local Docker image by name
-IMAGE_ID=$(docker images -q nef)
-if [ ! -z "$IMAGE_ID" ]; then
-  echo $IMAGE_ID
-  docker rmi -f $IMAGE_ID
-fi
+# kubectl delete -n $CORE_5G -f nef-deployment.yaml
 
 # Pull the latest changes from Git
 git pull
 
-# Build the new Docker image
-docker build -t nef .
+# Check if there are changes in the working directory
+if ! git diff --quiet; then
+  echo "Changes detected!"
 
-# Tag the image and push it to the repository
-docker tag nef:latest jacintoluf/nf-nef:latest
-docker push jacintoluf/nf-nef:latest
+  # Find and delete the local Docker image by name
+  echo "Deleting old images!"
+  IMAGE_ID=$(docker images -q nef)
+  if [ ! -z "$IMAGE_ID" ]; then
+    echo $IMAGE_ID
+    docker rmi -f $IMAGE_ID
+  fi
+
+  # Build the new Docker image
+  echo "Building image!"
+  docker build -t nef .
+
+  # Tag the image and push it to the repository
+  echo "Pushing image!"
+  docker tag nef:latest jacintoluf/nf-nef:latest
+  docker push jacintoluf/nf-nef:latest
+else
+    echo "No changes detected."
+fi
 
 if [ "$prune" = true ]; then
   docker system prune
 fi
 
 # Deploy the app to Kubernetes
-#kubectl apply -n open5gs -f nef-deployment.yaml --env=CORE_5G=$CORE_5G
+# kubectl apply -n open5gs -f nef-deployment.yaml --env=CORE_5G=$CORE_5G
 envsubst < nef-deployment.yaml | kubectl apply -n $NAMESPACE -f -
