@@ -33,11 +33,17 @@ fi
 kubectl delete -n $NAMESPACE -f nef-deployment.yaml
 # kubectl delete -n $CORE_5G -f nef-deployment.yaml
 
+# Capture the current commit hash before performing git pull
+OLD_COMMIT=$(git rev-parse HEAD)
+
 # Pull the latest changes from Git
 git pull
 
+# Capture the new commit hash after git pull
+NEW_COMMIT=$(git rev-parse HEAD)
+
 # Check if there are changes in the working directory
-if ! git diff --quiet; then
+if [ "$OLD_COMMIT" != "$NEW_COMMIT" ]; then
   echo "Changes detected!"
 
   # Find and delete the local Docker image by name
