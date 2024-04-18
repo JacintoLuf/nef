@@ -95,11 +95,10 @@ async def ti_create(afId: str, data: Request):
 # async def ti_create(ip: str, afId: str=None):
     # if not afId:
     #     afId = "default"
-
     # if ip:
     #     new_ip = ip.replace("-", ".")
     #     traffic_sub = create_sub(new_ip)
-    
+
     try:
         traffic_sub = TrafficInfluSub().from_dict(data.json())
     except Exception as e:
