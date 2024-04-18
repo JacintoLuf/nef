@@ -68,13 +68,6 @@ def create_sub3(ip):
         qos_reference="6",
         alt_qo_s_references=["7","80"],
         ue_ipv4_addr=ip,
-        # tsc_qos_req=TscQosRequirement(req_gbr_dl=100000000,
-        #                               req_gbr_ul=1000000,
-        #                               req_mbr_dl=10000000,
-        #                               req_mbr_ul=1000000,
-        #                               max_tsc_burst_size=100000,
-        #                               req5_gsdelay=3,
-        #                               priority=1),
     )
     return qos_sub
 
