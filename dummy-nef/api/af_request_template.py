@@ -98,7 +98,6 @@ def create_sub4(ip):
         alt_qos_param_set_ref="1",
         gbr_dl="1024",
         gbr_ul="1024",
-        #pdb=5000
     )
 
     qos_sub = AsSessionWithQoSSubscription(
