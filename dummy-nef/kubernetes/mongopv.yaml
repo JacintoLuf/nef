@@ -1,7 +1,7 @@
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: ${CORE_5G}-mongodb
+  name: open5gs-mongodb
   labels:
     type: local
 spec:
