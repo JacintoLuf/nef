@@ -67,7 +67,7 @@ class Settings():
             nf_type="NEF",
             nf_status="REGISTERED",
             heart_beat_timer=3600,
-            ipv4_addresses=self.HOSTS["NEF"][:-5],
+            ipv4_addresses=[self.HOSTS["NEF"][0][:-5]],
             nf_services=[],
             nef_info=None
         )
