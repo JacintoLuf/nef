@@ -26,14 +26,17 @@ logger = logging.getLogger(__name__)
 
 @app.on_event("startup")
 async def startup():
-    print("Registering NEF...")
-    res = await nrf_handler.nf_register()
-    if res.status_code == httpx.codes.CREATED:
-        await nrf_heartbeat()
-    print("NF discovery...")
-    await nrf_handler.nrf_discovery()
-    print("NF status subscribe...")
-    await status_subscribe()
+    try:
+        print("Registering NEF...")
+        res = await nrf_handler.nf_register()
+        if res.status_code == httpx.codes.CREATED:
+            await nrf_heartbeat()
+        print("NF discovery...")
+        await nrf_handler.nrf_discovery()
+        print("NF status subscribe...")
+        await status_subscribe()
+    except Exception as e:
+        print(f"Error starting up: {e}")
     # TLS dependant
     # print("Getting access token...")
     # res = await nrf_handler.nrf_get_access_token()
