@@ -18,7 +18,7 @@ import core.udr_handler as udr_handler
 import crud.nfProfile as nfProfile
 import crud.trafficInfluSub as trafficInfluSub
 import crud.asSessionWithQoSSub as asSessionWithQoSSub
-from api.af_request_template import create_sub, create_sub2, create_sub3, create_sub34, create_sub4
+# from api.af_request_template import create_sub, create_sub2, create_sub3, create_sub34, create_sub4
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
