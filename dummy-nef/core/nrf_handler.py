@@ -82,9 +82,6 @@ async def nrf_get_access_token():
     return response.status_code
 
 async def nf_register():
-    print(f'http1 = {True if conf.CORE=="free5gc" else False}, http2 = {None if conf.CORE=="free5gc" else True}')
-    print()
-    print(conf.NEF_PROFILE)
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.put(
             f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
