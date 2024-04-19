@@ -27,10 +27,10 @@ logger = logging.getLogger(__name__)
 @app.on_event("startup")
 async def startup():
     try:
-        print("Registering NEF...")
-        res = await nrf_handler.nf_register()
-        if res.status_code == httpx.codes.CREATED:
-            await nrf_heartbeat()
+        # print("Registering NEF...")
+        # res = await nrf_handler.nf_register()
+        # if res.status_code == httpx.codes.CREATED:
+        #     await nrf_heartbeat()
         print("NF discovery...")
         await nrf_handler.nrf_discovery()
         print("NF status subscribe...")
