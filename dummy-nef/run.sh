@@ -31,8 +31,6 @@ fi
 
 # Delete previous existing deployment and service
 kubectl delete -n $NAMESPACE -f nef-deployment.yaml
-# kubectl delete -n $CORE_5G -f nef-deployment.yaml
-kubectl delete -n $NAMESPACE -f kubernetes/mongopv.yaml
 
 
 # Capture the current commit hash before performing git pull
@@ -74,5 +72,4 @@ fi
 
 # Deploy the app to Kubernetes
 # kubectl apply -n open5gs -f nef-deployment.yaml --env=CORE_5G=$CORE_5G
-envsubst < kubernetes/mongopv.yaml | kubectl apply -n $NAMESPACE -f -
 envsubst < nef-deployment.yaml | kubectl apply -n $NAMESPACE -f -
