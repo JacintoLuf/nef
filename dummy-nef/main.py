@@ -104,7 +104,8 @@ async def ti_create(afId: str, data: Request):
     #     traffic_sub = create_sub(new_ip)
 
     try:
-        traffic_sub = await TrafficInfluSub().from_dict(data.json())
+        data_dict = await data.json()
+        traffic_sub = await TrafficInfluSub().from_dict(data_dict)
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to parse message'
 
@@ -247,7 +248,8 @@ async def qos_create(scsAsId: str, data: Request):
 
     print(f"qos data: {data.json()}")
     try:
-        qos_sub = await AsSessionWithQoSSubscription().from_dict(data.json())
+        data_dict = await data.json()
+        qos_sub = AsSessionWithQoSSubscription().from_dict(data_dict)
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to parse message'
 
