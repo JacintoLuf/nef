@@ -48,7 +48,6 @@ def create_sub2(ip):
         request_test_notification=True,
         traffic_routes=[route_to_loc],
         #dnai_chg_type="LATE",
-        #addr_preser_ind=True,
         supp_feat="0",
     )
     return traffic_influ
