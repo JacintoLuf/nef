@@ -18,7 +18,7 @@ import core.udr_handler as udr_handler
 import crud.nfProfile as nfProfile
 import crud.trafficInfluSub as trafficInfluSub
 import crud.asSessionWithQoSSub as asSessionWithQoSSub
-from api.af_request_template import create_sub, create_sub2, create_sub3, create_sub34, create_sub4
+# from api.af_request_template import create_sub, create_sub2, create_sub3, create_sub34, create_sub4
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
@@ -35,8 +35,6 @@ async def startup():
         await nrf_handler.nrf_discovery()
         print("NF status subscribe...")
         await status_subscribe()
-        sub = create_sub4("10.42.0.2")
-        print(f"dummy sub: {sub.to_dict()}")
     except Exception as e:
         print(f"Error starting up: {e}")
     # TLS dependant
@@ -247,6 +245,7 @@ async def qos_create(scsAsId: str, data: Request):
     # else:
     #     return("no ip")
 
+    print(f"qos data: {data.json()}")
     qos_sub = AsSessionWithQoSSubscription().from_dict(data.json())
     
     if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
