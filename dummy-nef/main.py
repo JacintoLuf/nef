@@ -253,10 +253,32 @@ async def qos_create(scsAsId: str, data: Request):
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to parse message'
 
-    if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
+    # if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
+    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
+    # if not ((qos_sub.flow_info is not None)^(qos_sub.eth_flow_info is not None)^(qos_sub.exter_app_id is not None)):
+    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of IP flow info, Ethernet flow info or External Application")
+
+    # Check if exactly one of ue_ipv4_addr, ue_ipv6_addr, mac_addr is not None
+    ipv4_exists = qos_sub.ue_ipv4_addr is not None
+    ipv6_exists = qos_sub.ue_ipv6_addr is not None
+    mac_exists = qos_sub.mac_addr is not None
+
+    if not ((ipv4_exists and not ipv6_exists and not mac_exists) or
+            (not ipv4_exists and ipv6_exists and not mac_exists) or
+            (not ipv4_exists and not ipv6_exists and mac_exists)):
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
-    if not ((qos_sub.flow_info is not None)^(qos_sub.eth_flow_info is not None)^(qos_sub.exter_app_id is not None)):
+
+    # Check if exactly one of flow_info, eth_flow_info, exter_app_id is not None
+    flow_info_exists = qos_sub.flow_info is not None
+    eth_flow_info_exists = qos_sub.eth_flow_info is not None
+    exter_app_id_exists = qos_sub.exter_app_id is not None
+
+    if not ((flow_info_exists and not eth_flow_info_exists and not exter_app_id_exists) or
+            (not flow_info_exists and eth_flow_info_exists and not exter_app_id_exists) or
+            (not flow_info_exists and not eth_flow_info_exists and exter_app_id_exists)):
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of IP flow info, Ethernet flow info or External Application")
+
+
     if (qos_sub.ue_ipv4_addr or qos_sub.ue_ipv6_addr) and not qos_sub.flow_info:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if qos_sub.mac_addr and not qos_sub.eth_flow_info:
