@@ -88,7 +88,7 @@ async def get():
     return {'subs': res}
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
-async def ti_get(afId: str, subId: str = None):
+async def ti_get(afId: str, subId: str):
     print(f"af id: {afId}, sub id: {subId}")
     res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
     if not res:
@@ -96,9 +96,9 @@ async def ti_get(afId: str, subId: str = None):
     return Response(content=res, status_code=httpx.codes.OK)
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
-async def ti_get(afId: str, subId: str = None):
-    print(f"af id: {afId}, sub id: {subId}")
-    res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
+async def ti_get(afId: str):
+    print(f"af id: {afId}")
+    res = await trafficInfluSub.traffic_influence_subscription_get(afId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
     return Response(content=res, status_code=httpx.codes.OK)
@@ -232,6 +232,15 @@ async def pcf_callback(data):
 @app.get("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
 async def qos_get(scsAsId: str, subId: str=None):
     res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId, subId)
+    if not res:
+        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
+    return Response(content=res, status_code=httpx.codes.OK)
+
+@app.get("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
+async def qos_get(scsAsId: str):
+    res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId)
+    if not res:
+        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
     return Response(content=res, status_code=httpx.codes.OK)
 
 @app.get("/qget")
