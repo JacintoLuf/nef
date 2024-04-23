@@ -246,29 +246,28 @@ async def qos_create(scsAsId: str, data: Request):
     # else:
     #     return("no ip")
 
-    print(f"qos data: {data.json()}")
     try:
         data_dict = await data.json()
         qos_sub = AsSessionWithQoSSubscription().from_dict(data_dict)
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to parse message'
 
-    # if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
-    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
-    # if not ((qos_sub.flow_info is not None)^(qos_sub.eth_flow_info is not None)^(qos_sub.exter_app_id is not None)):
-    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of IP flow info, Ethernet flow info or External Application")
-
-    # Check if exactly one of ue_ipv4_addr, ue_ipv6_addr, mac_addr is not None
-    if ((qos_sub.ue_ipv4_addr and (qos_sub.ue_ipv6_addr or qos_sub.mac_addr)) or
-            (qos_sub.ue_ipv6_addr and (qos_sub.ue_ipv4_addr or qos_sub.mac_addr)) or
-            (qos_sub.mac_addr and (qos_sub.ue_ipv4_addr or qos_sub.ue_ipv6_addr))):
+    if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
-
-    # Check if exactly one of flow_info, eth_flow_info, exter_app_id is not None
-    if not ((qos_sub.flow_info and (qos_sub.eth_flow_info or qos_sub.exter_app_id)) or
-            (qos_sub.eth_flow_info and (qos_sub.flow_info or qos_sub.exter_app_id)) or
-            (qos_sub.exter_app_id and (qos_sub.flow_info and qos_sub.eth_flow_info))):
+    if not ((qos_sub.flow_info is not None)^(qos_sub.eth_flow_info is not None)^(qos_sub.exter_app_id is not None)):
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of IP flow info, Ethernet flow info or External Application")
+
+    # # Check if exactly one of ue_ipv4_addr, ue_ipv6_addr, mac_addr is not None
+    # if ((qos_sub.ue_ipv4_addr and (qos_sub.ue_ipv6_addr or qos_sub.mac_addr)) or
+    #         (qos_sub.ue_ipv6_addr and (qos_sub.ue_ipv4_addr or qos_sub.mac_addr)) or
+    #         (qos_sub.mac_addr and (qos_sub.ue_ipv4_addr or qos_sub.ue_ipv6_addr))):
+    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
+
+    # # Check if exactly one of flow_info, eth_flow_info, exter_app_id is not None
+    # if not ((qos_sub.flow_info and (qos_sub.eth_flow_info or qos_sub.exter_app_id)) or
+    #         (qos_sub.eth_flow_info and (qos_sub.flow_info or qos_sub.exter_app_id)) or
+    #         (qos_sub.exter_app_id and (qos_sub.flow_info and qos_sub.eth_flow_info))):
+    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of IP flow info, Ethernet flow info or External Application")
 
 
     if (qos_sub.ue_ipv4_addr or qos_sub.ue_ipv6_addr) and not qos_sub.flow_info:
