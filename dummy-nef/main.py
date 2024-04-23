@@ -88,8 +88,15 @@ async def get():
     return {'subs': res}
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
+async def ti_get(afId: str, subId: str | None = None):
+    print(f"af id: {afId}, sub id: {subId}")
+    res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
+    if not res:
+        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
+    return Response(content=res, status_code=httpx.codes.OK)
+
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
-async def ti_get(afId: str, subId: str=None):
+async def ti_get(afId: str, subId: str | None = None):
     print(f"af id: {afId}, sub id: {subId}")
     res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
     if not res:
