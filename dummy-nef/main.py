@@ -77,6 +77,8 @@ async def up_path_chg_notif(notif):
     print(notif)
     return Response(status_code=httpx.codes.NO_CONTENT)
 
+
+#---------------------traffic-influence------------------------
 # @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 @app.get("/get")
 async def get():

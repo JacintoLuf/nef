@@ -1,31 +1,36 @@
 #!/bin/bash
 
-# Delete previous existing deployment and service
-kubectl delete deployment -n open5gs nef
-kubectl delete service -n open5gs nef
-kubectl delete clusterrole pods-list
-kubectl delete clusterrolebinding pods-list
-kubectl delete serviceaccount -n open5gs nef-account
+# Default open source core
+default_core=free5gc
+default_plmn=20899
+prune=false
 
-# Find and delete the Docker image by name
-IMAGE_ID=$(docker images -q nef)
-if [ ! -z "$IMAGE_ID" ]; then
-  echo $IMAGE_ID
-  docker rmi -f $IMAGE_ID
+# Iterate through the arguments
+for arg in "$@"; do
+  if [ "$arg" = "-dp" ]; then
+    prune=true
+    break
+  fi
+done
+
+if [ $# -eq 0 ]; then
+  export CORE_5G=$default_core
+  export NAMESPACE=$default_core
+  export PLMN=$default_plmn
+  echo Using default core $CORE_5G in default namespace: $NAMESPACE in default PLMN: $PLMN
+else
+  export CORE_5G=$1
+  export PLMN=$default_plmn
+  if [ -n "$2" ]; then
+    export NAMESPACE=$2
+  else
+    export NAMESPACE=$1
+  fi
+  echo Using $CORE_5G core in namespace: $NAMESPACE in default PLMN: $PLMN
 fi
 
-# Pull the latest changes from Git
-git pull
-
-# Build the new Docker image
-docker build -t nef .
-
-# Tag the image and push it to the repository
-docker tag nef:latest jacintoluf/nef:v1
-docker push jacintoluf/nef:v1
+# Delete previous existing deployment and service
+kubectl delete -n $NAMESPACE -f nef-deployment.yaml
 
 # Deploy the app to Kubernetes
-kubectl apply -n open5gs -f nef-deployment.yml
-
-# Port forward to service
-#kubectl port-forward -n open5gs svc/nef 9000:80
+envsubst < nef-deployment.yaml | kubectl apply -n $NAMESPACE -f -

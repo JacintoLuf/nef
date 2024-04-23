@@ -156,6 +156,7 @@ async def nf_status_subscribe():
                 data=json.dumps(sub.to_dict())
             )
             sub = SubscriptionData.from_dict(response.json())
+            print(f"status subscribe response code: {response.status_code} | message: {response.text}")
             if response.status_code == httpx.codes.CREATED:
                 print(f"{nfType} Subscription created until {sub.validity_time}")
                 res = subscriptionData.subscription_data_insert(sub, response.headers['location'])
