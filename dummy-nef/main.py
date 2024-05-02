@@ -273,32 +273,26 @@ async def qos_create(scsAsId: str, data: Request):
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to parse message'
 
     if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
+        print("Only one of ipv4Addr, ipv6Addr or macAddr")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
     if not ((qos_sub.flow_info is not None)^(qos_sub.eth_flow_info is not None)^(qos_sub.exter_app_id is not None)):
+        print("Only one of IP flow info, Ethernet flow info or External Application")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of IP flow info, Ethernet flow info or External Application")
 
-    # # Check if exactly one of ue_ipv4_addr, ue_ipv6_addr, mac_addr is not None
-    # if ((qos_sub.ue_ipv4_addr and (qos_sub.ue_ipv6_addr or qos_sub.mac_addr)) or
-    #         (qos_sub.ue_ipv6_addr and (qos_sub.ue_ipv4_addr or qos_sub.mac_addr)) or
-    #         (qos_sub.mac_addr and (qos_sub.ue_ipv4_addr or qos_sub.ue_ipv6_addr))):
-    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
-
-    # # Check if exactly one of flow_info, eth_flow_info, exter_app_id is not None
-    # if not ((qos_sub.flow_info and (qos_sub.eth_flow_info or qos_sub.exter_app_id)) or
-    #         (qos_sub.eth_flow_info and (qos_sub.flow_info or qos_sub.exter_app_id)) or
-    #         (qos_sub.exter_app_id and (qos_sub.flow_info and qos_sub.eth_flow_info))):
-    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of IP flow info, Ethernet flow info or External Application")
-
-
     if (qos_sub.ue_ipv4_addr or qos_sub.ue_ipv6_addr) and not qos_sub.flow_info:
+        print("No flow info")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if qos_sub.mac_addr and not qos_sub.eth_flow_info:
+        print("No eth flow info")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if (qos_sub.qos_reference and qos_sub.alt_qos_reqs) or (qos_sub.alt_qo_s_references and qos_sub.alt_qos_reqs):
+        print("(qos_sub.qos_reference and qos_sub.alt_qos_reqs) or (qos_sub.alt_qo_s_references and qos_sub.alt_qos_reqs)")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if qos_sub.qos_mon_info and qos_sub.events and "QOS_MONITORING" not in qos_sub.events:
+        print("qos_sub.qos_mon_info and qos_sub.events and QOS_MONITORING not in qos_sub.events")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if qos_sub.alt_qo_s_references and not qos_sub.notification_destination:
+        print("no notif destination")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
 
     if "BSF" in conf.HOSTS.keys():
