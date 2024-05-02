@@ -8,7 +8,7 @@ from models.traffic_influ_sub_patch import TrafficInfluSubPatch
 from models.traffic_influ_data_patch import TrafficInfluDataPatch
 
 async def udr_app_data_retrieval(loc: str=None):
-    uri = loc or f"http://{conf.HOSTS['UDR'][0]}:7777/nudr-dr/v1/application-data/influenceData"
+    uri = loc or f"http://{conf.HOSTS['UDR'][0]}/nudr-dr/v1/application-data/influenceData"
     #params = {'dnn': "", 'snssai': '', 'internal-Group-Id': '', 'supi': ''}
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(
@@ -44,7 +44,7 @@ async def udr_app_data_insert(traffic_influ_sub: TrafficInfluSub, intGroupID=Non
     if traffic_influ_sub.subscribed_events and "UP_PATH_CHANGE" in traffic_influ_sub.subscribed_events:
         #map influ sub dest notif to an id and save
         traffic_influ_data.up_path_chg_notif_corre_id = 1 #test
-        traffic_influ_data.up_path_chg_notif_uri = f"http://{conf.HOSTS['NEF'][0]}:7777/up_path_change"
+        traffic_influ_data.up_path_chg_notif_uri = f"http://{conf.HOSTS['NEF'][0]}/up_path_change"
 
     if traffic_influ_sub.temp_validities and len(traffic_influ_sub.temp_validities) == 1:
         traffic_influ_data.valid_start_time = traffic_influ_sub.temp_validities[0].start_time
@@ -54,7 +54,7 @@ async def udr_app_data_insert(traffic_influ_sub: TrafficInfluSub, intGroupID=Non
     print(traffic_influ_data)
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.put(
-                f"http://{conf.HOSTS['UDR'][0]}:7777/nudr-dr/v1/application-data/influenceData",
+                f"http://{conf.HOSTS['UDR'][0]}/nudr-dr/v1/application-data/influenceData",
                 headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
                 data=json.dumps(traffic_influ_data.to_dict())
             )
@@ -89,7 +89,7 @@ async def udr_app_data_delete(sub: TrafficInfluSub):
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.delete(
-                f"http://{conf.HOSTS['UDR'][0]}:7777/nudr-dr/v1/application-data/influenceData",
+                f"http://{conf.HOSTS['UDR'][0]}/nudr-dr/v1/application-data/influenceData",
                 headers={'Accept': 'application/json,application/problem+json'},
                 data=json.dumps(sub.to_dict())
             )
