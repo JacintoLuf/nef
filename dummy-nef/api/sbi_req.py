@@ -1,5 +1,5 @@
 import httpx
-from config import conf
+from api.config import conf
 from fastapi import Request, Response, HTTPException
 
 async def validate_req(request: Request):
