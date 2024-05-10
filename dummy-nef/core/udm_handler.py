@@ -5,13 +5,15 @@ from models.monitoring_event_subscription import MonitoringEventSubscription
 
 
 async def udm_sdm_id_translation(ueId: str=None):
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-        response = await client.get(
-            f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/{ueId}/id-translation-result",
-            headers={'Accept': 'application/json,application/problem+json'}
-        )
-        print(response.text)
-
+    try:
+        async with httpx.AsyncClient(http1=False, http2=True) as client:
+            response = await client.get(
+                f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/{ueId}/id-translation-result",
+                headers={'Accept': 'application/json,application/problem+json'}
+            )
+            print(response.text)
+    except Exception as e:
+        print(e.__str__)
     return response
 
 async def udm_sdm_group_identifiers_translation(ext_group_id: str=None):

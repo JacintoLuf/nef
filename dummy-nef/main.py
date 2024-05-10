@@ -3,10 +3,8 @@ import logging
 from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi_utils.tasks import repeat_every
 from fastapi.responses import JSONResponse
-from session import async_db, clean_db
+from session import clean_db
 from api.config import conf
-from api.sbi_req import get_req, delete_req
-from models.problem_details import ProblemDetails
 from models.pcf_binding import PcfBinding
 from models.monitoring_event_subscription import MonitoringEventSubscription
 from models.monitoring_event_report import MonitoringEventReport
@@ -23,11 +21,14 @@ import crud.nfProfile as nfProfile
 import crud.trafficInfluSub as trafficInfluSub
 import crud.asSessionWithQoSSub as asSessionWithQoSSub
 import crud.monitoringEventSubscription as monitoringEventSubscription
-# from api.af_request_template import create_sub, create_sub2, create_sub3, create_sub34, create_sub4
 
-app = FastAPI()
+app = FastAPI(debug=True)
 logger = logging.getLogger(__name__)
 
+@app.exception_handler(Exception)
+async def exception_callback(request: Request, exc: Exception):
+    print(f"Failed method {request.method} at URL {request.url}.")
+    print(f"Exception message is {exc!r}.")
 
 @app.on_event("startup")
 async def startup():
@@ -69,14 +70,31 @@ async def read_root():
 
 @app.get("/ue/{supi}")
 async def ue_info(supi: str):
+    params = {'dataset-names': ['AMF', 'SMF_SEL']}
     res = ""
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.get(
+            f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v1/{supi}/am-data",
+            headers={'Accept': 'application/json,application/problem+json'}
+        )
+        res += response.text
+        print(f"am data v1:\n {response.text}")
+    res += "\n-----------------------------------------------------\n"
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
             f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/{supi}/am-data",
             headers={'Accept': 'application/json,application/problem+json'}
         )
         res += response.text
-        print(f"am data:\n {response.text}")
+        print(f"am data v2:\n {response.text}")
+    res += "\n-----------------------------------------------------\n"
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.get(
+            f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v1/{supi}/sm-data",
+            headers={'Accept': 'application/json,application/problem+json'}
+        )
+        res += response.text
+        print(f"sm data v1:\n {response.text}")
     res += "\n-----------------------------------------------------\n"
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
@@ -84,15 +102,24 @@ async def ue_info(supi: str):
             headers={'Accept': 'application/json,application/problem+json'}
         )
         res += response.text
-        print(f"sm data:\n {response.text}")
+        print(f"sm data v2:\n {response.text}")
     res += "\n-----------------------------------------------------\n"
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
-            f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/{supi}",
-            headers={'Accept': 'application/json,application/problem+json'}
+            f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v1/{supi}",
+            headers={'Accept': 'application/json,application/problem+json'},
+            params=params
         )
         res += response.text
-        print(f"ue data:\n {response.text}")
+        print(f"ue data v1:\n {response.text}")
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.get(
+            f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/{supi}",
+            headers={'Accept': 'application/json,application/problem+json'},
+            params=params
+        )
+        res += response.text
+        print(f"ue data v2:\n {response.text}")
     return res
 
 @app.get("/{ueid}/translate")
