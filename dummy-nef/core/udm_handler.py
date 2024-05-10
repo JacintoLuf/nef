@@ -5,6 +5,7 @@ from models.monitoring_event_subscription import MonitoringEventSubscription
 
 
 async def udm_sdm_id_translation(ueId: str=None):
+    print(f"id to translate {ueId}")
     try:
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(

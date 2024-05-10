@@ -70,16 +70,8 @@ async def read_root():
 
 @app.get("/ue/{supi}")
 async def ue_info(supi: str):
-    params = {'dataset-names': ['AMF', 'SMF_SEL']}
+    params = {'dataset-names': ['AMF', 'SM']}
     res = ""
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-        response = await client.get(
-            f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v1/{supi}/am-data",
-            headers={'Accept': 'application/json,application/problem+json'}
-        )
-        res += response.text
-        print(f"am data v1:\n {response.text}")
-    res += "\n-----------------------------------------------------\n"
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
             f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/{supi}/am-data",
@@ -90,28 +82,12 @@ async def ue_info(supi: str):
     res += "\n-----------------------------------------------------\n"
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
-            f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v1/{supi}/sm-data",
-            headers={'Accept': 'application/json,application/problem+json'}
-        )
-        res += response.text
-        print(f"sm data v1:\n {response.text}")
-    res += "\n-----------------------------------------------------\n"
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-        response = await client.get(
             f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/{supi}/sm-data",
             headers={'Accept': 'application/json,application/problem+json'}
         )
         res += response.text
         print(f"sm data v2:\n {response.text}")
     res += "\n-----------------------------------------------------\n"
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-        response = await client.get(
-            f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v1/{supi}",
-            headers={'Accept': 'application/json,application/problem+json'},
-            params=params
-        )
-        res += response.text
-        print(f"ue data v1:\n {response.text}")
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
             f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/{supi}",
@@ -124,7 +100,7 @@ async def ue_info(supi: str):
 
 @app.get("/{ueid}/translate")
 async def translate_id(ueid: str):
-    translated_id = udm_handler.udm_sdm_id_translation(ueid)
+    translated_id = await udm_handler.udm_sdm_id_translation(ueid)
     print(f"translated id: {translated_id}")
     return translated_id
 
