@@ -13,6 +13,7 @@ from models.traffic_influ_sub import TrafficInfluSub
 from models.traffic_influ_sub_patch import TrafficInfluSubPatch
 from models.as_session_with_qo_s_subscription import AsSessionWithQoSSubscription
 import core.nrf_handler as nrf_handler
+import core.amf_handler as amf_handler
 import core.bsf_handler as bsf_handler
 import core.pcf_handler as pcf_handler
 import core.udm_handler as udm_handler
@@ -41,6 +42,9 @@ async def startup():
         await nrf_handler.nrf_discovery()
         print("NF status subscribe...")
         await status_subscribe()
+        print("amf UE event subscription")
+        res = await amf_handler.amf_event_exposure_subscribe()
+        print(res)
     except Exception as e:
         print(f"Error starting up: {e}")
     # TLS dependant
@@ -104,14 +108,16 @@ async def translate_id(ueid: str):
     print(f"translated id: {translated_id}")
     return translated_id
 
+#-----------------------------callback endpoints---------------------------------
+@app.post("/nnef-callback/amf-event-sub-callback")
+async def amf_evt_sub_callback(request: Request):
+    print(request.method)
+    print(request.body)
+
 @app.post("/nnrf-nfm/v1/subscriptions")
-async def nrf_notif(notif):
-    print("--------------------------nrf callback notif-------------------------")
-    print(type(notif))
-    print(notif)
-    #notif_data = notif.json()
-    #res = await nrf_handler.nf_update(notif_data)
-    return Response(status_code=httpx.codes.NO_CONTENT)
+async def nrf_notif(request: Request):
+    print(request.method)
+    print(request.body)
 
 @app.post("/up_path_change")
 async def up_path_chg_notif(notif):
