@@ -6,7 +6,11 @@ from fastapi.responses import JSONResponse
 from session import async_db, clean_db
 from api.config import conf
 from api.sbi_req import get_req, delete_req
+from models.problem_details import ProblemDetails
 from models.pcf_binding import PcfBinding
+from models.monitoring_event_subscription import MonitoringEventSubscription
+from models.monitoring_event_report import MonitoringEventReport
+from models.monitoring_event_reports import MonitoringEventReports
 from models.traffic_influ_sub import TrafficInfluSub
 from models.traffic_influ_sub_patch import TrafficInfluSubPatch
 from models.as_session_with_qo_s_subscription import AsSessionWithQoSSubscription
@@ -18,6 +22,7 @@ import core.udr_handler as udr_handler
 import crud.nfProfile as nfProfile
 import crud.trafficInfluSub as trafficInfluSub
 import crud.asSessionWithQoSSub as asSessionWithQoSSub
+import crud.monitoringEventSubscription as monitoringEventSubscription
 # from api.af_request_template import create_sub, create_sub2, create_sub3, create_sub34, create_sub4
 
 app = FastAPI()
@@ -55,12 +60,46 @@ async def shutdown():
     print("shuting down...")
     await nrf_handler.nf_deregister()
     await nrf_handler.nf_status_unsubscribe()
-    clean_db()
+    # clean_db()
 
 @app.get("/")
 async def read_root():
     insts = await nfProfile.get_all()
     return {'nfs instances': str(insts)}
+
+@app.get("/ue/{supi}")
+async def ue_info(supi: str):
+    res = ""
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.get(
+            f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/{supi}/am-data",
+            headers={'Accept': 'application/json,application/problem+json'}
+        )
+        res += response.text
+        print(f"am data:\n {response.text}")
+    res += "\n-----------------------------------------------------\n"
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.get(
+            f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/{supi}/sm-data",
+            headers={'Accept': 'application/json,application/problem+json'}
+        )
+        res += response.text
+        print(f"sm data:\n {response.text}")
+    res += "\n-----------------------------------------------------\n"
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
+        response = await client.get(
+            f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/{supi}",
+            headers={'Accept': 'application/json,application/problem+json'}
+        )
+        res += response.text
+        print(f"ue data:\n {response.text}")
+    return res
+
+@app.get("/{ueid}/translate")
+async def translate_id(ueid: str):
+    translated_id = udm_handler.udm_sdm_id_translation(ueid)
+    print(f"translated id: {translated_id}")
+    return translated_id
 
 @app.post("/nnrf-nfm/v1/subscriptions")
 async def nrf_notif(notif):
@@ -77,10 +116,97 @@ async def up_path_chg_notif(notif):
     print(notif)
     return Response(status_code=httpx.codes.NO_CONTENT)
 
+#---------------------monitoring-event------------------------
+@app.get("/monget")
+async def get():
+    res = await monitoringEventSubscription.monitoring_event_subscriptionscription_get()
+    if not res:
+        return {'subs': []}
+    return {'subs': res}
+
+@app.get("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions")
+async def mon_evt_subs_get(scsAsId: str):
+    print(f"af id: {scsAsId}")
+    res = await monitoringEventSubscription.monitoring_event_subscriptionscription_get(scsAsId)
+    if not res:
+        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
+    return Response(content=res, status_code=httpx.codes.OK)
+
+@app.post("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions")
+async def mon_evt_subs_post(scsAsId: str, data: Request):
+    try:
+        data_dict = await data.json()
+        mon_evt_sub = MonitoringEventSubscription.from_dict(data_dict)
+    except Exception as e:
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to parse message'
+
+    if not mon_evt_sub.supported_features:
+        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"EVENT_FEATURE_MISMATCH. Supported features are {conf.SERVICE_LIST['nnef-evt']}")
+    
+    if hex(int(mon_evt_sub.supported_features, 16)) and hex(int(conf.SERVICE_LIST['nnef-evt'], 16)) == hex(0):
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=f"EVENT_UNSUPPORTED. Supported features are {conf.SERVICE_LIST['nnef-evt']}")
+    
+    if mon_evt_sub.location_type or mon_evt_sub.accuracy or mon_evt_sub.minimum_report_interval:
+        if not ((mon_evt_sub.external_id is not None)^(mon_evt_sub.msisdn is not None)^(mon_evt_sub.ipv4_addr is not None)^(mon_evt_sub.ipv6_addr is not None)^(mon_evt_sub.external_group_id is not None)):
+            raise HTTPException(httpx.codes.BAD_REQUEST, detail='One of the properties "externalId", "msisdn", "ipv4Addr", "ipv6Addr" or "externalGroupId" shall be included for features "Location_notification" and "Communication_failure_notification"')
+    
+    if mon_evt_sub.location_type or mon_evt_sub.accuracy or mon_evt_sub.minimum_report_interval or mon_evt_sub.max_rpt_expire_intvl or mon_evt_sub.sampling_interval or mon_evt_sub.reporting_loc_est_ind or mon_evt_sub.linear_distance or mon_evt_sub.loc_qo_s or mon_evt_sub.svc_id or mon_evt_sub.ldr_type or mon_evt_sub.velocity_requested or mon_evt_sub.max_age_of_loc_est or mon_evt_sub.loc_time_window or mon_evt_sub.supported_gad_shapes or mon_evt_sub.code_word or mon_evt_sub.location_area5_g:
+        if not ((mon_evt_sub.external_id is not None)^(mon_evt_sub.msisdn is not None)^(mon_evt_sub.external_group_id is not None)):
+            raise HTTPException(httpx.codes.BAD_REQUEST, detail='One of the properties "externalId", "msisdn" or "externalGroupId" shall be included for feature "eLCS"')
+        
+    if not mon_evt_sub.monitoring_type or mon_evt_sub.notification_destination:
+        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Message shall include SCS/AS Identifier, "Monitoring Type", "Notification Destination Address" and pne of External Identifier, MSISDN or External Group Identifier')
+
+    if not ((mon_evt_sub.maximum_number_of_reports is not None)^(mon_evt_sub.monitor_expire_time is not None)):
+        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='At least one of "maximumNumberOfReports" or "monitorExpireTime" shall be provided.')
+    
+    
+
+    mon_evt_rep = MonitoringEventReport()
+    return Response(status_code=200, headers=conf.GLOBAL_HEADERS, content={
+        'MonitoringEventSubscription': mon_evt_sub.to_dict(),
+        'MonitoringEventReport': mon_evt_rep.to_dict()
+    })
+
+@app.put("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
+async def mon_evt_sub_put(scsAsId: str, subscriptionId: str, data: Request):
+    try:
+        data_dict = await data.json()
+        mon_evt_sub = MonitoringEventSubscription.from_dict(data_dict)
+        await monitoringEventSubscription.monitoring_event_subscriptionscription_update(scsAsId, subscriptionId, mon_evt_sub.to_dict())
+    except Exception as e:
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to update subscription'
+    return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
+
+@app.patch("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
+async def mon_evt_sub_patch(scsAsId: str, subscriptionId: str, data: Request):
+    try:
+        data_dict = await data.json()
+        mon_evt_sub = MonitoringEventSubscription.from_dict(data_dict)
+        await monitoringEventSubscription.monitoring_event_subscriptionscription_update(scsAsId, subscriptionId, mon_evt_sub.to_dict())
+
+        if not (mon_evt_sub.excluded_external_ids and mon_evt_sub.excluded_msisdns and mon_evt_sub.added_external_ids and mon_evt_sub.added_msisdns):
+            raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='At least one of "excludedExternalIds", "excludedMsisdns", "addedExternalIds" and/or "addedMsisdns"')
+    
+    except Exception as e:
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to update subscription'
+    return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
+
+@app.get("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
+async def mon_evt_sub_get(scsAsId: str, subbscriptionId: str):
+    print(f"af id: {scsAsId}, sub id: {subbscriptionId}")
+    res = await monitoringEventSubscription.monitoring_event_subscriptionscription_get(scsAsId, subbscriptionId)
+    if not res:
+        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
+    return Response(content=res, status_code=httpx.codes.OK)
+
+@app.delete("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
+async def mon_evt_sub_delete():
+    return
 
 #---------------------traffic-influence------------------------
 # @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
-@app.get("/get")
+@app.get("/tiget")
 async def get():
     res = await trafficInfluSub.traffic_influence_subscription_get()
     if not res:
@@ -104,7 +230,7 @@ async def ti_get_all(afId: str):
     return Response(content=res, status_code=httpx.codes.OK)
 
 @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
-async def ti_create(afId: str, data: Request):
+async def traffic_influ_create(afId: str, data: Request):
 # @app.get("/create/{ip}")
 # async def ti_create(ip: str, afId: str=None):
     # if not afId:
@@ -116,7 +242,7 @@ async def ti_create(afId: str, data: Request):
 
     try:
         data_dict = await data.json()
-        traffic_sub = await TrafficInfluSub().from_dict(data_dict)
+        traffic_sub = TrafficInfluSub().from_dict(data_dict)
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to parse message'
 
@@ -187,7 +313,8 @@ async def ti_create(afId: str, data: Request):
 @app.put("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_put(afId: str, subId: str, data: Request):
     try:
-        traffic_sub = TrafficInfluSub.from_dict(data.json())
+        data_dict = await data.json()
+        traffic_sub = TrafficInfluSub.from_dict(data_dict)
         await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=traffic_sub.to_dict())
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to update subscription'

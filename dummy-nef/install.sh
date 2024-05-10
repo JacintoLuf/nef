@@ -1,19 +1,21 @@
 #!/bin/bash
 
-# Default open source core
+# Default values
+default_name=nef
 default_core=free5gc
 default_plmn=20899
 prune=false
 
 # Iterate through the arguments
 for arg in "$@"; do
-  if [ "$arg" = "-dp" ]; then
+  if [ "$arg" = "-p" ]; then
     prune=true
     break
   fi
 done
 
 if [ $# -eq 0 ]; then
+  export NAME=$default_name
   export CORE_5G=$default_core
   export NAMESPACE=$default_core
   export PLMN=$default_plmn

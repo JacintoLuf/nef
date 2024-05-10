@@ -3,13 +3,15 @@ import uuid
 from typing import List
 from models.nf_profile import NFProfile
 from models.nf_service import NFService
+from models.nf_service_version import NFServiceVersion
 from kubernetes import client, config
 
 class Settings():
     def __init__(self):
+        self.NAME = os.environ['NAME']
         self.CORE = os.environ['CORE_5G']
         self.NAMESPACE = os.environ['NAMESPACE']
-        self.PLMN = '20899' #os.environ['PLMN']
+        self.PLMN = os.environ['PLMN']
         print(f"core: {self.CORE}")
         print(f'namespace: {self.NAMESPACE}')
 
@@ -21,6 +23,13 @@ class Settings():
             'Content-Type': 'application/json',
             'charsets': 'utf-8',
         }
+
+        service_names = [] #[('','')]
+        self.SERVICE_LIST = {}
+
+        for svc_name, supp_feat in service_names:
+            base_svc = self.create_svc(svc_name, supp_feat)
+            self.SERVICE_LIST[svc_name] = base_svc
 
         try:
             config.load_incluster_config()
@@ -68,7 +77,7 @@ class Settings():
             nf_status="REGISTERED",
             heart_beat_timer=3600,
             ipv4_addresses=[self.HOSTS["NEF"][0][:-5]],
-            nf_services=[],
+            nf_service_list=self.SERVICE_LIST,
             nef_info=None
         )
 
@@ -81,12 +90,17 @@ class Settings():
             "UDR": "nudr-dr",
             "UDM": "nudm-sdm nudm-uecm nudm-ueau",
         }
-
-    def set_new_api_uuid(self):
-        self.API_UUID = str(uuid.uuid4())
-       
-        return self.API_UUID
     
+    
+    def create_svc(self, svc_name, supp_feat, oauth=False):
+        return NFService(service_instance_id=str(uuid.uuid4()),
+                             service_name=svc_name,
+                             versions=NFServiceVersion("v1", "1.0.0"),
+                             scheme="http",
+                             nf_service_status="REGISTERED",
+                             supported_features=supp_feat,
+                             oauth2_required=oauth)
+
     def set_nf_endpoints(self, profiles: List[NFProfile] = None, instances = None):
         if profiles:
             for profile in profiles:

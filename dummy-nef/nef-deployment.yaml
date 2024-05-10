@@ -22,12 +22,16 @@ spec:
           ports:
             - containerPort: 7777
           env:
+            - name: NAME
+              value: ${NAME}
             - name: CORE_5G
               value: ${CORE_5G}
             - name: NAMESPACE
               value: ${NAMESPACE}
-      imagePullSecrets:
-        - name: dockerhub-secret
+            - name: PLMN
+              value: ${PLMN}
+      # imagePullSecrets:
+      #   - name: dockerhub-secret
 
 ---
 apiVersion: v1

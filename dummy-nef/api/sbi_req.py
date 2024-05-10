@@ -1,4 +1,11 @@
 import httpx
+from config import conf
+from fastapi import Request, Response, HTTPException
+
+async def validate_req(request: Request):
+    if request.headers['Accept'] not in conf.GLOBAL_HEADERS['Accept']:
+        raise HTTPException(status_code=httpx.codes.NOT_ACCEPTABLE)
+    return
 
 async def get_req(url, headers=None, params=None):
     async with httpx.AsyncClient(http1=False, http2=True) as client:
