@@ -3,7 +3,7 @@
 # Default values
 default_name=nef
 default_core=free5gc
-default_plmn="20899"
+default_plmn='20899'
 prune=false
 
 # Iterate through the arguments
