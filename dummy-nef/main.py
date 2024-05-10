@@ -45,6 +45,9 @@ async def startup():
         print("amf UE event subscription")
         res = await amf_handler.amf_event_exposure_subscribe()
         print(res)
+        print("udm UE event subscription")
+        res = await udm_handler.udm_ee_subscription_create()
+        print(res)
     except Exception as e:
         print(f"Error starting up: {e}")
     # TLS dependant
@@ -111,6 +114,11 @@ async def translate_id(ueid: str):
 #-----------------------------callback endpoints---------------------------------
 @app.post("/nnef-callback/amf-event-sub-callback")
 async def amf_evt_sub_callback(request: Request):
+    print(request.method)
+    print(request.body)
+
+@app.post("/nnef-callback/udm-event-sub-callback")
+async def udm_evt_sub_callback(request: Request):
     print(request.method)
     print(request.body)
 
