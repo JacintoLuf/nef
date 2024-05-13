@@ -47,7 +47,7 @@ async def startup():
         print("udm UE event subscription")
         await udm_handler.udm_ee_subscription_create()
     except Exception as e:
-        print(f"Error starting up: {e!r}")
+        print(f"Error starting up: {e}")
     # TLS dependant
     # print("Getting access token...")
     # res = await nrf_handler.nrf_get_access_token()
