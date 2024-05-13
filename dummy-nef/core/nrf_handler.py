@@ -216,6 +216,8 @@ async def nf_status_subscribe3(nf_type):
             res = await subscriptionData.subscription_data_insert(sub, response.headers['location'])
             if not res:
                 print("Error saving subscription")
+            else:
+                print("Subscription saved sucessfully")
         else:
             print(f"{nf_type} Subscription not created")
     return res
