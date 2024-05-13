@@ -40,12 +40,12 @@ async def startup():
             await nrf_heartbeat()
         print("NF discovery...")
         await nrf_handler.nrf_discovery()
-        # print("NF status subscribe...")
-        # await status_subscribe()
+        print("NF status subscribe...")
+        await status_subscribe()
         print("amf UE event subscription")
-        res = await amf_handler.amf_event_exposure_subscribe()
+        await amf_handler.amf_event_exposure_subscribe()
         print("udm UE event subscription")
-        res = await udm_handler.udm_ee_subscription_create()
+        await udm_handler.udm_ee_subscription_create()
     except Exception as e:
         print(f"Error starting up: {e!r}")
     # TLS dependant
@@ -122,6 +122,11 @@ async def amf_evt_sub_callback(request: Request):
 async def udm_evt_sub_callback(request: Request):
     print(request.method)
     print(request.body)
+    mon_evt_rep = MonitoringEventReport()
+    return Response(status_code=httpx.codes.OK, headers=conf.GLOBAL_HEADERS, content={
+        # 'MonitoringEventSubscription': mon_evt_sub.to_dict(),
+        'MonitoringEventReport': mon_evt_rep.to_dict()
+    })
 
 @app.post("/nnrf-nfm/v1/subscriptions")
 async def nrf_notif(request: Request):
@@ -175,16 +180,29 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
     if not mon_evt_sub.monitoring_type or mon_evt_sub.notification_destination:
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Message shall include SCS/AS Identifier, "Monitoring Type", "Notification Destination Address" and pne of External Identifier, MSISDN or External Group Identifier')
 
-    if not ((mon_evt_sub.maximum_number_of_reports is not None)^(mon_evt_sub.monitor_expire_time is not None)):
-        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='At least one of "maximumNumberOfReports" or "monitorExpireTime" shall be provided.')
+    if mon_evt_sub.maximum_number_of_reports == 1 and mon_evt_sub.monitor_expire_time:
+        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Cannot parse message.')
     
-    
+    if (mon_evt_sub.reachability_type == "SMS" and mon_evt_sub.monitoring_type == "UE_REACHABILITY") or (mon_evt_sub.location_type == "LAST_KNOWN_LOCATION" and mon_evt_sub.monitoring_type == "LOCATION_REPORTING"):
+        if mon_evt_sub.maximum_number_of_reports != 1:
+            raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Only one-time reporting supported for this event.')
 
-    mon_evt_rep = MonitoringEventReport()
-    return Response(status_code=200, headers=conf.GLOBAL_HEADERS, content={
-        'MonitoringEventSubscription': mon_evt_sub.to_dict(),
-        'MonitoringEventReport': mon_evt_rep.to_dict()
-    })
+    if mon_evt_sub.monitoring_type == "NUMBER_OF_UES_IN_AN_AREA" and mon_evt_sub.maximum_number_of_reports != 1:
+        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Only one-time reporting supported for this event.')
+
+    if mon_evt_sub.monitoring_type in ['NUMBER_OF_UES_IN_AN_AREA']:
+        res = amf_handler.amf_event_exposure_subscribe()
+    elif mon_evt_sub.monitoring_type in ['LOSS_OF_CONNECTIVITY','UE_REACHABILITY','LOCATION_REPORTING','CHANGE_OF_IMSI_IMEI_ASSOCIATION','ROAMING_STATUS','COMMUNICATION_FAILURE','AVAILABILITY_AFTER_DDN_FAILURE','PDN_CONNECTIVITY_STATUS','API_SUPPORT_CAPABILITY']:
+        res = udm_handler.udm_ee_subscription_create(mon_evt_sub, scsAsId)
+
+    if res.status_code == httpx.codes.CREATED:
+        if mon_evt_sub.maximum_number_of_reports > 1:
+            inserted = monitoringEventSubscription.monitoring_event_subscriptionscription_insert(scsAsId, mon_evt_sub, res.headers['location'])
+            location = f"http://{conf.HOSTS['NEF'][0]}/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{res}"
+            mon_evt_sub._self = location
+            headers = conf.GLOBAL_HEADERS
+            headers['location'] = location
+            return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
 
 @app.put("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
 async def mon_evt_sub_put(scsAsId: str, subscriptionId: str, data: Request):
