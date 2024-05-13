@@ -8,5 +8,5 @@ async def bsf_management_discovery(params):
                 headers={'Accept': 'application/json,application/problem+json'},
                 params=params
             )
-
-    return {'code': response.status_code, 'response': response.json()}
+    res = response.json()
+    return {'code': response.status_code, 'response': res}
