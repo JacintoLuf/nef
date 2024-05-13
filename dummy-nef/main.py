@@ -40,14 +40,14 @@ async def startup():
             await nrf_heartbeat()
         print("NF discovery...")
         await nrf_handler.nrf_discovery()
-        print("NF status subscribe...")
-        await status_subscribe()
+        # print("NF status subscribe...")
+        # await status_subscribe()
         # print("amf UE event subscription")
         # res = await amf_handler.amf_event_exposure_subscribe()
-        # print("udm UE event subscription")
-        # res = await udm_handler.udm_ee_subscription_create()
+        print("udm UE event subscription")
+        res = await udm_handler.udm_ee_subscription_create()
     except Exception as e:
-        print(f"Error starting up: {e}")
+        print(f"Error starting up: {e!r}")
     # TLS dependant
     # print("Getting access token...")
     # res = await nrf_handler.nrf_get_access_token()
@@ -58,13 +58,14 @@ async def nrf_heartbeat():
     await nrf_handler.nf_register_heart_beat()
 
 @repeat_every(seconds=86400)
-async def status_subscribe(bg_tasks: BackgroundTasks):
-    def bg_task():
+async def status_subscribe():
+    try:
         nf_types = list(conf.NF_SCOPES.keys())
         for nf_type in nf_types:
             print(f"Creating subscription for: {nf_type}")
-            res = nrf_handler.nf_status_subscribe(nf_type)
-    bg_tasks.add_task(bg_task)
+            res = await nrf_handler.nf_status_subscribe(nf_type)
+    except Exception as e:
+        print(e)
 
 @app.on_event("shutdown")
 async def shutdown():
