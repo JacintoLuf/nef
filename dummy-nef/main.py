@@ -59,12 +59,9 @@ async def nrf_heartbeat():
 
 @repeat_every(seconds=86400)
 async def status_subscribe():
-    nf_types = list(conf.NF_SCOPES.keys())
-    print(f"nf types: {nf_types}")
-    for i in nf_types:
-        print(i)
-        nrf_handler.nf_status_subscribe(nf_type)
     try:
+        nf_types = list(conf.NF_SCOPES.keys())
+        print(f"nf types: {nf_types}")
         for nf_type in nf_types:
             print(f"Creating subscription for: {nf_type}")
             await nrf_handler.nf_status_subscribe(nf_type)
