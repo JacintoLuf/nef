@@ -175,10 +175,7 @@ async def nf_status_unsubscribe(subId=None):
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.delete(
                 f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/subscriptions/{subId}",
-                headers={
-                    'Accept': 'application/json,application/problem+json',
-                    'Content-Type': 'application/json-patch+json'
-                    }
+                headers=conf.GLOBAL_HEADERS
             )
             print(response.text)
     return 1

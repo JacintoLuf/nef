@@ -1,6 +1,6 @@
 import httpx
 import logging
-from fastapi import FastAPI, Request, Response, HTTPException
+from fastapi import FastAPI, Request, Response, HTTPException, BackgroundTasks
 from fastapi_utils.tasks import repeat_every
 from fastapi.responses import JSONResponse
 from session import clean_db
@@ -58,14 +58,13 @@ async def nrf_heartbeat():
     await nrf_handler.nf_register_heart_beat()
 
 @repeat_every(seconds=86400)
-async def status_subscribe():
-    try:
+async def status_subscribe(bg_tasks: BackgroundTasks):
+    def bg_task():
         nf_types = list(conf.NF_SCOPES.keys())
         for nf_type in nf_types:
             print(f"Creating subscription for: {nf_type}")
-            res = await nrf_handler.nf_status_subscribe(nf_type)
-    except Exception as e:
-        print(e)
+            res = nrf_handler.nf_status_subscribe(nf_type)
+    bg_tasks.add_task(bg_task)
 
 @app.on_event("shutdown")
 async def shutdown():
