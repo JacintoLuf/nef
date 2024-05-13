@@ -23,7 +23,7 @@ async def nrf_discovery():
             async with httpx.AsyncClient(http1=True) as client:
                 response = await client.get(
                     f"http://{conf.HOSTS['NRF'][0]}/nnrf-disc/v1/nf-instances",
-                    headers={'Accept': 'application/json,application/problem+json'},
+                    headers=conf.GLOBAL_HEADERS,
                     params={"target-nf-type": nf, "requester-nf-type": "NEF"}
                 )
             r = response.json()
@@ -38,7 +38,7 @@ async def nrf_discovery():
             async with httpx.AsyncClient(http1=False, http2=True) as client:
                 response = await client.get(
                     f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/nf-instances",
-                    headers={'Accept': 'application/json,application/problem+json'},
+                    headers=conf.GLOBAL_HEADERS,
                     params={"target-nf-type": nf}
                 )
             if response.json():
@@ -49,7 +49,7 @@ async def nrf_discovery():
             async with httpx.AsyncClient(http1=False, http2=True) as client:
                 response = await client.get(
                     href,
-                    headers={'Accept': 'application/json,application/problem+json'}
+                    headers=conf.GLOBAL_HEADERS
                 )
                 if response.json():
                     r = response.json()
@@ -105,7 +105,7 @@ async def nf_deregister():
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.delete(
             f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/nf-instances/"+conf.NEF_PROFILE.nf_instance_id,
-            headers={'Accept': 'application/json,application/problem+json'}
+            headers=conf.GLOBAL_HEADERS
         )
         if response.status_code == httpx.codes.NO_CONTENT:
             print(f"[{conf.NEF_PROFILE.nf_instance_id}] NF de-registered")
@@ -149,10 +149,7 @@ async def nf_status_subscribe():
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.post(
                 f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/subscriptions",
-                headers={
-                    'Accept': 'application/json,application/problem+json',
-                    'Content-Type': 'application/json'
-                    },
+                headers=conf.GLOBAL_HEADERS,
                 data=json.dumps(sub.to_dict())
             )
             sub = SubscriptionData.from_dict(response.json())
@@ -172,10 +169,7 @@ async def nf_status_unsubscribe(subId=None):
             async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
                 response = await client.delete(
                     f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/subscriptions/{sub['subscription_id']}",
-                    headers={
-                        'Accept': 'application/json,application/problem+json',
-                        'Content-Type': 'application/json-patch+json'
-                        }
+                    headers=conf.GLOBAL_HEADERS
                 )
         print(response.text)
     else:

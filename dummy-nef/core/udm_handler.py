@@ -32,7 +32,7 @@ async def udm_sdm_group_identifiers_translation(ext_group_id: str=None):
 
     return response
 
-async def udm_ee_subscription_create(monEvtSub: MonitoringEventSubscription, afId: str=None):
+async def udm_ee_subscription_create(monEvtSub: MonitoringEventSubscription=None, afId: str=None):
     ueIdentity = "^anyUE$"
 
     mon_conf = {

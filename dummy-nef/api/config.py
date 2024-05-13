@@ -90,7 +90,7 @@ class Settings():
             "BSF": "nbsf-management",
             "PCF": "npcf-policyauthorization npcf-eventexposure",
             "UDR": "nudr-dr",
-            "UDM": "nudm-sdm nudm-uecm nudm-ueau",
+            "UDM": "nudm-sdm nudm-uecm nudm-ueau nudm-ee",
         }
     
     

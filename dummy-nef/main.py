@@ -44,10 +44,8 @@ async def startup():
         await status_subscribe()
         print("amf UE event subscription")
         res = await amf_handler.amf_event_exposure_subscribe()
-        print(res)
         print("udm UE event subscription")
-        res = await udm_handler.udm_ee_subscription_create(MonitoringEventSubscription())
-        print(res)
+        res = await udm_handler.udm_ee_subscription_create()
     except Exception as e:
         print(f"Error starting up: {e}")
     # TLS dependant
