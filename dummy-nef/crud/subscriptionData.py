@@ -27,7 +27,7 @@ async def subscription_data_insert(sub: SubscriptionData, location: str):
         return None
 
 async def subscription_data_delete(subId: str=None):
-    collection = db["traffic_influ_sub"]
+    collection = db["subscription_data"]
     n = await collection.count_documents({})
     try:
         result = await collection.delete_one({'_id': subId})

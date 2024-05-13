@@ -150,7 +150,6 @@ async def nf_status_subscribe(nf_type):
             headers=conf.GLOBAL_HEADERS,
             data=json.dumps(sub.to_dict())
         )
-    print(f"status subscribe response code: {response.status_code} | message: {response.text}")
     if response.status_code == httpx.codes.CREATED:
         sub = SubscriptionData.from_dict(response.json())
         print(sub)
