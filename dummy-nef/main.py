@@ -64,7 +64,7 @@ async def status_subscribe():
     try:
         for nf_type in nf_types:
             print(f"Creating subscription for: {nf_type}")
-            await nrf_handler.nf_status_subscribe()
+            await nrf_handler.nf_status_subscribe(nf_type)
     except Exception as e:
         print(e)
 
