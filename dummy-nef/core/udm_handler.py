@@ -54,14 +54,14 @@ async def udm_ee_subscription_create(monEvtSub: MonitoringEventSubscription=None
         # supported_features="",
     )
     print(ee_sub.to_dict())
-    # async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
-    #     response = await client.post(
-    #         f"http://{conf.HOSTS['UDM'][0]}/nudm-ee/v1/{ueIdentity}/ee-subscriptions",
-    #         headers=conf.GLOBAL_HEADERS,
-    #         data=json.dumps(ee_sub.to_dict())
-    #     )
-    #     print("sent")
-    #     print(response.text)
+    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
+        response = await client.post(
+            f"http://{conf.HOSTS['UDM'][0]}/nudm-ee/v1/{ueIdentity}/ee-subscriptions",
+            headers=conf.GLOBAL_HEADERS,
+            data=json.dumps(ee_sub.to_dict())
+        )
+        print("sent")
+        print(response.text)
 
     # if response.status_code==httpx.codes.CREATED:
     #     res_data = await response.json()
