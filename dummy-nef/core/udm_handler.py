@@ -88,9 +88,11 @@ async def udm_ee_subscription_create(monEvtSub: MonitoringEventSubscription=None
             data=json.dumps(ee_sub.to_dict())
         )
         print(response.headers)
+        print(response.text)
 
     if response.status_code==httpx.codes.CREATED:
-        res_data = await response.json()
+        res_data = response.json()
+        print(f"udm response data: {res_data}")
         created_sub = CreatedEeSubscription.from_dict(res_data)
         res = createdEeSubscription.created_ee_subscriptionscription_insert(created_sub)
 
