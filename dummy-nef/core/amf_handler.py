@@ -22,10 +22,9 @@ async def amf_event_exposure_subscribe():
         any_ue=True
         )
     amf_evt_sub = AmfCreateEventSubscription(subscription=amf_sub)
-    print(amf_evt_sub.to_dict())
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
-            f"http://{conf.HOSTS['PCF'][0]}/namf-evts/v1/subscriptions",
+            f"http://{conf.HOSTS['AMF'][0]}/namf-evts/v1/subscriptions",
             headers=conf.GLOBAL_HEADERS,
             data=json.dumps(amf_evt_sub.to_dict())
         )
@@ -36,7 +35,7 @@ async def amf_event_exposure_subscription_update(app_session_id: str=None):
     if app_session_id:
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.post(
-                f"http://{conf.HOSTS['PCF'][0]}/namf-evts/v1/subscriptions",
+                f"http://{conf.HOSTS['AMF'][0]}/namf-evts/v1/subscriptions",
                 headers=conf.GLOBAL_HEADERS
             )
             print(response.text)
@@ -47,7 +46,7 @@ async def amf_event_exposure_subscription_delete(app_session_id: str=None):
     if app_session_id:
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.post(
-                f"http://{conf.HOSTS['PCF'][0]}/namf-evts/v1/subscriptions",
+                f"http://{conf.HOSTS['AMF'][0]}/namf-evts/v1/subscriptions",
                 headers=conf.GLOBAL_HEADERS
             )
             print(response.text)

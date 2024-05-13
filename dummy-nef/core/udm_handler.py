@@ -94,7 +94,8 @@ async def udm_ee_subscription_create(monEvtSub: MonitoringEventSubscription=None
         res_data = response.json()
         print(f"udm response data: {res_data}")
         created_sub = CreatedEeSubscription.from_dict(res_data)
-        res = createdEeSubscription.created_ee_subscriptionscription_insert(created_sub)
+        if response.headers['location']:
+            res = createdEeSubscription.created_ee_subscriptionscription_insert(created_sub)
 
 async def udm_ee_subscription_udoate(monEvtSub: MonitoringEventSubscription=None, afId: str=None):
 
