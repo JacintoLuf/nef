@@ -57,7 +57,7 @@ async def startup():
 async def nrf_heartbeat():
     await nrf_handler.nf_register_heart_beat()
 
-# @repeat_every(seconds=86400)
+@repeat_every(seconds=86400)
 async def status_subscribe():
     try:
         nf_types = list(conf.NF_SCOPES.keys())
