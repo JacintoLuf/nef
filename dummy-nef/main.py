@@ -46,7 +46,7 @@ async def startup():
         res = await amf_handler.amf_event_exposure_subscribe()
         print(res)
         print("udm UE event subscription")
-        res = await udm_handler.udm_ee_subscription_create()
+        res = await udm_handler.udm_ee_subscription_create(MonitoringEventSubscription())
         print(res)
     except Exception as e:
         print(f"Error starting up: {e}")
