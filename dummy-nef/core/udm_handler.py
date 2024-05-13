@@ -9,7 +9,7 @@ from models.monitoring_configuration import MonitoringConfiguration
 async def udm_sdm_id_translation(ueId: str=None):
     print(f"id to translate {ueId}")
     try:
-        async with httpx.AsyncClient(http1=False, http2=True) as client:
+        async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.get(
                 f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/{ueId}/id-translation-result",
                 headers=conf.GLOBAL_HEADERS
@@ -53,7 +53,7 @@ async def udm_ee_subscription_create(monEvtSub: MonitoringEventSubscription=None
         # reporting_options="",
         # supported_features="",
     )
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
+    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
             f"http://{conf.HOSTS['UDM'][0]}/nudm-ee/v1/{ueIdentity}/ee-subscriptions",
             headers=conf.GLOBAL_HEADERS,
