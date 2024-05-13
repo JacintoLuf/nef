@@ -1,5 +1,7 @@
 import httpx
 import json
+import datetime
+from datetime import datetime, timezone, timedelta
 from api.config import conf
 from models.monitoring_event_subscription import MonitoringEventSubscription
 from models.ee_subscription import EeSubscription
@@ -33,7 +35,7 @@ async def udm_sdm_group_identifiers_translation(ext_group_id: str=None):
     return response
 
 async def udm_ee_subscription_create(monEvtSub: MonitoringEventSubscription=None, afId: str=None):
-    ueIdentity = "^anyUE$"
+    ueIdentity = "anyUE"
 
     mon_conf = {
         '1': MonitoringConfiguration(event_type="LOSS_OF_CONNECTIVITY", immediate_flag=True),
@@ -46,12 +48,17 @@ async def udm_ee_subscription_create(monEvtSub: MonitoringEventSubscription=None
         '8': MonitoringConfiguration(event_type="PDU_SES_REL", immediate_flag=True),
         '9': MonitoringConfiguration(event_type="PDU_SES_EST", immediate_flag=True)
         }
+    
+    current_time = datetime.now(timezone.utc)
+    validity_time = current_time + timedelta(days=1)
+    formatted_time = validity_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     ee_sub = EeSubscription(
         callback_reference=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/udm-event-sub-callback",
         monitoring_configurations=mon_conf,
         # reporting_options="",
         # supported_features="",
+        validity_time=formatted_time
     )
     print(ee_sub.to_dict())
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
