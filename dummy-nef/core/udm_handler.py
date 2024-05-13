@@ -12,7 +12,7 @@ async def udm_sdm_id_translation(ueId: str=None):
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.get(
                 f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/{ueId}/id-translation-result",
-                headers={'Accept': 'application/json,application/problem+json'}
+                headers=conf.GLOBAL_HEADERS
             )
             print(response.text)
     except Exception as e:
@@ -25,7 +25,7 @@ async def udm_sdm_group_identifiers_translation(ext_group_id: str=None):
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
             f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/group-data/group-identifiers",
-            headers={'Accept': 'application/json,application/problem+json'},
+            headers=conf.GLOBAL_HEADERS,
             params=params
         )
         print(response.text)
