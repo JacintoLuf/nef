@@ -159,6 +159,66 @@ async def nf_status_subscribe(nf_type):
                 print("Error saving subscription")
         else:
             print(f"{nf_type} Subscription not created")
+    return res
+
+async def nf_status_subscribe2(nf_type):
+    current_time = datetime.now(timezone.utc)
+    validity_time = current_time + timedelta(days=1)
+    formatted_time = validity_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+    sub = SubscriptionData(
+        nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}/nnrf-nfm/v1/subscriptions",
+        req_nf_instance_id=conf.NEF_PROFILE.nf_instance_id,
+        subscr_cond=SubscrCond(nf_type=nf_type),
+        validity_time=formatted_time,
+        req_nf_type="NEF",
+        requester_features="1"
+    )
+    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
+        response = await client.post(
+            f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/subscriptions",
+            headers=conf.GLOBAL_HEADERS,
+            data=json.dumps(sub.to_dict())
+        )
+        if response.status_code == httpx.codes.CREATED:
+            data = response.json()
+            sub = SubscriptionData.from_dict(data)
+            print(f"{nf_type} Subscription created until {sub.validity_time}")
+            res = await subscriptionData.subscription_data_insert(sub, response.headers['location'])
+            if not res:
+                print("Error saving subscription")
+        else:
+            print(f"{nf_type} Subscription not created")
+    return res
+
+
+async def nf_status_subscribe3(nf_type):
+    current_time = datetime.now(timezone.utc)
+    validity_time = current_time + timedelta(days=1)
+    formatted_time = validity_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+    sub = SubscriptionData(
+        nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}/nnrf-nfm/v1/subscriptions",
+        req_nf_instance_id=conf.NEF_PROFILE.nf_instance_id,
+        subscr_cond=SubscrCond(nf_type=nf_type),
+        validity_time=formatted_time,
+        req_nf_type="NEF",
+        requester_features="1"
+    )
+    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
+        response = await client.post(
+            f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/subscriptions",
+            headers=conf.GLOBAL_HEADERS,
+            data=json.dumps(sub.to_dict())
+        )
+        if response.status_code == httpx.codes.CREATED:
+            data = response.json()
+            sub = SubscriptionData.from_dict(data)
+            print(f"{nf_type} Subscription created until {sub.validity_time}")
+            res = await subscriptionData.subscription_data_insert(sub, response.headers['location'])
+            if not res:
+                print("Error saving subscription")
+        else:
+            print(f"{nf_type} Subscription not created")
+    return res
 
 async def nf_status_unsubscribe(subId=None):
     if not subId:
