@@ -61,9 +61,12 @@ async def nrf_heartbeat():
 async def status_subscribe():
     nf_types = list(conf.NF_SCOPES.keys())
     print(f"nf types: {nf_types}")
-    for nf_type in nf_types:
-        print(f"Creating subscription for: {nf_type}")
-        await nrf_handler.nf_status_subscribe()
+    try:
+        for nf_type in nf_types:
+            print(f"Creating subscription for: {nf_type}")
+            await nrf_handler.nf_status_subscribe()
+    except Exception as e:
+        print(e)
 
 @app.on_event("shutdown")
 async def shutdown():
