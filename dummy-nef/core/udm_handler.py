@@ -56,7 +56,7 @@ async def udm_ee_subscription_create(monEvtSub: MonitoringEventSubscription, afI
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.post(
             f"http://{conf.HOSTS['UDM'][0]}/nudm-ee/v1/{ueIdentity}/ee-subscriptions",
-            headers={'Accept': 'application/json,application/problem+json'},
+            headers=conf.GLOBAL_HEADERS,
             data=json.dumps(ee_sub.to_dict())
         )
         print(response.text)
