@@ -63,6 +63,7 @@ async def status_subscribe():
     print(f"nf types: {nf_types}")
     for i in nf_types:
         print(i)
+        nrf_handler.nf_status_subscribe(nf_type)
     try:
         for nf_type in nf_types:
             print(f"Creating subscription for: {nf_type}")
