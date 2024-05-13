@@ -134,6 +134,7 @@ async def nf_register_heart_beat():
 
 async def nf_status_subscribe():
     nfTypes = list(conf.NF_SCOPES.keys())
+    print(f"nf types: {nfTypes}")
     current_time = datetime.now(timezone.utc)
     validity_time = current_time + timedelta(days=1)
     formatted_time = validity_time.strftime("%Y-%m-%dT%H:%M:%SZ")
