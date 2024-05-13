@@ -151,10 +151,9 @@ async def nf_status_subscribe(nf_type):
             data=json.dumps(sub.to_dict())
         )
     if response.status_code == httpx.codes.CREATED:
-        sub = SubscriptionData.from_dict(response.json())
-        print(sub)
+        sub = await SubscriptionData.from_dict(response.json())
         print(f"{nf_type} Subscription created until {sub.validity_time}")
-        res = subscriptionData.subscription_data_insert(sub, response.headers['location'])
+        res = await subscriptionData.subscription_data_insert(sub, response.headers['location'])
         if not res:
             print("Error saving subscription")
     else:
