@@ -57,16 +57,13 @@ async def startup():
 async def nrf_heartbeat():
     await nrf_handler.nf_register_heart_beat()
 
-@repeat_every(seconds=86400)
+# @repeat_every(seconds=86400)
 async def status_subscribe():
     try:
         nf_types = list(conf.NF_SCOPES.keys())
-        print(f"nf types: {nf_types}")
         for nf_type in nf_types:
             print(f"Creating subscription for: {nf_type}")
             res = await nrf_handler.nf_status_subscribe(nf_type)
-        res = await nrf_handler.nf_status_subscribe2(nf_types[1])
-        res = await nrf_handler.nf_status_subscribe3(nf_types[2])
     except Exception as e:
         print(e)
 
