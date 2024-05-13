@@ -138,6 +138,7 @@ async def nf_status_subscribe():
     validity_time = current_time + timedelta(days=1)
     formatted_time = validity_time.strftime("%Y-%m-%dT%H:%M:%SZ")
     for nfType in nfTypes:
+        print(f"Creating subscription for: {nfType}")
         sub = SubscriptionData(
             nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}/nnrf-nfm/v1/subscriptions",
             req_nf_instance_id=conf.NEF_PROFILE.nf_instance_id,
@@ -152,9 +153,10 @@ async def nf_status_subscribe():
                 headers=conf.GLOBAL_HEADERS,
                 data=json.dumps(sub.to_dict())
             )
-            sub = SubscriptionData.from_dict(response.json())
             print(f"status subscribe response code: {response.status_code} | message: {response.text}")
             if response.status_code == httpx.codes.CREATED:
+                sub = SubscriptionData.from_dict(response.json())
+                print(sub)
                 print(f"{nfType} Subscription created until {sub.validity_time}")
                 res = subscriptionData.subscription_data_insert(sub, response.headers['location'])
                 if not res:
