@@ -132,38 +132,34 @@ async def nf_register_heart_beat():
             print("NEF instance not registered")
     return response.status_code
 
-async def nf_status_subscribe():
-    nfTypes = list(conf.NF_SCOPES.keys())
-    print(f"nf types: {nfTypes}")
+async def nf_status_subscribe(nf_type):
     current_time = datetime.now(timezone.utc)
     validity_time = current_time + timedelta(days=1)
     formatted_time = validity_time.strftime("%Y-%m-%dT%H:%M:%SZ")
-    for nfType in nfTypes:
-        print(f"Creating subscription for: {nfType}")
-        sub = SubscriptionData(
-            nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}/nnrf-nfm/v1/subscriptions",
-            req_nf_instance_id=conf.NEF_PROFILE.nf_instance_id,
-            subscr_cond=SubscrCond(nf_type=nfType),
-            validity_time=formatted_time,
-            req_nf_type="NEF",
-            requester_features="1"
+    sub = SubscriptionData(
+        nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}/nnrf-nfm/v1/subscriptions",
+        req_nf_instance_id=conf.NEF_PROFILE.nf_instance_id,
+        subscr_cond=SubscrCond(nf_type=nf_type),
+        validity_time=formatted_time,
+        req_nf_type="NEF",
+        requester_features="1"
+    )
+    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
+        response = await client.post(
+            f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/subscriptions",
+            headers=conf.GLOBAL_HEADERS,
+            data=json.dumps(sub.to_dict())
         )
-        async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
-            response = await client.post(
-                f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/subscriptions",
-                headers=conf.GLOBAL_HEADERS,
-                data=json.dumps(sub.to_dict())
-            )
-            print(f"status subscribe response code: {response.status_code} | message: {response.text}")
-            if response.status_code == httpx.codes.CREATED:
-                sub = SubscriptionData.from_dict(response.json())
-                print(sub)
-                print(f"{nfType} Subscription created until {sub.validity_time}")
-                res = subscriptionData.subscription_data_insert(sub, response.headers['location'])
-                if not res:
-                    print("Error saving subscription")
-            else:
-                print(f"{nfType} Subscription not created")
+        print(f"status subscribe response code: {response.status_code} | message: {response.text}")
+        if response.status_code == httpx.codes.CREATED:
+            sub = SubscriptionData.from_dict(response.json())
+            print(sub)
+            print(f"{nf_type} Subscription created until {sub.validity_time}")
+            res = subscriptionData.subscription_data_insert(sub, response.headers['location'])
+            if not res:
+                print("Error saving subscription")
+        else:
+            print(f"{nf_type} Subscription not created")
 
 async def nf_status_unsubscribe(subId=None):
     if not subId:
