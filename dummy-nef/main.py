@@ -267,20 +267,16 @@ async def ti_get_all(afId: str):
 
 @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 async def traffic_influ_create(afId: str, data: Request):
-# @app.get("/create/{ip}")
-# async def ti_create(ip: str, afId: str=None):
-    # if not afId:
-    #     afId = "default"
-    
-    # if ip:
-    #     new_ip = ip.replace("-", ".")
-    #     traffic_sub = create_sub(new_ip)
+
+    print("Initiating Traffic Influence request process")
 
     try:
         data_dict = await data.json()
         traffic_sub = TrafficInfluSub().from_dict(data_dict)
+    except ValueError as e:
+        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"Failed to parse message. Err: {e.__str__}")
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to parse message'
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
 
     if not ((traffic_sub.af_app_id is not None)^(traffic_sub.traffic_filters is not None)^(traffic_sub.eth_traffic_filters is not None)):
         print(f"app id: {type(traffic_sub.af_app_id)}, traffic filters: {type(traffic_sub.traffic_filters)}, eth traffic filters: {type(traffic_sub.eth_traffic_filters)}")
@@ -365,7 +361,6 @@ async def ti_patch(afId: str, subId: str, data: Request):
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to update subscription'
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
-# @app.get("/delete/{subId}")
 @app.delete("/3gpp-trafficInfluence/v1/{afId}/subscriptions/{subId}")
 async def delete_ti(afId: str, subId: str):
     try:
@@ -415,25 +410,15 @@ async def qget():
 
 @app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
 async def qos_create(scsAsId: str, data: Request):
-# @app.get("/qos/{i}/{ip}")
-# async def qos_create(i: int, ip: str):
-    # scsAsId = "default"
-    # if ip:
-    #     new_ip = ip.replace("-", ".")
-    #     if i == 0:
-    #         qos_sub = create_sub34(new_ip)
-    #     elif i == 1:
-    #         qos_sub = create_sub4(new_ip)
-    #     else:
-    #         qos_sub = create_sub3(new_ip)
-    # else:
-    #     return("no ip")
+    print("Initiating As Session With QoS request process")
 
     try:
         data_dict = await data.json()
         qos_sub = AsSessionWithQoSSubscription().from_dict(data_dict)
+    except ValueError as e:
+        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"Failed to parse message. Err: {e.__str__}")
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to parse message'
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
 
     if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
         print("Only one of ipv4Addr, ipv6Addr or macAddr")
@@ -475,21 +460,21 @@ async def qos_create(scsAsId: str, data: Request):
         response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
     else:
         response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
-    # try:
-    #     if response.status_code == httpx.codes.INTERNAL_SERVER_ERROR:
-    #         print("SERVER ERROR!")
-    #     elif response.status_code == httpx.codes.CREATED:
-    #         sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
-    #         if sub_id:
-    #             qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
-    #             print(qos_sub)
-    #             headers={'location': qos_sub.__self, 'content-type': 'application/json'}
-    #             return JSONResponse(status_code=httpx.codes.CREATED, content=qos_sub.to_dict(), headers=headers)
-    #         else:
-    #             return Response(status_code=500, content="Error creating resource")      
-    # except Exception as e:
-    #     print("##############EXCEPTION############")
-    #     print(e)
+    try:
+        if response.status_code == httpx.codes.INTERNAL_SERVER_ERROR:
+            print("SERVER ERROR!")
+        elif response.status_code == httpx.codes.CREATED:
+            sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
+            if sub_id:
+                qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
+                print(qos_sub)
+                headers={'location': qos_sub.__self, 'content-type': 'application/json'}
+                return JSONResponse(status_code=httpx.codes.CREATED, content=qos_sub.to_dict(), headers=headers)
+            else:
+                return Response(status_code=500, content="Error creating resource")      
+    except Exception as e:
+        print("##############EXCEPTION############")
+        print(e)
     return response
 
 @app.post("/pcf-policy-authorization-qos-callback")
