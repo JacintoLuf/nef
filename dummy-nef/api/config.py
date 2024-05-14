@@ -12,10 +12,8 @@ class Settings():
         self.CORE = os.environ['CORE_5G']
         self.NAMESPACE = os.environ['NAMESPACE']
         self.PLMN = os.environ['PLMN']
-        print(f'deploy name: {self.NAME}')
-        print(f'core: {self.CORE}')
-        print(f'namespace: {self.NAMESPACE}')
-        print(f'plmn: {self.PLMN}')
+        print(f'deploying {self.NAME} in namespace {self.NAMESPACE}')
+        print(f'integrating with {self.CORE}, serving PLMN: {self.PLMN}')
 
         self.HOSTS = {}
         self.MONGO_URI = ""
