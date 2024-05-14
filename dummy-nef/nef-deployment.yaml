@@ -30,9 +30,6 @@ spec:
               value: ${NAMESPACE}
             - name: PLMN
               value: ${PLMN}
-      # imagePullSecrets:
-      #   - name: dockerhub-secret
-
 ---
 apiVersion: v1
 kind: Service
