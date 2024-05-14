@@ -15,7 +15,7 @@ async def udm_sdm_id_translation(ueId: str=None):
     try:
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.get(
-                f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/{ueId}/id-translation-result",
+                f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v1/{ueId}/id-translation-result",
                 headers=conf.GLOBAL_HEADERS
             )
             print(response.text)
@@ -28,7 +28,7 @@ async def udm_sdm_group_identifiers_translation(ext_group_id: str=None):
 
     async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.get(
-            f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/group-data/group-identifiers",
+            f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v1/group-data/group-identifiers",
             headers=conf.GLOBAL_HEADERS,
             params=params
         )
