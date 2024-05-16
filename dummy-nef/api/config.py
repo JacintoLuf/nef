@@ -30,11 +30,6 @@ class Settings():
             ('3gpp-traffic-influence','00000002'), # ts 29522 5.4.4-1 :2
             ('3gpp-as-session-with-qos','00000920'), # ts 29122 5.14.4-1 :6, 9, 12
             ]
-        self.SERVICE_LIST = {}
-
-        for svc_name, supp_feat in service_names:
-            base_svc = self.create_svc(svc_name, supp_feat)
-            self.SERVICE_LIST[svc_name] = base_svc
 
         try:
             config.load_incluster_config()
@@ -75,6 +70,12 @@ class Settings():
             else:
                 self.HOSTS["NRF"] = "10.102.176.115:7777"
                 print("NRFs manually resolved: "+self.HOSTS["NRF"])
+
+        self.SERVICE_LIST = {}
+
+        for svc_name, supp_feat in service_names:
+            base_svc = self.create_svc(svc_name, supp_feat)
+            self.SERVICE_LIST[svc_name] = base_svc
 
         self.NEF_PROFILE = NFProfile(
             nf_instance_id=self.API_UUID,
