@@ -21,6 +21,7 @@ if [ $# -eq 0 ]; then
   export PLMN=$default_plmn
   echo Using default core $CORE_5G in default namespace: $NAMESPACE in default PLMN: $PLMN
 else
+  export NAME=$default_name
   export CORE_5G=$1
   export PLMN=$default_plmn
   if [ -n "$2" ]; then
