@@ -1,6 +1,7 @@
 import os
 import uuid
 from typing import List
+from models.ip_end_point import IpEndPoint
 from models.nf_profile import NFProfile
 from models.nf_service import NFService
 from models.nf_service_version import NFServiceVersion
@@ -102,7 +103,7 @@ class Settings():
             versions=[NFServiceVersion("v1", "1.0.0")],
             scheme="http",
             nf_service_status="REGISTERED",
-            ip_end_points=[self.HOSTS["NEF"][0][:-5]],
+            ip_end_points=[IpEndPoint(ipv4_address=self.HOSTS["NEF"][0][:-5], transport="TCP", port=7777)],
             api_prefix=self.NAME,
             supported_features=supp_feat,
             oauth2_required=oauth
