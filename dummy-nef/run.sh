@@ -34,7 +34,8 @@ else
 fi
 
 # Delete previous existing deployment and service
-kubectl delete -n $NAMESPACE -f nef-deployment.yaml
+# kubectl delete -n $NAMESPACE -f nef-deployment.yaml
+envsubst < nef-deployment.yaml | kubectl delete -n $NAMESPACE -f -
 
 
 # Capture the current commit hash before performing git pull
