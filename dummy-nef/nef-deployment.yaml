@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ${NAME}
+  name: $NAME
   labels:
-    app: ${NAME}
+    app: $NAME
 spec:
   selector:
     matchLabels:
-      app: ${NAME}
+      app: $NAME
   replicas: 1
   template:
     metadata:
       labels:
-        app: ${NAME}
+        app: $NAME
     spec:
-      serviceAccountName: ${NAME}-account
+      serviceAccountName: $NAME-account
       containers:
-        - name: ${NAME}
+        - name: $NAME
           image: jacintoluf/nf-nef:latest
           imagePullPolicy: Always
           ports:
@@ -34,32 +34,32 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ${NAME}
+  name: $NAME
   labels:
-    app: ${NAME}
+    app: $NAME
 spec:
   ports:
-  - name: ${NAME}
+  - name: $NAME
     protocol: TCP
     port: 7777
     targetPort: 7777
     nodePort: 7777
   selector:
-    app: ${NAME}
+    app: $NAME
   type: NodePort
 
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: ${NAME}-account
+  name: $NAME-account
   namespace: ${NAMESPACE}
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: pods-list-${NAME}
+  name: pods-list-$NAME
 rules:
 - apiGroups: [""]
   resources: ["pods", "services"]
@@ -69,12 +69,12 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: pods-list-${NAME}
+  name: pods-list-$NAME
 subjects:
 - kind: ServiceAccount
-  name: ${NAME}-account
+  name: $NAME-account
   namespace: ${NAMESPACE}
 roleRef:
   kind: ClusterRole
-  name: pods-list-${NAME}
+  name: pods-list-$NAME
   apiGroup: rbac.authorization.k8s.io
