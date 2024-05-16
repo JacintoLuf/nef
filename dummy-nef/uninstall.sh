@@ -5,14 +5,15 @@ default_core=free5gc
 default_plmn="'20899'"
 prune=false
 
+export NAME=$default_name
+echo Deleting $NAME
+
 if [ $# -eq 0 ]; then
-  export NAME=$default_name
   export CORE_5G=$default_core
   export NAMESPACE=$default_core
   export PLMN=$default_plmn
   echo Deleting $NAME in default namespace: $NAMESPACE with default PLMN: $PLMN
 else
-  export NAME=$default_name
   export CORE_5G=$1
   export PLMN=$default_plmn
   if [ -n "$2" ]; then
@@ -24,7 +25,7 @@ else
 fi
 
 # Delete previous existing deployment and service
-kubectl delete -n $NAMESPACE -f nef-deployment.yaml
+envsubst < nef-deployment.yaml | kubectl delete -n $NAMESPACE -f -
 
 # Find and delete the Docker image by name
 IMAGE_ID=$(docker images -q nef)
