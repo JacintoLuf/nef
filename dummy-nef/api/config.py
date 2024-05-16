@@ -102,7 +102,7 @@ class Settings():
             versions=[NFServiceVersion("v1", "1.0.0")],
             scheme="http",
             nf_service_status="REGISTERED",
-            ip_end_points=self.HOSTS['NEF'],
+            ip_end_points=[self.HOSTS["NEF"][0][:-5]],
             api_prefix=self.NAME,
             supported_features=supp_feat,
             oauth2_required=oauth
