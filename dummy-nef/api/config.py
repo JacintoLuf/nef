@@ -24,7 +24,11 @@ class Settings():
             'charsets': 'utf-8',
         }
 
-        service_names = [] #[('','')]
+        service_names = [
+            ('3gpp-monitoring-event','02481437'), # ts 29122 5.3.4-1 :1, 2, 3, 5, 6, 11, 13, 20, 23, 26
+            ('3gpp-traffic-influence','00000002'), # ts 29522 5.4.4-1 :2
+            ('3gpp-as-session-with-qos','00000920'), # ts 29122 5.14.4-1 :6, 9, 12
+            ]
         self.SERVICE_LIST = {}
 
         for svc_name, supp_feat in service_names:
@@ -51,7 +55,7 @@ class Settings():
                     else:
                         self.HOSTS["NRF"] = [f"{svc.metadata.name}:{svc.spec.ports[0].port}"]
 
-            svc = v1.read_namespaced_service("nef", self.NAMESPACE)
+            svc = v1.read_namespaced_service(self.NAME, self.NAMESPACE)
             self.HOSTS["NEF"] = [f"{svc.spec.cluster_ip}:{svc.spec.ports[0].port}"]
         
         except client.ApiException as e:
@@ -94,12 +98,15 @@ class Settings():
     
     def create_svc(self, svc_name, supp_feat, oauth=False):
         return NFService(service_instance_id=str(uuid.uuid4()),
-                             service_name=svc_name,
-                             versions=NFServiceVersion("v1", "1.0.0"),
-                             scheme="http",
-                             nf_service_status="REGISTERED",
-                             supported_features=supp_feat,
-                             oauth2_required=oauth)
+            service_name=svc_name,
+            versions=[NFServiceVersion("v1", "1.0.0")],
+            scheme="http",
+            nf_service_status="REGISTERED",
+            ip_end_points=self.HOSTS['NEF'],
+            api_prefix=self.NAME,
+            supported_features=supp_feat,
+            oauth2_required=oauth
+        )
 
     def set_nf_endpoints(self, profiles: List[NFProfile] = None, instances = None):
         if profiles:

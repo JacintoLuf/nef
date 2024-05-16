@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nef
+  name: ${NAME}
   labels:
-    app: nef
+    app: ${NAME}
 spec:
   selector:
     matchLabels:
-      app: nef
+      app: ${NAME}
   replicas: 1
   template:
     metadata:
       labels:
-        app: nef
+        app: ${NAME}
     spec:
-      serviceAccountName: nef-account
+      serviceAccountName: ${NAME}-account
       containers:
-        - name: nef
+        - name: ${NAME}
           image: jacintoluf/nf-nef:latest
           imagePullPolicy: Always
           ports:
@@ -34,34 +34,32 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nef
+  name: ${NAME}
   labels:
-    app: nef
+    app: ${NAME}
 spec:
   ports:
-  - name: nef
+  - name: ${NAME}
     protocol: TCP
     port: 7777
     targetPort: 7777
     nodePort: 7777
   selector:
-    app: nef
+    app: ${NAME}
   type: NodePort
-  #type: ClusterIP
 
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: nef-account
+  name: ${NAME}-account
   namespace: ${NAMESPACE}
-#automountServiceAccountToken: true
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: pods-list-nef
+  name: pods-list-${NAME}
 rules:
 - apiGroups: [""]
   resources: ["pods", "services"]
@@ -71,13 +69,12 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: pods-list-nef
-  #namespace: ${NAMESPACE}
+  name: pods-list-${NAME}
 subjects:
 - kind: ServiceAccount
-  name: nef-account
+  name: ${NAME}-account
   namespace: ${NAMESPACE}
 roleRef:
   kind: ClusterRole
-  name: pods-list-nef
+  name: pods-list-${NAME}
   apiGroup: rbac.authorization.k8s.io

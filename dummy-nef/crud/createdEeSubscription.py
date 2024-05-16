@@ -32,20 +32,18 @@ async def created_ee_subscriptionscription_insert(sub: CreatedEeSubscription, lo
         print(e)
         return None
 
-async def created_ee_subscriptionscription_update(subId: str, sub, partial=False):
+async def created_ee_subscriptionscription_update(subId: str, sub: CreatedEeSubscription, partial=False):
     collection = db["created_ee_subscription"]
     if partial:
         doc = await collection.find_one({'_id': subId})
         if not doc:
-            return 404
+            return -1
         updated_sub = CreatedEeSubscription.from_dict(doc['sub'])
-        # created_ee_subscription = CreatedEeSubscriptionPatch.from_dict(sub)
-        for attr_name in created_ee_subscription.attribute_map.keys():
-            setattr(updated_sub, attr_name, getattr(created_ee_subscription, attr_name))
-        res = await collection.update_one({'_id': doc['_id']}, updated_sub)
+        for attr_name in sub.attribute_map.keys():
+            setattr(updated_sub, attr_name, getattr(sub, attr_name))
+        res = await collection.update_one({'_id': subId}, updated_sub)
     else:
-        created_ee_subscription = CreatedEeSubscription.from_dict(sub)
-        res = await collection.update_one(created_ee_subscription)
+        res = await collection.update_one({'_id': subId}, sub)
 
 async def created_ee_subscriptionscription_delete(subId: str=None):
     collection = db["created_ee_subscription"]

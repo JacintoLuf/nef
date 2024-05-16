@@ -4,8 +4,6 @@ from typing import List
 from api.config import conf
 from models.traffic_influ_sub import TrafficInfluSub
 from models.traffic_influ_data import TrafficInfluData
-from models.traffic_influ_sub_patch import TrafficInfluSubPatch
-from models.traffic_influ_data_patch import TrafficInfluDataPatch
 
 async def udr_app_data_retrieval(loc: str=None):
     uri = loc or f"http://{conf.HOSTS['UDR'][0]}/nudr-dr/v1/application-data/influenceData"

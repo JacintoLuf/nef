@@ -25,7 +25,6 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
 
 async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_influ_sub: TrafficInfluSub=None):
     host_addr = f"{binding.pcf_ip_end_points[0].ipv4_address}:7777" if binding is not None else conf.HOSTS['PCF'][0]
-    print(f"pcf address: {host_addr}")
 
     req_data = AppSessionContextReqData()
     for attr_name in traffic_influ_sub.attribute_map.keys():
@@ -66,13 +65,15 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
     req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
-    print("---------------------------------------------")
+    print("Creating app session for traffic influence at PCF")
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
             f"http://{host_addr}/npcf-policyauthorization/v1/app-sessions",
             headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
             data=json.dumps(app_session_context.to_dict())
         )
+        print(response.headers)
+        print(response.status_code)
         print(response.text)
     return response
 
@@ -118,16 +119,17 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
                                                             tsn_qos=tsn_qos_c)}
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
-    print(json.dumps(app_session_context.to_dict()))
-
+    print("Creating app session for as session with qos at PCF")
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
             f"http://{host_addr}/npcf-policyauthorization/v1/app-sessions",
             headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
             data=json.dumps(app_session_context.to_dict())
         )
-    print(response.text)
-    # return response
+        print(response.headers)
+        print(response.status_code)
+        print(response.text)
+    return response
 
 async def pcf_policy_authorization_delete(subId: str=None):
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:

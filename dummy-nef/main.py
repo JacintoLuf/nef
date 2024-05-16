@@ -160,6 +160,8 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
     try:
         data_dict = await data.json()
         mon_evt_sub = MonitoringEventSubscription.from_dict(data_dict)
+    except ValueError as e:
+        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"Failed to parse message. Err: {e.__str__}")
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to parse message'
 
@@ -288,7 +290,7 @@ async def traffic_influ_create(afId: str, data: Request):
     #---------------------------any ue, gpsi or ext group id------------------------
     if traffic_sub.any_ue_ind or traffic_sub.gpsi or traffic_sub.external_group_id:
         if traffic_sub.any_ue_ind and not traffic_sub.dnn or not traffic_sub.snssai:
-            raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
+            raise HTTPException(httpx.codes.BAD_REQUEST, detail="Cannot parse message")
         supi = intGroupId = None
         if traffic_sub.gpsi:
             supi = udm_handler.udm_sdm_id_translation(traffic_sub.gpsi)
@@ -325,16 +327,18 @@ async def traffic_influ_create(afId: str, data: Request):
             res = await bsf_handler.bsf_management_discovery(bsf_params)
             if res['code'] != httpx.codes.OK:
                 raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
+            
             pcf_binding = PcfBinding.from_dict(res['response'])
-        
             res = await pcf_handler.pcf_policy_authorization_create_ti(pcf_binding, traffic_sub)
         else:
             res = await pcf_handler.pcf_policy_authorization_create_ti(traffic_influ_sub=traffic_sub)
         
         if res.status_code == httpx.codes.CREATED:
+            print("Storing request and generating 'Traffic Influence' resource.")
             sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
             if sub_id:
                 traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-traffic-influence/v1/{afId}/subscriptions/{sub_id}"
+                print(f"Resource stored at {traffic_sub.__self} with ID: {sub_id}")
                 headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
@@ -349,7 +353,7 @@ async def ti_put(afId: str, subId: str, data: Request):
         traffic_sub = TrafficInfluSub.from_dict(data_dict)
         await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=traffic_sub.to_dict())
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to update subscription'
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
 @app.patch("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
@@ -358,7 +362,7 @@ async def ti_patch(afId: str, subId: str, data: Request):
         traffic_sub = TrafficInfluSubPatch.from_dict(data.json())
         await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=traffic_sub.to_dict(), partial=True)
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to update subscription'
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
 @app.delete("/3gpp-trafficInfluence/v1/{afId}/subscriptions/{subId}")
@@ -378,7 +382,7 @@ async def delete_ti(afId: str, subId: str):
             if res == 1:
                 return Response(status_code=httpx.codes.NO_CONTENT)
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # "Failed to delete subscription"
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
 
 @app.post("/pcf-policy-authorization-callback")
 async def pcf_callback(data):
@@ -461,19 +465,17 @@ async def qos_create(scsAsId: str, data: Request):
     else:
         response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
     try:
-        if response.status_code == httpx.codes.INTERNAL_SERVER_ERROR:
-            print("SERVER ERROR!")
-        elif response.status_code == httpx.codes.CREATED:
+        if response.status_code == httpx.codes.CREATED:
+            print("Storing request and generating 'As Aession With QoS' resource.")
             sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
             if sub_id:
                 qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
-                print(qos_sub)
+                print(f"Resource stored at {qos_sub.__self} with ID: {sub_id}")
                 headers={'location': qos_sub.__self, 'content-type': 'application/json'}
                 return JSONResponse(status_code=httpx.codes.CREATED, content=qos_sub.to_dict(), headers=headers)
             else:
                 return Response(status_code=500, content="Error creating resource")      
     except Exception as e:
-        print("##############EXCEPTION############")
         print(e)
     return response
 

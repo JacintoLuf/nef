@@ -37,9 +37,8 @@ async def udm_sdm_group_identifiers_translation(ext_group_id: str=None):
     return response
 
 async def udm_ee_subscription_create(monEvtSub: MonitoringEventSubscription=None, afId: str=None):
-    ueIdentity = "anyUE"
-
     if monEvtSub:
+        ueIdentity = "anyUE"
         mon_conf = {'1': MonitoringConfiguration(event_type=monEvtSub.monitoring_type, immediate_flag=True if monEvtSub.maximum_number_of_reports==1 else False, af_id=afId)}
         repo_opt = ReportingOptions(
             report_mode=None,
@@ -51,6 +50,7 @@ async def udm_ee_subscription_create(monEvtSub: MonitoringEventSubscription=None
             notif_flag=None
         )
     else:
+        ueIdentity = "anyUE"
         mon_conf = {
             '1': MonitoringConfiguration(event_type="LOSS_OF_CONNECTIVITY"),
             '2': MonitoringConfiguration(event_type="ACCESS_TYPE_REPORT"),
