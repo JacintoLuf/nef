@@ -14,14 +14,15 @@ for arg in "$@"; do
   fi
 done
 
+export NAME=$default_name
+echo Deploying $NAME
+
 if [ $# -eq 0 ]; then
-  export NAME=$default_name
   export CORE_5G=$default_core
   export NAMESPACE=$default_core
   export PLMN=$default_plmn
   echo Using default core $CORE_5G in default namespace: $NAMESPACE in default PLMN: $PLMN
 else
-  export NAME=$default_name
   export CORE_5G=$1
   export PLMN=$default_plmn
   if [ -n "$2" ]; then
