@@ -42,7 +42,7 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
         elif hasattr(req_data, attr_name) and attr_val:
             setattr(req_data, attr_name, attr_val)
 
-    req_data.notif_uri = traffic_influ_sub.notification_destination #f"http://{conf.HOSTS['NEF'][0]}/pcf-policy-authorization-callback"
+    req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}/up_path_change"
     req_data.supp_feat = "FFFFFF"
     rout_req = AfRoutingRequirement(
             app_reloc=not traffic_influ_sub.app_relo_ind,
@@ -60,7 +60,7 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
                                                                 af_rout_req=rout_req,
                                                                 med_comp_n=1,
                                                                 f_status="ENABLED", #DISABLED
-                                                                med_type="TEXT", #AUDIO
+                                                                med_type="AUDIO",
                                                                 med_sub_comps=med_sub_cmp)}
     req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)

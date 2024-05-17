@@ -1,3 +1,4 @@
+import json
 import httpx
 import logging
 from fastapi import FastAPI, Request, Response, HTTPException, BackgroundTasks
@@ -11,6 +12,7 @@ from models.monitoring_event_report import MonitoringEventReport
 from models.monitoring_event_reports import MonitoringEventReports
 from models.traffic_influ_sub import TrafficInfluSub
 from models.traffic_influ_sub_patch import TrafficInfluSubPatch
+from models.event_notification import EventNotification
 from models.as_session_with_qo_s_subscription import AsSessionWithQoSSubscription
 import core.nrf_handler as nrf_handler
 import core.amf_handler as amf_handler
@@ -134,9 +136,13 @@ async def nrf_notif(request: Request):
     print(request.body)
 
 @app.post("/up_path_change")
-async def up_path_chg_notif(notif):
-    print(type(notif))
-    print(notif)
+async def up_path_chg_notif(request: Request):
+    print(request.method)
+    print(request.text)
+    data = await request.json()
+    evt_notif = EventNotification()
+    # if data:
+    #     print(data)
     return Response(status_code=httpx.codes.NO_CONTENT)
 
 #---------------------monitoring-event------------------------
@@ -147,8 +153,16 @@ async def get():
         return {'subs': []}
     return {'subs': res}
 
+@app.get("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
+async def mon_evt_subs_get(scsAsId: str, subscriptionId: str):
+    print(f"af id: {scsAsId}, subscription id: {subscriptionId}")
+    res = await monitoringEventSubscription.monitoring_event_subscriptionscription_get(scsAsId, subscriptionId)
+    if not res:
+        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
+    return Response(content=res, status_code=httpx.codes.OK)
+
 @app.get("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions")
-async def mon_evt_subs_get(scsAsId: str):
+async def mon_evt_subs_get_all(scsAsId: str):
     print(f"af id: {scsAsId}")
     res = await monitoringEventSubscription.monitoring_event_subscriptionscription_get(scsAsId)
     if not res:
@@ -163,7 +177,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
     except ValueError as e:
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"Failed to parse message. Err: {e.__str__}")
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to parse message'
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
 
     if not mon_evt_sub.supported_features:
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"EVENT_FEATURE_MISMATCH. Supported features are {conf.SERVICE_LIST['nnef-evt']}")
@@ -269,7 +283,6 @@ async def ti_get_all(afId: str):
 
 @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 async def traffic_influ_create(afId: str, data: Request):
-
     print("Initiating Traffic Influence request process")
 
     try:
@@ -303,6 +316,9 @@ async def traffic_influ_create(afId: str, data: Request):
                 traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-trafficInfluence/v1/{afId}/subscriptions/{sub_id}"
                 traffic_sub.supp_feat = "0"
                 headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
+                if traffic_sub.request_test_notification:
+                    test_notif = EventNotification(af_trans_id=traffic_sub.af_trans_id)
+                    test_res = httpx.post(traffic_sub.notification_destination, headers=conf.GLOBAL_HEADERS, data=json.dumps(test_notif.to_dict()))
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
                 print("Server error")
@@ -340,6 +356,9 @@ async def traffic_influ_create(afId: str, data: Request):
                 traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-traffic-influence/v1/{afId}/subscriptions/{sub_id}"
                 print(f"Resource stored at {traffic_sub.__self} with ID: {sub_id}")
                 headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
+                if traffic_sub.request_test_notification:
+                    test_notif = EventNotification(af_trans_id=traffic_sub.af_trans_id)
+                    test_res = httpx.post(traffic_sub.notification_destination, headers=conf.GLOBAL_HEADERS, data=json.dumps(test_notif.to_dict()))
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
                 print("Server error")
@@ -351,19 +370,19 @@ async def ti_put(afId: str, subId: str, data: Request):
     try:
         data_dict = await data.json()
         traffic_sub = TrafficInfluSub.from_dict(data_dict)
-        await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=traffic_sub.to_dict())
+        res = await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=traffic_sub.to_dict())
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
-    return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
+    return Response(status_code=httpx.codes.OK, content=res)
 
 @app.patch("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_patch(afId: str, subId: str, data: Request):
     try:
         traffic_sub = TrafficInfluSubPatch.from_dict(data.json())
-        await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=traffic_sub.to_dict(), partial=True)
+        res = await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=traffic_sub.to_dict(), partial=True)
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
-    return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
+    return Response(status_code=httpx.codes.OK, content=res)
 
 @app.delete("/3gpp-trafficInfluence/v1/{afId}/subscriptions/{subId}")
 async def delete_ti(afId: str, subId: str):
@@ -383,12 +402,6 @@ async def delete_ti(afId: str, subId: str):
                 return Response(status_code=httpx.codes.NO_CONTENT)
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
-
-@app.post("/pcf-policy-authorization-callback")
-async def pcf_callback(data):
-    print("-------------------------smf callback msg--------------------")
-    print(data)
-    return httpx.codes.OK
 
 #---------------------as-session-with-qos------------------------
 @app.get("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
@@ -512,8 +525,6 @@ async def qo_s_delete(subId: str):
     else:
         contextId = res['location'].split('/')[-1]
         res = await pcf_handler.pcf_policy_authorization_delete(contextId)
-        # print(f"deleting at location: {res['location']}")
-        # res :httpx.Response = await delete_req(f"{res['location']}/delete")
         if res.status_code != httpx.codes.NO_CONTENT:
             print("Context not found!")
 

@@ -29,6 +29,7 @@ class Settings():
             ('3gpp-monitoring-event','02481437'), # ts 29122 5.3.4-1 :1, 2, 3, 5, 6, 11, 13, 20, 23, 26
             ('3gpp-traffic-influence','00000002'), # ts 29522 5.4.4-1 :2
             ('3gpp-as-session-with-qos','00000920'), # ts 29122 5.14.4-1 :6, 9, 12
+            ('3gpp-ueid', '0')
             ]
 
         try:
