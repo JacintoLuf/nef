@@ -96,7 +96,7 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
         elif hasattr(req_data, attr_name) and attr_val:
             setattr(req_data, attr_name, attr_val)
 
-    req_data.notif_uri = as_session_qos_sub.notification_destination # f"http://{conf.HOSTS['NEF'][0]}/pcf-policy-authorization-qos-callback"
+    req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}/up_path_change"
     req_data.supp_feat = "FFFFFF"#"18000"
     tsn_qos_c = None
     if as_session_qos_sub.tsc_qos_req:
