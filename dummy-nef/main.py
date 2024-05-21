@@ -4,6 +4,7 @@ import logging
 from fastapi import FastAPI, Request, Response, HTTPException, BackgroundTasks
 from fastapi_utils.tasks import repeat_every
 from fastapi.responses import JSONResponse
+from typing import Callable
 from session import clean_db
 from api.config import conf
 from models.pcf_binding import PcfBinding
@@ -32,6 +33,11 @@ logger = logging.getLogger(__name__)
 async def exception_callback(request: Request, exc: Exception):
     print(f"Failed method {request.method} at URL {request.url}.")
     print(f"Exception message is {exc!r}.")
+
+@app.middleware('http')
+async def req_middleware(request: Request, call_next):
+    response = await call_next(request)
+    return
 
 @app.on_event("startup")
 async def startup():
@@ -271,7 +277,7 @@ async def ti_get(afId: str, subId: str):
     res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
-    return Response(content=res, status_code=httpx.codes.OK)
+    return Response(content=json.dumps(res), status_code=httpx.codes.OK)
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 async def ti_get_all(afId: str):
@@ -279,7 +285,7 @@ async def ti_get_all(afId: str):
     res = await trafficInfluSub.traffic_influence_subscription_get(afId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
-    return Response(content=res, status_code=httpx.codes.OK)
+    return Response(content=json.dumps(res), status_code=httpx.codes.OK)
 
 @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 async def traffic_influ_create(afId: str, data: Request):
@@ -409,14 +415,14 @@ async def qos_get(scsAsId: str, subId: str=None):
     res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId, subId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
-    return Response(content=res, status_code=httpx.codes.OK)
+    return Response(content=json.dumps(res), status_code=httpx.codes.OK)
 
 @app.get("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
 async def qos_get_all(scsAsId: str):
     res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
-    return Response(content=res, status_code=httpx.codes.OK)
+    return Response(content=json.dumps(res), status_code=httpx.codes.OK)
 
 @app.get("/qget")
 async def qget():
@@ -492,12 +498,6 @@ async def qos_create(scsAsId: str, data: Request):
         print(e)
     return response
 
-@app.post("/pcf-policy-authorization-qos-callback")
-async def pcf_callback(data):
-    print("-------------------------smf callback msg--------------------")
-    print(data)
-    return httpx.codes.OK
-
 @app.put("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
 async def qos_put(scsAsId: str, subId: str, data: Request):
     try:
@@ -518,7 +518,7 @@ async def qos_patch(scAsId: str, subId: str, data: Request):
 
 @app.get("/qdelete/{subId}")
 async def qo_s_delete(subId: str):
-    scsAsId = "default"
+    scsAsId = "test_AF_1"
     res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId, subId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
