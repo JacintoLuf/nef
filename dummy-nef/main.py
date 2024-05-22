@@ -1,10 +1,14 @@
+import os, sys
 import json
 import httpx
 import logging
-from fastapi import FastAPI, Request, Response, HTTPException, BackgroundTasks
-from fastapi_utils.tasks import repeat_every
+from fastapi import APIRouter, FastAPI, Request, Response, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
-from typing import Callable
+from fastapi.exceptions import RequestValidationError
+from fastapi.routing import APIRoute
+from fastapi_utils.tasks import repeat_every
+from pathlib import Path
+from typing import Callable, Coroutine
 from session import clean_db
 from api.config import conf
 from models.pcf_binding import PcfBinding
@@ -26,8 +30,24 @@ import crud.trafficInfluSub as trafficInfluSub
 import crud.asSessionWithQoSSub as asSessionWithQoSSub
 import crud.monitoringEventSubscription as monitoringEventSubscription
 
+class CustomRouter(APIRoute):
+    def get_route_handler(self) -> Callable:
+        original_route_handler = super().get_route_andler()
+        
+        async def custom_route_handler(request: Response) -> Response:
+            try:
+                response: Response = await original_route_handler(response)
+            except RequestValidationError as exc:
+                body = await request.body()
+                detail = {"errors": exc.errors(), "body": body.decode()}
+                raise HTTPException(status_code=500, detail=detail)
+
+        return custom_route_handler
+
 app = FastAPI(debug=True)
+# router = APIRouter(route_class=CustomRouter)
 logger = logging.getLogger(__name__)
+logger.setLevel(conf.LOGGING_LEVEL)
 
 @app.exception_handler(Exception)
 async def exception_callback(request: Request, exc: Exception):
@@ -36,8 +56,15 @@ async def exception_callback(request: Request, exc: Exception):
 
 @app.middleware('http')
 async def req_middleware(request: Request, call_next):
-    response = await call_next(request)
-    return
+    try:
+        response = await call_next(request)
+        logger.info(f"INFO - {request.method}: {request.url}")
+        if request.method in ["POST", "PUT", "PATCH"]:
+            body = await request.body()
+            logger.info(f"body: {body}")
+    except RequestValidationError as exc:
+        logger.error(f"ERROR - {request.method}: {request.url}")
+    return response
 
 @app.on_event("startup")
 async def startup():

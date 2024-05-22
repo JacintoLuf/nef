@@ -1,5 +1,6 @@
 import os
 import uuid
+import logging
 from typing import List
 from models.ip_end_point import IpEndPoint
 from models.nf_profile import NFProfile
@@ -14,6 +15,7 @@ class Settings():
         self.NAMESPACE = os.environ['NAMESPACE']
         self.PLMN = os.environ['PLMN']
         print(f'deploying {self.NAME} in namespace {self.NAMESPACE}')
+        self.LOGGING_LEVEL = logging.DEBUG
         print(f'integrating with {self.CORE}, serving PLMN: {self.PLMN}')
 
         self.HOSTS = {}
