@@ -35,7 +35,7 @@ async def nrf_discovery():
 
     else:
         for nf in list(conf.NF_SCOPES.keys()):
-            async with httpx.AsyncClient(http1=False, http2=True) as client:
+            async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
                 response = await client.get(
                     f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/nf-instances",
                     headers=conf.GLOBAL_HEADERS,
@@ -46,7 +46,7 @@ async def nrf_discovery():
                 hrefs += [item["href"] for item in r["_links"]["items"]]
 
         for href in hrefs:
-            async with httpx.AsyncClient(http1=False, http2=True) as client:
+            async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
                 response = await client.get(
                     href,
                     headers=conf.GLOBAL_HEADERS

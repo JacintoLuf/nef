@@ -111,11 +111,20 @@ async def read_root():
     insts = await nfProfile.get_all()
     return {'nfs instances': str(insts)}
 
+async def send_notification(data: str, link: str):
+    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
+        response = await client.post(
+            link,
+            headers=conf.GLOBAL_HEADERS,
+            data=json.dumps(data)
+        )
+        print(response.text)
+
 @app.get("/ue/{supi}")
 async def ue_info(supi: str):
     params = {'dataset-names': ['AMF', 'SM']}
     res = ""
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
+    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.get(
             f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/{supi}/am-data",
             headers={'Accept': 'application/json,application/problem+json'}
@@ -123,7 +132,7 @@ async def ue_info(supi: str):
         res += response.text
         print(f"am data v2:\n {response.text}")
     res += "\n-----------------------------------------------------\n"
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
+    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.get(
             f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/{supi}/sm-data",
             headers={'Accept': 'application/json,application/problem+json'}
@@ -131,7 +140,7 @@ async def ue_info(supi: str):
         res += response.text
         print(f"sm data v2:\n {response.text}")
     res += "\n-----------------------------------------------------\n"
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
+    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.get(
             f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v2/{supi}",
             headers={'Accept': 'application/json,application/problem+json'},
@@ -315,7 +324,7 @@ async def ti_get_all(afId: str):
     return Response(content=json.dumps(res), status_code=httpx.codes.OK)
 
 @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
-async def traffic_influ_create(afId: str, data: Request):
+async def traffic_influ_create(afId: str, data: Request, background_tasks: BackgroundTasks):
     print("Initiating Traffic Influence request process")
 
     try:
@@ -351,7 +360,7 @@ async def traffic_influ_create(afId: str, data: Request):
                 headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
                 if traffic_sub.request_test_notification:
                     test_notif = EventNotification(af_trans_id=traffic_sub.af_trans_id)
-                    test_res = httpx.post(traffic_sub.notification_destination, headers=conf.GLOBAL_HEADERS, data=json.dumps(test_notif.to_dict()))
+                    background_tasks.add_task(send_notification, test_notif.to_dict(), traffic_sub.notification_destination)
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
                 print("Server error")
@@ -391,7 +400,7 @@ async def traffic_influ_create(afId: str, data: Request):
                 headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
                 if traffic_sub.request_test_notification:
                     test_notif = EventNotification(af_trans_id=traffic_sub.af_trans_id)
-                    test_res = httpx.post(traffic_sub.notification_destination, headers=conf.GLOBAL_HEADERS, data=json.dumps(test_notif.to_dict()))
+                    background_tasks.add_task(send_notification, test_notif.to_dict(), traffic_sub.notification_destination)
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
                 print("Server error")
@@ -459,7 +468,7 @@ async def qget():
     return {'subs': res}
 
 @app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
-async def qos_create(scsAsId: str, data: Request):
+async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTasks):
     print("Initiating As Session With QoS request process")
 
     try:
@@ -515,6 +524,9 @@ async def qos_create(scsAsId: str, data: Request):
             print("Storing request and generating 'As Aession With QoS' resource.")
             sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
             if sub_id:
+                if qos_sub.request_test_notification:
+                    test_notif = {'subscription': qos_sub.notification_destination}
+                    background_tasks.add_task(send_notification, test_notif.__str__, qos_sub.notification_destination)
                 qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
                 print(f"Resource stored at {qos_sub.__self} with ID: {sub_id}")
                 headers={'location': qos_sub.__self, 'content-type': 'application/json'}
