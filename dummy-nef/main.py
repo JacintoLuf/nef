@@ -54,17 +54,17 @@ async def exception_callback(request: Request, exc: Exception):
     print(f"Failed method {request.method} at URL {request.url}.")
     print(f"Exception message is {exc!r}.")
 
-@app.middleware('http')
-async def req_middleware(request: Request, call_next):
-    try:
-        response = await call_next(request)
-        logger.info(f"INFO - {request.method}: {request.url}")
-        if request.method in ["POST", "PUT", "PATCH"]:
-            body = await request.body()
-            logger.info(f"body: {body}")
-    except RequestValidationError as exc:
-        logger.error(f"ERROR - {request.method}: {request.url}")
-    return response
+# @app.middleware('http')
+# async def req_middleware(request: Request, call_next):
+#     try:
+#         response = await call_next(request)
+#         logger.info(f"INFO - {request.method}: {request.url}")
+#         if request.method in ["POST", "PUT", "PATCH"]:
+#             body = await request.body()
+#             logger.info(f"body: {body}")
+#     except RequestValidationError as exc:
+#         logger.error(f"ERROR - {request.method}: {request.url}")
+#     return response
 
 @app.on_event("startup")
 async def startup():
