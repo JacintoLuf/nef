@@ -20,7 +20,9 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
                 headers={'Accept': 'application/json,application/problem+json'}
             )
             print(response.text)
-        return response.json()
+            res = await response.json()
+            if res:
+                return res
     return None
 
 async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_influ_sub: TrafficInfluSub=None):
@@ -72,8 +74,7 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
             headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
             data=json.dumps(app_session_context.to_dict())
         )
-        print(response.headers)
-        print(response.status_code)
+        print(f"Response {response.status_code} for creating app session. Content:")
         print(response.text)
     return response
 
@@ -126,16 +127,17 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
             headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
             data=json.dumps(app_session_context.to_dict())
         )
-        print(response.headers)
-        print(response.status_code)
+        print(f"Response {response.status_code} for creating app session. Content:")
         print(response.text)
     return response
 
 async def pcf_policy_authorization_delete(subId: str=None):
+    print("Deleting app session for as session with qos at PCF")
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
             f"http://{conf.HOSTS['PCF'][0]}/npcf-policyauthorization/v1/app-sessions/{subId}/delete",
             headers={'Accept': 'application/json,application/problem+json'},
         )
+        print(f"Response {response.status_code} for deleting app session. Content:")
         print(response.text)
     return response

@@ -145,13 +145,14 @@ async def nf_status_subscribe(nf_types):
             requester_features="1"
         )
         for nf_type in nf_types:
+            print(f"{nf_type} status subscribe")
             sub.subscr_cond = SubscrCond(nf_type=nf_type)
             response = await client.post(
                 f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/subscriptions",
                 headers=conf.GLOBAL_HEADERS,
                 data=json.dumps(sub.to_dict())
             )
-            print(response.headers)
+            print(f"Response for {nf_type} status subscribe. Content:")
             print(response.text)
             if response.status_code == httpx.codes.CREATED:
                 data = response.json()
