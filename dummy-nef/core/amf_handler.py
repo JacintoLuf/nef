@@ -27,7 +27,6 @@ async def amf_event_exposure_subscribe():
             headers=conf.GLOBAL_HEADERS,
             data=json.dumps(amf_evt_sub.to_dict())
         )
-        conf.logger.info(response.headers)
         conf.logger.info(response.text)
 
 async def amf_event_exposure_subscription_update(app_session_id: str=None):
