@@ -87,7 +87,6 @@ async def udm_ee_subscription_create(monEvtSub: MonitoringEventSubscription=None
             headers=conf.GLOBAL_HEADERS,
             data=json.dumps(ee_sub.to_dict())
         )
-        conf.logger.info(response.headers)
         conf.logger.info(response.text)
 
     if response.status_code==httpx.codes.CREATED:
