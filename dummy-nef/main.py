@@ -488,10 +488,10 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
         conf.logger.info("No eth flow info")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if (qos_sub.qos_reference and qos_sub.alt_qos_reqs) or (qos_sub.alt_qo_s_references and qos_sub.alt_qos_reqs):
-        conf.logger.info("(qos_sub.qos_reference and qos_sub.alt_qos_reqs) or (qos_sub.alt_qo_s_references and qos_sub.alt_qos_reqs)")
+        conf.logger.info("(qos reference and alt qos reqs) or (alt qo s references and alt qos reqs)")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if qos_sub.qos_mon_info and qos_sub.events and "QOS_MONITORING" not in qos_sub.events:
-        conf.logger.info("qos_sub.qos_mon_info and qos_sub.events and QOS_MONITORING not in qos_sub.events")
+        conf.logger.info("qos mon info and events and QOS_MONITORING not in events")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if qos_sub.alt_qo_s_references and not qos_sub.notification_destination:
         conf.logger.info("no notif destination")
