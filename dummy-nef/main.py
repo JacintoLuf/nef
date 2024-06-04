@@ -1,13 +1,10 @@
-import os, sys
 import json
 import httpx
-import logging
 from fastapi import APIRouter, FastAPI, Request, Response, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
 from fastapi_utils.tasks import repeat_every
-from pathlib import Path
 from typing import Callable, Coroutine
 from session import clean_db
 from api.config import conf
@@ -46,45 +43,43 @@ class CustomRouter(APIRoute):
 
 app = FastAPI(debug=True)
 # router = APIRouter(route_class=CustomRouter)
-logger = logging.getLogger(__name__)
-logger.setLevel(conf.LOGGING_LEVEL)
 
 @app.exception_handler(Exception)
 async def exception_callback(request: Request, exc: Exception):
-    print(f"Failed method {request.method} at URL {request.url}.")
-    print(f"Exception message is {exc!r}.")
+    conf.logger.info(f"Failed method {request.method} at URL {request.url}.")
+    conf.logger.info(f"Exception message is {exc!r}.")
 
 # @app.middleware('http')
 # async def req_middleware(request: Request, call_next):
 #     try:
 #         response = await call_next(request)
-#         logger.info(f"INFO - {request.method}: {request.url}")
+#         conf.logger.info(f"INFO - {request.method}: {request.url}")
 #         if request.method in ["POST", "PUT", "PATCH"]:
 #             body = await request.body()
-#             logger.info(f"body: {body}")
+#             conf.logger.info(f"body: {body}")
 #     except RequestValidationError as exc:
-#         logger.error(f"ERROR - {request.method}: {request.url}")
+#         conf.logger.error(f"ERROR - {request.method}: {request.url}")
 #     return response
 
 @app.on_event("startup")
 async def startup():
     try:
-        print("Registering NEF...")
+        conf.logger.info("Registering NEF...")
         res = await nrf_handler.nf_register()
         if res.status_code == httpx.codes.CREATED:
             await nrf_heartbeat()
-        print("NF discovery...")
+        conf.logger.info("NF discovery...")
         await nrf_handler.nrf_discovery()
-        print("NF status subscribe...")
+        conf.logger.info("NF status subscribe...")
         await status_subscribe()
-        print("amf UE event subscription")
+        conf.logger.info("amf UE event subscription")
         await amf_handler.amf_event_exposure_subscribe()
-        print("udm UE event subscription")
+        conf.logger.info("udm UE event subscription")
         await udm_handler.udm_ee_subscription_create()
     except Exception as e:
-        print(f"Error starting up: {e}")
+        conf.logger.info(f"Error starting up: {e}")
     # TLS dependant
-    # print("Getting access token...")
+    # conf.logger.info("Getting access token...")
     # res = await nrf_handler.nrf_get_access_token()
 
 
@@ -97,11 +92,11 @@ async def status_subscribe():
     try:
         await nrf_handler.nf_status_subscribe(list(conf.NF_SCOPES.keys()))
     except Exception as e:
-        print(e)
+        conf.logger.error(e)
 
 @app.on_event("shutdown")
 async def shutdown():
-    print("shuting down...")
+    conf.logger.info("shuting down...")
     await nrf_handler.nf_deregister()
     await nrf_handler.nf_status_unsubscribe()
     # clean_db()
@@ -118,7 +113,7 @@ async def send_notification(data: str, link: str):
             headers=conf.GLOBAL_HEADERS,
             data=json.dumps(data)
         )
-        print(response.text)
+        conf.logger.info(response.text)
 
 @app.get("/ue/{supi}")
 async def ue_info(supi: str):
@@ -130,7 +125,7 @@ async def ue_info(supi: str):
             headers={'Accept': 'application/json,application/problem+json'}
         )
         res += response.text
-        print(f"am data v2:\n {response.text}")
+        conf.logger.info(f"am data v2:\n {response.text}")
     res += "\n-----------------------------------------------------\n"
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.get(
@@ -138,7 +133,7 @@ async def ue_info(supi: str):
             headers={'Accept': 'application/json,application/problem+json'}
         )
         res += response.text
-        print(f"sm data v2:\n {response.text}")
+        conf.logger.info(f"sm data v2:\n {response.text}")
     res += "\n-----------------------------------------------------\n"
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.get(
@@ -147,25 +142,25 @@ async def ue_info(supi: str):
             params=params
         )
         res += response.text
-        print(f"ue data v2:\n {response.text}")
+        conf.logger.info(f"ue data v2:\n {response.text}")
     return res
 
 @app.get("/{ueid}/translate")
 async def translate_id(ueid: str):
     translated_id = await udm_handler.udm_sdm_id_translation(ueid)
-    print(f"translated id: {translated_id}")
+    conf.logger.info(f"translated id: {translated_id}")
     return translated_id
 
 #-----------------------------callback endpoints---------------------------------
 @app.post("/nnef-callback/amf-event-sub-callback")
 async def amf_evt_sub_callback(request: Request):
-    print(request.method)
-    print(request.body)
+    conf.logger.info(request.method)
+    conf.logger.info(request.body)
 
 @app.post("/nnef-callback/udm-event-sub-callback")
 async def udm_evt_sub_callback(request: Request):
-    print(request.method)
-    print(request.body)
+    conf.logger.info(request.method)
+    conf.logger.info(request.body)
     mon_evt_rep = MonitoringEventReport()
     return Response(status_code=httpx.codes.OK, headers=conf.GLOBAL_HEADERS, content={
         # 'MonitoringEventSubscription': mon_evt_sub.to_dict(),
@@ -174,17 +169,17 @@ async def udm_evt_sub_callback(request: Request):
 
 @app.post("/nnrf-nfm/v1/subscriptions")
 async def nrf_notif(request: Request):
-    print(request.method)
-    print(request.body)
+    conf.logger.info(request.method)
+    conf.logger.info(request.body)
 
 @app.post("/up_path_change")
 async def up_path_chg_notif(request: Request):
-    print(request.method)
-    print(request.text)
+    conf.logger.info(request.method)
+    conf.logger.info(request.text)
     data = await request.json()
     evt_notif = EventNotification()
     # if data:
-    #     print(data)
+    #     conf.logger.info(data)
     return Response(status_code=httpx.codes.NO_CONTENT)
 
 #---------------------monitoring-event------------------------
@@ -197,7 +192,7 @@ async def get():
 
 @app.get("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
 async def mon_evt_subs_get(scsAsId: str, subscriptionId: str):
-    print(f"af id: {scsAsId}, subscription id: {subscriptionId}")
+    conf.logger.info(f"af id: {scsAsId}, subscription id: {subscriptionId}")
     res = await monitoringEventSubscription.monitoring_event_subscriptionscription_get(scsAsId, subscriptionId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
@@ -205,7 +200,7 @@ async def mon_evt_subs_get(scsAsId: str, subscriptionId: str):
 
 @app.get("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions")
 async def mon_evt_subs_get_all(scsAsId: str):
-    print(f"af id: {scsAsId}")
+    conf.logger.info(f"af id: {scsAsId}")
     res = await monitoringEventSubscription.monitoring_event_subscriptionscription_get(scsAsId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
@@ -288,7 +283,7 @@ async def mon_evt_sub_patch(scsAsId: str, subscriptionId: str, data: Request):
 
 @app.get("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
 async def mon_evt_sub_get(scsAsId: str, subbscriptionId: str):
-    print(f"af id: {scsAsId}, sub id: {subbscriptionId}")
+    conf.logger.info(f"af id: {scsAsId}, sub id: {subbscriptionId}")
     res = await monitoringEventSubscription.monitoring_event_subscriptionscription_get(scsAsId, subbscriptionId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
@@ -309,7 +304,7 @@ async def get():
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_get(afId: str, subId: str):
-    print(f"af id: {afId}, sub id: {subId}")
+    conf.logger.info(f"af id: {afId}, sub id: {subId}")
     res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
@@ -317,7 +312,7 @@ async def ti_get(afId: str, subId: str):
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 async def ti_get_all(afId: str):
-    print(f"af id: {afId}")
+    conf.logger.info(f"af id: {afId}")
     res = await trafficInfluSub.traffic_influence_subscription_get(afId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
@@ -325,7 +320,7 @@ async def ti_get_all(afId: str):
 
 @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 async def traffic_influ_create(afId: str, data: Request, background_tasks: BackgroundTasks):
-    print("Initiating Traffic Influence request process")
+    conf.logger.info("Initiating Traffic Influence request process")
 
     try:
         data_dict = await data.json()
@@ -336,10 +331,10 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
 
     if not ((traffic_sub.af_app_id is not None)^(traffic_sub.traffic_filters is not None)^(traffic_sub.eth_traffic_filters is not None)):
-        print(f"app id: {type(traffic_sub.af_app_id)}, traffic filters: {type(traffic_sub.traffic_filters)}, eth traffic filters: {type(traffic_sub.eth_traffic_filters)}")
+        conf.logger.info(f"app id: {type(traffic_sub.af_app_id)}, traffic filters: {type(traffic_sub.traffic_filters)}, eth traffic filters: {type(traffic_sub.eth_traffic_filters)}")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of afAppId, trafficFilters or ethTrafficFilters")
     if not ((traffic_sub.ipv4_addr is not None)^(traffic_sub.ipv6_addr is not None)^(traffic_sub.mac_addr is not None)^(traffic_sub.gpsi is not None)^(traffic_sub.external_group_id is not None)^(traffic_sub.any_ue_ind)):
-        print(f"ipv4: {type(traffic_sub.ipv4_addr)}, any ue: {type(traffic_sub.any_ue_ind)}")
+        conf.logger.info(f"ipv4: {type(traffic_sub.ipv4_addr)}, any ue: {type(traffic_sub.any_ue_ind)}")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr, macAddr, gpsi, externalGroupId or anyUeInd")
    
     #---------------------------any ue, gpsi or ext group id------------------------
@@ -363,7 +358,7 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
                     background_tasks.add_task(send_notification, test_notif.to_dict(), traffic_sub.notification_destination)
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
-                print("Server error")
+                conf.logger.info("Server error")
                 raise HTTPException(status_code=500, detail="Error creating resource")
         else:
             raise HTTPException(status_code=500, detail="Error creating resource")
@@ -392,18 +387,18 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
             res = await pcf_handler.pcf_policy_authorization_create_ti(traffic_influ_sub=traffic_sub)
         
         if res.status_code == httpx.codes.CREATED:
-            print("Storing request and generating 'Traffic Influence' resource.")
+            conf.logger.info("Storing request and generating 'Traffic Influence' resource.")
             sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
             if sub_id:
                 traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-traffic-influence/v1/{afId}/subscriptions/{sub_id}"
-                print(f"Resource stored at {traffic_sub.__self} with ID: {sub_id}")
+                conf.logger.info(f"Resource stored at {traffic_sub.__self} with ID: {sub_id}")
                 headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
                 if traffic_sub.request_test_notification:
                     test_notif = EventNotification(af_trans_id=traffic_sub.af_trans_id)
                     background_tasks.add_task(send_notification, test_notif.to_dict(), traffic_sub.notification_destination)
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
-                print("Server error")
+                conf.logger.info("Server error")
                 return Response(status_code=500, content="Error creating resource")
     return res.status_code
 
@@ -436,7 +431,7 @@ async def delete_ti(afId: str, subId: str):
             contextId = res['location'].split('/')[-1]
             res = await pcf_handler.pcf_policy_authorization_delete(contextId)
             if res.status_code != httpx.codes.NO_CONTENT:
-                print("Context not found!")
+                conf.logger.info("Context not found!")
                 raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
 
             res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
@@ -469,7 +464,7 @@ async def qget():
 
 @app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
 async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTasks):
-    print("Initiating As Session With QoS request process")
+    conf.logger.info("Initiating As Session With QoS request process")
 
     try:
         data_dict = await data.json()
@@ -480,26 +475,26 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
 
     if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
-        print("Only one of ipv4Addr, ipv6Addr or macAddr")
+        conf.logger.info("Only one of ipv4Addr, ipv6Addr or macAddr")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
     if not ((qos_sub.flow_info is not None)^(qos_sub.eth_flow_info is not None)^(qos_sub.exter_app_id is not None)):
-        print("Only one of IP flow info, Ethernet flow info or External Application")
+        conf.logger.info("Only one of IP flow info, Ethernet flow info or External Application")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of IP flow info, Ethernet flow info or External Application")
 
     if (qos_sub.ue_ipv4_addr or qos_sub.ue_ipv6_addr) and not qos_sub.flow_info:
-        print("No flow info")
+        conf.logger.info("No flow info")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if qos_sub.mac_addr and not qos_sub.eth_flow_info:
-        print("No eth flow info")
+        conf.logger.info("No eth flow info")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if (qos_sub.qos_reference and qos_sub.alt_qos_reqs) or (qos_sub.alt_qo_s_references and qos_sub.alt_qos_reqs):
-        print("(qos_sub.qos_reference and qos_sub.alt_qos_reqs) or (qos_sub.alt_qo_s_references and qos_sub.alt_qos_reqs)")
+        conf.logger.info("(qos_sub.qos_reference and qos_sub.alt_qos_reqs) or (qos_sub.alt_qo_s_references and qos_sub.alt_qos_reqs)")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if qos_sub.qos_mon_info and qos_sub.events and "QOS_MONITORING" not in qos_sub.events:
-        print("qos_sub.qos_mon_info and qos_sub.events and QOS_MONITORING not in qos_sub.events")
+        conf.logger.info("qos_sub.qos_mon_info and qos_sub.events and QOS_MONITORING not in qos_sub.events")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if qos_sub.alt_qo_s_references and not qos_sub.notification_destination:
-        print("no notif destination")
+        conf.logger.info("no notif destination")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
 
     if "BSF" in conf.HOSTS.keys():
@@ -521,20 +516,20 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
         response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
     try:
         if response.status_code == httpx.codes.CREATED:
-            print("Storing request and generating 'As Aession With QoS' resource.")
+            conf.logger.info("Storing request and generating 'As Aession With QoS' resource.")
             sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
             if sub_id:
                 if qos_sub.request_test_notification:
                     test_notif = {'subscription': qos_sub.notification_destination}
                     background_tasks.add_task(send_notification, test_notif.__str__, qos_sub.notification_destination)
                 qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
-                print(f"Resource stored at {qos_sub.__self} with ID: {sub_id}")
+                conf.logger.info(f"Resource stored at {qos_sub.__self} with ID: {sub_id}")
                 headers={'location': qos_sub.__self, 'content-type': 'application/json'}
                 return JSONResponse(status_code=httpx.codes.CREATED, content=qos_sub.to_dict(), headers=headers)
             else:
                 return Response(status_code=500, content="Error creating resource")      
     except Exception as e:
-        print(e)
+        conf.logger.error(e)
     return response
 
 @app.put("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
@@ -565,7 +560,7 @@ async def qo_s_delete(subId: str):
         contextId = res['location'].split('/')[-1]
         res = await pcf_handler.pcf_policy_authorization_delete(contextId)
         if res.status_code != httpx.codes.NO_CONTENT:
-            print("Context not found!")
+            conf.logger.info("Context not found!")
 
         res = await asSessionWithQoSSub.as_session_with_qos_subscription_delete(scsAsId, subId)
         if res == 1:
@@ -581,7 +576,7 @@ async def qos_delete(scsAsId: str, subId: str):
         contextId = res['location'].split('/')[-1]
         res = await pcf_handler.pcf_policy_authorization_delete(contextId)
         if res.status_code != httpx.codes.NO_CONTENT:
-            print("Context not found!")
+            conf.logger.info("Context not found!")
             raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
         res = await asSessionWithQoSSub.as_session_with_qos_subscription_delete(scsAsId, subId)
         if res == 1:

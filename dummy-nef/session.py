@@ -13,10 +13,10 @@ def clean_db():
     collections = ['nf_instances', 'traffic_influ_sub', 'as_session_with_qos_sub', 'subscription_data', ]
     try:
         for i in collections:
-            print(f"cleaning {i} collection docs")
+            conf.logger.info(f"cleaning {i} collection docs")
             async_db[i].delete_many({})
-        print("Database cleaned.")
+        conf.logger.info("Database cleaned.")
         return True
     except Exception as e:
-        print("Error cleaning database!")
+        conf.logger.info("Error cleaning database!")
         return False

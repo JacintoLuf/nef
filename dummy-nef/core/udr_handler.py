@@ -15,7 +15,7 @@ async def udr_app_data_retrieval(loc: str=None):
                 headers={'Accept': 'application/json,application/problem+json'},
                 #params=params
             )
-            print(response.text)
+            conf.logger.info(response.text)
 
     return response.status_code
 
@@ -49,8 +49,8 @@ async def udr_app_data_insert(traffic_influ_sub: TrafficInfluSub, intGroupID=Non
     #     traffic_influ_data.valid_start_time = traffic_influ_sub.temp_validities[0].start_time
     #     traffic_influ_data.valid_end_time = traffic_influ_sub.temp_validities[0].stop_time
 
-    # print("--------------------influ data-------------------")
-    # print(traffic_influ_data)
+    # conf.logger.info("--------------------influ data-------------------")
+    # conf.logger.info(traffic_influ_data)
 
     traffic_influ_sub.notification_destination = f"http://{conf.HOSTS['NEF'][0]}/up_path_change"
 
@@ -60,7 +60,7 @@ async def udr_app_data_insert(traffic_influ_sub: TrafficInfluSub, intGroupID=Non
                 headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
                 data=json.dumps(traffic_influ_sub.to_dict())
             )
-            print(response.text)
+            conf.logger.info(response.text)
             
     return response
 
@@ -95,7 +95,7 @@ async def udr_app_data_delete(sub: TrafficInfluSub):
                 headers={'Accept': 'application/json,application/problem+json'},
                 data=json.dumps(sub.to_dict())
             )
-            print(response.text)
+            conf.logger.info(response.text)
             
     return response
 

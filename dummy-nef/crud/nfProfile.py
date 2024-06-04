@@ -30,10 +30,10 @@ async def insert_one(profile):
         result = await collection.update_one(query, update, upsert=True)
         return result.modified_count or result.upserted_id
     except DuplicateKeyError:
-        print("duplicate key")
+        conf.logger.info("duplicate key")
         return None
     except Exception as e:
-        print(e)
+        conf.logger.error(e)
         return None
 
 async def insert_many(profiles):
@@ -47,13 +47,13 @@ async def insert_many(profiles):
 
         # Perform the bulk write operation
         result = await collection.bulk_write(bulk_operations)
-        print(result)
+        conf.logger.info(result)
         return result.modified_count + len(result.upserted_ids)
     except DuplicateKeyError:
-        print("duplicate key")
+        conf.logger.info("duplicate key")
         return None
     except Exception as e:
-        print(e)
+        conf.logger.error(e)
         return 0
 
 async def update(profile):
@@ -66,7 +66,7 @@ async def update(profile):
         result = await collection.replace_one({'_id': _id}, {'profile': profile})
         return result.modified_count
     except Exception as e:
-        print(e)
+        conf.logger.error(e)
         return -1
 
 async def delete_one(profile):
@@ -76,7 +76,7 @@ async def delete_one(profile):
         result = await collection.delete_one({'_id': profile['nfInstanceId']})
         return n - await collection.count_documents({})
     except Exception as e:
-        print(e)
+        conf.logger.error(e)
         return -1
 
 async def delete_many(profiles):
@@ -86,5 +86,5 @@ async def delete_many(profiles):
         result = await collection.delete_one({'_id': {'$in': [profile['nfInstanceId'] for profile in profiles]}})
         return n - await collection.count_documents({})
     except Exception as e:
-        print(e)
+        conf.logger.error(e)
         return -1

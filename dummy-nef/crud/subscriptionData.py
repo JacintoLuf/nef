@@ -17,13 +17,13 @@ async def subscription_data_insert(sub: SubscriptionData, location: str):
     document = {'_id': subId, 'sub': sub.to_dict(), 'location': location}
     try:
         result = await collection.insert_one(document)
-        print(result.inserted_id)
+        conf.logger.info(result.inserted_id)
         return result.inserted_id
     except DuplicateKeyError:
-        print("duplicate key")
+        conf.logger.info("duplicate key")
         return None
     except Exception as e:
-        print(e)
+        conf.logger.error(e)
         return None
 
 async def subscription_data_delete(subId: str=None):
@@ -33,5 +33,5 @@ async def subscription_data_delete(subId: str=None):
         result = await collection.delete_one({'_id': subId})
         return n - await collection.count_documents({})
     except Exception as e:
-        print(e)
+        conf.logger.error(e)
         return -1

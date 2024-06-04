@@ -28,15 +28,15 @@ async def traffic_influence_subscription_insert(afId: str, sub: TrafficInfluSub,
     document = {'_id': subId, 'afId': afId, 'sub': sub.to_dict(), 'location': location}
     try:
         result = await collection.insert_one(document)
-        print(result.inserted_id)
+        conf.logger.info(result.inserted_id)
         return result.inserted_id
     except DuplicateKeyError as e:
         document['_id'] = str(uuid.uuid4().hex)
         result = await collection.insert_one(document)
-        print(result.inserted_id)
+        conf.logger.info(result.inserted_id)
         return result.inserted_id
     except Exception as e:
-        print(e)
+        conf.logger.error(e)
         return None
 
 async def individual_traffic_influence_subscription_update(afId: str, subId: str, sub, partial=False):
@@ -63,6 +63,6 @@ async def individual_traffic_influence_subscription_delete(afId: str, subId: str
             result = await collection.delete_one({'_id': subId, 'afId': afId})
             return n - await collection.count_documents({})
         except Exception as e:
-            print(e)
+            conf.logger.error(e)
             return None
     return None

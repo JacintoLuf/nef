@@ -1,5 +1,4 @@
 import json
-from fastapi import Response
 import httpx
 from api.config import conf
 from models.amf_create_event_subscription import AmfCreateEventSubscription
@@ -28,8 +27,8 @@ async def amf_event_exposure_subscribe():
             headers=conf.GLOBAL_HEADERS,
             data=json.dumps(amf_evt_sub.to_dict())
         )
-        print(response.headers)
-        print(response.text)
+        conf.logger.info(response.headers)
+        conf.logger.info(response.text)
 
 async def amf_event_exposure_subscription_update(app_session_id: str=None):
     if app_session_id:
@@ -38,7 +37,7 @@ async def amf_event_exposure_subscription_update(app_session_id: str=None):
                 f"http://{conf.HOSTS['AMF'][0]}/namf-evts/v1/subscriptions",
                 headers=conf.GLOBAL_HEADERS
             )
-            print(response.text)
+            conf.logger.info(response.text)
         return response.json()
     return None
 
@@ -49,6 +48,6 @@ async def amf_event_exposure_subscription_delete(app_session_id: str=None):
                 f"http://{conf.HOSTS['AMF'][0]}/namf-evts/v1/subscriptions",
                 headers=conf.GLOBAL_HEADERS
             )
-            print(response.text)
+            conf.logger.info(response.text)
         return response.json()
     return None

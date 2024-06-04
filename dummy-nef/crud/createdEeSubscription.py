@@ -21,15 +21,15 @@ async def created_ee_subscriptionscription_insert(sub: CreatedEeSubscription, lo
     document = {'_id': subId, 'sub': sub.to_dict(), 'location': location}
     try:
         result = await collection.insert_one(document)
-        print(result.inserted_id)
+        conf.logger.info(result.inserted_id)
         return result.inserted_id
     except DuplicateKeyError as e:
         document['_id'] = str(uuid.uuid4().hex)
         result = await collection.insert_one(document)
-        print(result.inserted_id)
+        conf.logger.info(result.inserted_id)
         return result.inserted_id
     except Exception as e:
-        print(e)
+        conf.logger.error(e)
         return None
 
 async def created_ee_subscriptionscription_update(subId: str, sub: CreatedEeSubscription, partial=False):
@@ -52,6 +52,6 @@ async def created_ee_subscriptionscription_delete(subId: str=None):
         result = await collection.delete_one({'_id': subId})
         return n - await collection.count_documents({})
     except Exception as e:
-        print(e)
+        conf.logger.error(e)
         return None
     return None

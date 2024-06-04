@@ -10,13 +10,16 @@ from kubernetes import client, config
 
 class Settings():
     def __init__(self):
+        logging.basicConfig(level=logging.INFO)
+        self.self.logger = logging.getself.logger(__name__)
+
         self.NAME = os.environ['NAME']
         self.CORE = os.environ['CORE_5G']
         self.NAMESPACE = os.environ['NAMESPACE']
         self.PLMN = os.environ['PLMN']
-        print(f'deploying {self.NAME} in namespace {self.NAMESPACE}')
+        self.self.logger.info(f'deploying {self.NAME} in namespace {self.NAMESPACE}')
         self.LOGGING_LEVEL = logging.DEBUG
-        print(f'integrating with {self.CORE}, serving PLMN: {self.PLMN}')
+        self.self.logger.info(f'integrating with {self.CORE}, serving PLMN: {self.PLMN}')
 
         self.HOSTS = {}
         self.MONGO_URI = ""
@@ -32,7 +35,7 @@ class Settings():
             ('3gpp-traffic-influence','00000002'), # ts 29522 5.4.4-1 :2
             ('3gpp-as-session-with-qos','00000920'), # ts 29122 5.14.4-1 :6, 9, 12
             ('3gpp-ueid', '0')
-            ]
+        ]
 
         try:
             config.load_incluster_config()
@@ -58,21 +61,21 @@ class Settings():
             self.HOSTS["NEF"] = [f"{svc.spec.cluster_ip}:{svc.spec.ports[0].port}"]
         
         except client.ApiException as e:
-            print(e)
+            self.self.conf.logger.error(e)
             if os.getenv('MONGO_IP') is not None:
                 self.HOSTS["MONGODB"] = os.getenv('MONGO_IP')
                 self.MONGO_URI = "mongodb://"+self.HOSTS["MONGODB"]+"/nef" 
-                print("Mongo DNS resolve docker-compose: "+self.HOSTS["MONGODB"])
+                self.logger.info("Mongo DNS resolve docker-compose: "+self.HOSTS["MONGODB"])
             else:
                 self.HOSTS["MONGODB"] = "10.109.39.130"
-                print("Mongodb manually resolved: "+self.HOSTS["MONGODB"])
+                self.logger.info("Mongodb manually resolved: "+self.HOSTS["MONGODB"])
 
             if os.getenv('NRF_IP') is not None:
                 self.HOSTS["NRF"] = os.getenv('NRF_IP')
-                print("NFs DNS resolve docker-compose: "+self.HOSTS["NRF"])
+                self.logger.info("NFs DNS resolve docker-compose: "+self.HOSTS["NRF"])
             else:
                 self.HOSTS["NRF"] = "10.102.176.115:7777"
-                print("NRFs manually resolved: "+self.HOSTS["NRF"])
+                self.logger.info("NRFs manually resolved: "+self.HOSTS["NRF"])
 
         self.SERVICE_LIST = {}
 

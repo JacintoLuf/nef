@@ -19,7 +19,7 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
                 f"http://{conf.HOSTS['PCF'][0]}/npcf-policyauthorization/v1/app-sessions/{app_session_id}",
                 headers={'Accept': 'application/json,application/problem+json'}
             )
-            print(response.text)
+            conf.logger.info(response.text)
             res = await response.json()
             if res:
                 return res
@@ -67,15 +67,15 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
     req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
-    print("Creating app session for traffic influence at PCF")
+    conf.logger.info("Creating app session for traffic influence at PCF")
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
             f"http://{host_addr}/npcf-policyauthorization/v1/app-sessions",
             headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
             data=json.dumps(app_session_context.to_dict())
         )
-        print(f"Response {response.status_code} for creating app session. Content:")
-        print(response.text)
+        conf.logger.info(f"Response {response.status_code} for creating app session. Content:")
+        conf.logger.info(response.text)
     return response
 
 async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_session_qos_sub: AsSessionWithQoSSubscription=None):
@@ -120,24 +120,24 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
                                                             tsn_qos=tsn_qos_c)}
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
-    print("Creating app session for as session with qos at PCF")
+    conf.logger.info("Creating app session for as session with qos at PCF")
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
             f"http://{host_addr}/npcf-policyauthorization/v1/app-sessions",
             headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
             data=json.dumps(app_session_context.to_dict())
         )
-        print(f"Response {response.status_code} for creating app session. Content:")
-        print(response.text)
+        conf.logger.info(f"Response {response.status_code} for creating app session. Content:")
+        conf.logger.info(response.text)
     return response
 
 async def pcf_policy_authorization_delete(subId: str=None):
-    print("Deleting app session for as session with qos at PCF")
+    conf.logger.info("Deleting app session for as session with qos at PCF")
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
             f"http://{conf.HOSTS['PCF'][0]}/npcf-policyauthorization/v1/app-sessions/{subId}/delete",
             headers={'Accept': 'application/json,application/problem+json'},
         )
-        print(f"Response {response.status_code} for deleting app session. Content:")
-        print(response.text)
+        conf.logger.info(f"Response {response.status_code} for deleting app session. Content:")
+        conf.logger.info(response.text)
     return response

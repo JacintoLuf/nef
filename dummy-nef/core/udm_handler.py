@@ -11,16 +11,16 @@ from models.reporting_options import ReportingOptions
 import crud.createdEeSubscription as createdEeSubscription
 
 async def udm_sdm_id_translation(ueId: str=None):
-    print(f"id to translate {ueId}")
+    conf.logger.info(f"id to translate {ueId}")
     try:
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.get(
                 f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v1/{ueId}/id-translation-result",
                 headers=conf.GLOBAL_HEADERS
             )
-            print(response.text)
+            conf.logger.info(response.text)
     except Exception as e:
-        print(e.__str__)
+        conf.logger.info(e.__str__)
     return response
 
 async def udm_sdm_group_identifiers_translation(ext_group_id: str=None):
@@ -32,7 +32,7 @@ async def udm_sdm_group_identifiers_translation(ext_group_id: str=None):
             headers=conf.GLOBAL_HEADERS,
             params=params
         )
-        print(response.text)
+        conf.logger.info(response.text)
 
     return response
 
@@ -80,19 +80,19 @@ async def udm_ee_subscription_create(monEvtSub: MonitoringEventSubscription=None
         notify_correlation_id=1,
         second_callback_ref=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/udm-event-sub-callback"
     )
-    print(ee_sub.to_dict())
+    conf.logger.info(ee_sub.to_dict())
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
             f"http://{conf.HOSTS['UDM'][0]}/nudm-ee/v1/{ueIdentity}/ee-subscriptions",
             headers=conf.GLOBAL_HEADERS,
             data=json.dumps(ee_sub.to_dict())
         )
-        print(response.headers)
-        print(response.text)
+        conf.logger.info(response.headers)
+        conf.logger.info(response.text)
 
     if response.status_code==httpx.codes.CREATED:
         res_data = response.json()
-        print(f"udm response data: {res_data}")
+        conf.logger.info(f"udm response data: {res_data}")
         created_sub = CreatedEeSubscription.from_dict(res_data)
         if response.headers['location']:
             res = createdEeSubscription.created_ee_subscriptionscription_insert(created_sub)

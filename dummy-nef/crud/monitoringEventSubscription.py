@@ -27,15 +27,15 @@ async def monitoring_event_subscriptionscription_insert(scsAsId: str, sub: Monit
     document = {'_id': subId, 'scsAsId': scsAsId, 'sub': sub.to_dict(), 'location': location}
     try:
         result = await collection.insert_one(document)
-        print(result.inserted_id)
+        conf.logger.info(result.inserted_id)
         return result.inserted_id
     except DuplicateKeyError as e:
         document['_id'] = str(uuid.uuid4().hex)
         result = await collection.insert_one(document)
-        print(result.inserted_id)
+        conf.logger.info(result.inserted_id)
         return result.inserted_id
     except Exception as e:
-        print(e)
+        conf.logger.error(e)
         return None
 
 async def monitoring_event_subscriptionscription_update(scsAsId: str, subId: str, sub, partial=False):
@@ -61,6 +61,6 @@ async def monitoring_event_subscriptionscription_delete(scsAsId: str, subId: str
             result = await collection.delete_one({'_id': subId, 'scsAsId': scsAsId})
             return n - await collection.count_documents({})
         except Exception as e:
-            print(e)
+            conf.logger.error(e)
             return None
     return None

@@ -78,7 +78,7 @@ async def nrf_get_access_token():
             )
             if response.status_code == httpx.codes.BAD_REQUEST:
                 err = AccessTokenErr.from_dict(response.json())
-                print(err)
+                conf.logger.info(err)
     return response.status_code
 
 async def nf_register():
@@ -92,9 +92,9 @@ async def nf_register():
             data = json.dumps(conf.NEF_PROFILE.to_dict())
         )
         if response.status_code == httpx.codes.CREATED:
-            print(f"[{conf.NEF_PROFILE.nf_instance_id}] NF registerd [Heartbeat:{conf.NEF_PROFILE.heart_beat_timer}s]")
+            conf.logger.info(f"[{conf.NEF_PROFILE.nf_instance_id}] NF registerd [Heartbeat:{conf.NEF_PROFILE.heart_beat_timer}s]")
         else:
-            print(response.text)
+            conf.logger.info(response.text)
     return response
 
 async def nf_update(profile):
@@ -108,9 +108,9 @@ async def nf_deregister():
             headers=conf.GLOBAL_HEADERS
         )
         if response.status_code == httpx.codes.NO_CONTENT:
-            print(f"[{conf.NEF_PROFILE.nf_instance_id}] NF de-registered")
+            conf.logger.info(f"[{conf.NEF_PROFILE.nf_instance_id}] NF de-registered")
         if response.status_code == httpx.codes.NOT_FOUND:
-            print("NEF instance not registered")
+            conf.logger.info("NEF instance not registered")
 
     return response.status_code
 
@@ -126,10 +126,10 @@ async def nf_register_heart_beat():
         )
         # if response.status_code == httpx.codes.OK:
         #     new_nef_profile = NFProfile.from_dict(response.json())
-        #     print(f"new profile {json.dumps(new_nef_profile)}")
+        #     conf.logger.info(f"new profile {json.dumps(new_nef_profile)}")
         if response.status_code == httpx.codes.NOT_FOUND:
-            print(response.text)
-            print("NEF instance not registered")
+            conf.logger.info(response.text)
+            conf.logger.info("NEF instance not registered")
     return response.status_code
 
 async def nf_status_subscribe(nf_types):
@@ -145,28 +145,28 @@ async def nf_status_subscribe(nf_types):
             requester_features="1"
         )
         for nf_type in nf_types:
-            print(f"{nf_type} status subscribe")
+            conf.logger.info(f"{nf_type} status subscribe")
             sub.subscr_cond = SubscrCond(nf_type=nf_type)
             response = await client.post(
                 f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/subscriptions",
                 headers=conf.GLOBAL_HEADERS,
                 data=json.dumps(sub.to_dict())
             )
-            print(f"Response for {nf_type} status subscribe. Content:")
-            print(response.text)
+            conf.logger.info(f"Response for {nf_type} status subscribe. Content:")
+            conf.logger.info(response.text)
             if response.status_code == httpx.codes.CREATED:
                 data = response.json()
                 sub = SubscriptionData.from_dict(data)
-                print(f"{nf_type} Subscription created until {sub.validity_time}")
-                print(f"Resource location: {response.headers['location']}")
+                conf.logger.info(f"{nf_type} Subscription created until {sub.validity_time}")
+                conf.logger.info(f"Resource location: {response.headers['location']}")
                 try:
                     res = await subscriptionData.subscription_data_insert(sub, response.headers['location'])
                 except Exception as e:
-                    print(e)
+                    conf.logger.error(e)
                     if not res:
-                        print("Error saving subscription")
+                        conf.logger.info("Error saving subscription")
             else:
-                print(f"{nf_type} Subscription not created")
+                conf.logger.info(f"{nf_type} Subscription not created")
 
 async def nf_status_unsubscribe(subId=None):
     if not subId:
@@ -177,12 +177,12 @@ async def nf_status_unsubscribe(subId=None):
                     f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/subscriptions/{sub['subscription_id']}",
                     headers=conf.GLOBAL_HEADERS
                 )
-        print(response.text)
+        conf.logger.info(response.text)
     else:
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.delete(
                 f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/subscriptions/{subId}",
                 headers=conf.GLOBAL_HEADERS
             )
-            print(response.text)
+            conf.logger.info(response.text)
     return 1
