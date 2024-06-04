@@ -11,15 +11,15 @@ from kubernetes import client, config
 class Settings():
     def __init__(self):
         logging.basicConfig(level=logging.INFO)
-        self.self.logger = logging.getself.logger(__name__)
+        self.logger = logging.getself.logger(__name__)
 
         self.NAME = os.environ['NAME']
         self.CORE = os.environ['CORE_5G']
         self.NAMESPACE = os.environ['NAMESPACE']
         self.PLMN = os.environ['PLMN']
-        self.self.logger.info(f'deploying {self.NAME} in namespace {self.NAMESPACE}')
+        self.logger.info(f'deploying {self.NAME} in namespace {self.NAMESPACE}')
         self.LOGGING_LEVEL = logging.DEBUG
-        self.self.logger.info(f'integrating with {self.CORE}, serving PLMN: {self.PLMN}')
+        self.logger.info(f'integrating with {self.CORE}, serving PLMN: {self.PLMN}')
 
         self.HOSTS = {}
         self.MONGO_URI = ""

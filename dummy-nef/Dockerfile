@@ -19,5 +19,5 @@ EXPOSE 8000
 #It is the command that will start and run the FastAPI application container
 #HTTP2/ server
 #CMD ["hypercorn", "--bind", "0.0.0.0:7777", "--keyfile", "key.pem", "--certfile", "cert.pem", "main:app"]
-CMD ["hypercorn", "--bind", "0.0.0.0:7777", "--worker-class", "asyncio", "main:app"]
+CMD ["hypercorn", "--bind", "0.0.0.0:7777", "--worker-class", "asyncio", "--config", "hypercorn_config.py", "main:app"]
 #CMD ["uvicorn", "main:app", "--host=0.0.0.0", "--port=7777"]
