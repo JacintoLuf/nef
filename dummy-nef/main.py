@@ -355,7 +355,7 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
                 headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
                 if traffic_sub.request_test_notification:
                     test_notif = EventNotification(af_trans_id=traffic_sub.af_trans_id)
-                    background_tasks.add_task(send_notification, test_notif.to_dict(), traffic_sub.notification_destination)
+                    await background_tasks.add_task(send_notification, test_notif.to_dict(), traffic_sub.notification_destination)
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
                 conf.logger.info("Server error")
@@ -521,7 +521,7 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
             if sub_id:
                 if qos_sub.request_test_notification:
                     test_notif = {'subscription': qos_sub.notification_destination}
-                    background_tasks.add_task(send_notification, test_notif.__str__, qos_sub.notification_destination)
+                    await background_tasks.add_task(send_notification, test_notif.__str__, qos_sub.notification_destination)
                 qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
                 conf.logger.info(f"Resource stored at {qos_sub.__self} with ID: {sub_id}")
                 headers={'location': qos_sub.__self, 'content-type': 'application/json'}
