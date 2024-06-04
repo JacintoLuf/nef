@@ -10,8 +10,10 @@ from kubernetes import client, config
 
 class Settings():
     def __init__(self):
+
+
         logging.basicConfig(level=logging.INFO)
-        self.logger = logging.getself.logger(__name__)
+        self.logger = logging.getLogger(__name__)
 
         self.NAME = os.environ['NAME']
         self.CORE = os.environ['CORE_5G']
