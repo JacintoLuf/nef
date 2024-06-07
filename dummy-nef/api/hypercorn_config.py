@@ -33,7 +33,7 @@ logconfig_dict = {
             "propagate": False,
         },
         "httpx": {
-            "level": "INFO",
+            "level": "WARNING",  # Set log level to WARNING to suppress INFO and DEBUG logs
             "handlers": ["console"],
             "propagate": False,
         },

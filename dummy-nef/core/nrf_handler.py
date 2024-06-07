@@ -1,8 +1,7 @@
 import httpx
 import json
 import datetime
-import uuid
-import rstr
+import rstr # type: ignore
 from datetime import datetime, timezone, timedelta
 from api.config import conf
 from session import async_db
@@ -148,7 +147,7 @@ async def nf_status_subscribe(nf_types):
         )
         for nf_type in nf_types:
             conf.logger.info(f"{nf_type} status subscribe")
-            sub.subscription_id = rstr.xeger(r'^([0-9]{5,6}-)?[^-]+$')
+            sub.subscription_id = rstr.xeger(r'/^([0-9]{5,6}-)?[^-]+$/')
             sub.subscr_cond = SubscrCond(nf_type=nf_type)
             response = await client.post(
                 f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/subscriptions",
