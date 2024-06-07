@@ -18,12 +18,12 @@ logconfig_dict = {
         },
     },
     "root": {
-        "level": "DEBUG",
+        "level": "INFO",
         "handlers": ["console"],
     },
     "loggers": {
         "hypercorn": {
-            "level": "INFO",
+            "level": "DEBUG",
             "handlers": ["console"],
             "propagate": False,
         },
