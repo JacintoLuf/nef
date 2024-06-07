@@ -2,7 +2,7 @@ import os
 import uuid
 import logging
 import logging.config
-from hypercorn_config import logconfig_dict
+from api.hypercorn_config import logconfig_dict
 from typing import List
 from models.ip_end_point import IpEndPoint
 from models.nf_profile import NFProfile
