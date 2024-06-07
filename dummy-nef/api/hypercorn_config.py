@@ -1,4 +1,4 @@
-log_format = '%(asctime)s: [%(name)s] %(levelname)s: [%(module)s] %(message)s [%(process)d] (%(filename)s:%(lineno)d)'
+log_format = '%(asctime)s: %(levelname)s: [%(module)s] %(message)s (%(filename)s:%(lineno)d)'
 
 # Define the log configuration dictionary
 logconfig_dict = {
