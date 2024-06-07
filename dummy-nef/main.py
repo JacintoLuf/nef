@@ -524,7 +524,11 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
             qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
             conf.logger.info(f"Resource stored at {qos_sub.__self} with ID: {sub_id}")
             headers={'location': qos_sub.__self, 'content-type': 'application/json'}
-            conf.logger.debug(f"Response Data: {qos_sub.to_dict()}")
+            try:
+                serialized_data = json.dumps(qos_sub.to_dict())
+            except Exception as e:
+                conf.logger.error(f"Serialization error: {e}")
+                raise
             jsoned = qos_sub.to_dict()
             return JSONResponse(status_code=httpx.codes.CREATED, content=jsoned, headers=headers)
         else:

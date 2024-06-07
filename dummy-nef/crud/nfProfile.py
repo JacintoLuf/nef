@@ -1,3 +1,4 @@
+from api.config import conf
 from pymongo import UpdateOne
 from pymongo.errors import DuplicateKeyError
 from session import async_db
