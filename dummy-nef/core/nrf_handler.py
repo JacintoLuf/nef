@@ -1,7 +1,6 @@
 import httpx
 import json
 import datetime
-import rstr # type: ignore
 from datetime import datetime, timezone, timedelta
 from api.config import conf
 from session import async_db
