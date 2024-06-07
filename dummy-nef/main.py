@@ -525,7 +525,11 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
                 qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
                 conf.logger.info(f"Resource stored at {qos_sub.__self} with ID: {sub_id}")
                 headers={'location': qos_sub.__self, 'content-type': 'application/json'}
-                return JSONResponse(status_code=httpx.codes.CREATED, content=qos_sub.to_dict(), headers=headers)
+                try:
+                    jsoned = json.dumps(qos_sub.to_dict())
+                except ValueError as e:
+                    conf.logger.info(f"Response is not jsonable: {e!r}")
+                return JSONResponse(status_code=httpx.codes.CREATED, content=json.dumps(qos_sub.to_dict()), headers=headers)
             else:
                 return Response(status_code=500, content="Error creating resource")      
     except Exception as e:
