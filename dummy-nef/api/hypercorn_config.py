@@ -23,7 +23,17 @@ logconfig_dict = {
     },
     "loggers": {
         "hypercorn": {
-            "level": "DEBUG",
+            "level": "INFO",
+            "handlers": ["console"],
+            "propagate": False,
+        },
+        "pymongo": {
+            "level": "WARNING",
+            "handlers": ["console"],
+            "propagate": False,
+        },
+        "httpx": {
+            "level": "INFO",
             "handlers": ["console"],
             "propagate": False,
         },
