@@ -354,7 +354,7 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
                 headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
                 if traffic_sub.request_test_notification:
                     test_notif = EventNotification(af_trans_id=traffic_sub.af_trans_id)
-                    await background_tasks.add_task(send_notification, test_notif.to_dict(), traffic_sub.notification_destination)
+                    background_tasks.add_task(send_notification, test_notif.to_dict(), traffic_sub.notification_destination)
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
                 conf.logger.info("Server error")
@@ -513,25 +513,26 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
         response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
     else:
         response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
-    if response.status_code == httpx.codes.CREATED:
-        conf.logger.info("Storing request and generating 'As Aession With QoS' resource.")
-        sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
-        if sub_id:
-            if qos_sub.request_test_notification:
-                test_notif = {'subscription': qos_sub.notification_destination}
-                background_tasks.add_task(send_notification, test_notif.__str__, qos_sub.notification_destination)
-            qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
-            conf.logger.info(f"Resource stored at {qos_sub.__self} with ID: {sub_id}")
-            headers={'location': qos_sub.__self, 'content-type': 'application/json'}
-            try:
-                serialized_data = json.dumps(qos_sub.to_dict())
-            except Exception as e:
-                conf.logger.error(f"Serialization error: {e}")
-                raise
-            jsoned = qos_sub.to_dict()
-            return JSONResponse(status_code=httpx.codes.CREATED, content=jsoned, headers=headers)
-        else:
-            return Response(status_code=500, content="Error creating resource")
+
+    # if response.status_code == httpx.codes.CREATED:
+    #     conf.logger.info("Storing request and generating 'As Aession With QoS' resource.")
+    #     sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
+    #     if sub_id:
+    #         if qos_sub.request_test_notification:
+    #             test_notif = {'subscription': qos_sub.notification_destination}
+    #             background_tasks.add_task(send_notification, test_notif.__str__, qos_sub.notification_destination)
+    #         qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
+    #         conf.logger.info(f"Resource stored at {qos_sub.__self} with ID: {sub_id}")
+    #         headers={'location': qos_sub.__self, 'content-type': 'application/json'}
+    #         try:
+    #             serialized_data = json.dumps(qos_sub.to_dict())
+    #         except Exception as e:
+    #             conf.logger.error(f"Serialization error: {e}")
+    #             raise
+    #         jsoned = qos_sub.to_dict()
+    #         return JSONResponse(status_code=httpx.codes.CREATED, content=jsoned, headers=headers)
+    #     else:
+    #         return Response(status_code=500, content="Error creating resource")
     return response
 
 @app.put("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
