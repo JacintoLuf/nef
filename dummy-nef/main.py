@@ -509,15 +509,10 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
         if res['code'] != httpx.codes.OK:
             raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
         pcf_binding = PcfBinding.from_dict(res['response'])
-
         response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
+    
     else:
-        try:
-            response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
-        except ValueError as v:
-            conf.logger.info("value error!")
-        except Exception as e:
-            conf.logger.info("unknown error!")
+        response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
     # if response.status_code == httpx.codes.CREATED:
     #     conf.logger.info("Storing request and generating 'As Aession With QoS' resource.")
     #     sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
@@ -537,7 +532,7 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
     #         return JSONResponse(status_code=httpx.codes.CREATED, content=jsoned, headers=headers)
     #     else:
     #         return Response(status_code=500, content="Error creating resource")
-    return response
+    return Response(status_code=httpx.codes.OK, headers=conf.GLOBAL_HEADERS)
 
 @app.put("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
 async def qos_put(scsAsId: str, subId: str, data: Request):
