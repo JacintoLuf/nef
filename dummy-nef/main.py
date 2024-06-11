@@ -312,7 +312,6 @@ async def ti_get(afId: str, subId: str):
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 async def ti_get_all(afId: str):
-    conf.logger.info(f"af id: {afId}")
     res = await trafficInfluSub.traffic_influence_subscription_get(afId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
@@ -520,7 +519,7 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
         if sub_id:
             if qos_sub.request_test_notification:
                 test_notif = {'subscription': qos_sub.notification_destination}
-                await background_tasks.add_task(send_notification, test_notif.__str__, qos_sub.notification_destination)
+                background_tasks.add_task(send_notification, test_notif.__str__, qos_sub.notification_destination)
             qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
             conf.logger.info(f"Resource stored at {qos_sub.__self} with ID: {sub_id}")
             headers={'location': qos_sub.__self, 'content-type': 'application/json'}
