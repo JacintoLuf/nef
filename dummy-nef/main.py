@@ -389,17 +389,18 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
             conf.logger.info("Storing request and generating 'Traffic Influence' resource.")
             sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
             if sub_id:
-                traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-traffic-influence/v1/{afId}/subscriptions/{sub_id}"
-                conf.logger.info(f"Resource stored at {traffic_sub.__self} with ID: {sub_id}")
-                headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
                 if traffic_sub.request_test_notification:
                     test_notif = EventNotification(af_trans_id=traffic_sub.af_trans_id)
                     background_tasks.add_task(send_notification, test_notif.to_dict(), traffic_sub.notification_destination)
+                traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-traffic-influence/v1/{afId}/subscriptions/{sub_id}"
+                conf.logger.info(f"Resource stored at {traffic_sub.__self} with ID: {sub_id}")
+                headers = conf.GLOBAL_HEADERS
+                headers['location'] = traffic_sub.__self
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
                 conf.logger.info("Server error")
-                return Response(status_code=500, content="Error creating resource")
-    return res.status_code
+                return Response(status_code=httpx.codes.INTERNAL_SERVER_ERROR, content="Error creating resource!")
+    return Response(status_code=httpx.codes.INTERNAL_SERVER_ERROR, content="Unknown server error!")
 
 @app.put("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_put(afId: str, subId: str, data: Request):
@@ -513,26 +514,22 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
     
     else:
         response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
-    # if response.status_code == httpx.codes.CREATED:
-    #     conf.logger.info("Storing request and generating 'As Aession With QoS' resource.")
-    #     sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
-    #     if sub_id:
-    #         if qos_sub.request_test_notification:
-    #             test_notif = {'subscription': qos_sub.notification_destination}
-    #             background_tasks.add_task(send_notification, test_notif.__str__, qos_sub.notification_destination)
-    #         qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
-    #         conf.logger.info(f"Resource stored at {qos_sub.__self} with ID: {sub_id}")
-    #         headers={'location': qos_sub.__self, 'content-type': 'application/json'}
-    #         try:
-    #             serialized_data = json.dumps(qos_sub.to_dict())
-    #         except Exception as e:
-    #             conf.logger.error(f"Serialization error: {e}")
-    #             raise
-    #         jsoned = qos_sub.to_dict()
-    #         return JSONResponse(status_code=httpx.codes.CREATED, content=jsoned, headers=headers)
-    #     else:
-    #         return Response(status_code=500, content="Error creating resource")
-    return Response(status_code=httpx.codes.OK, headers=conf.GLOBAL_HEADERS)
+    
+    if response.status_code == httpx.codes.CREATED:
+        conf.logger.info("Storing request and generating 'As Aession With QoS' resource.")
+        sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
+        if sub_id:
+            if qos_sub.request_test_notification:
+                test_notif = {'subscription': qos_sub.notification_destination}
+                background_tasks.add_task(send_notification, test_notif.__str__, qos_sub.notification_destination)
+            qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
+            conf.logger.info(f"Resource stored at {qos_sub.__self} with ID: {sub_id}")
+            headers = conf.GLOBAL_HEADERS
+            headers['location'] = qos_sub.__self
+            return JSONResponse(status_code=httpx.codes.CREATED, content=qos_sub.to_dict(), headers=headers)
+        else:
+            return Response(status_code=httpx.codes.INTERNAL_SERVER_ERROR, content="Error creating resource!")
+    return Response(status_code=httpx.codes.INTERNAL_SERVER_ERROR, content="Unknown server error!")
 
 @app.put("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
 async def qos_put(scsAsId: str, subId: str, data: Request):
