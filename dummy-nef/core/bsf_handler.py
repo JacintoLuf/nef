@@ -8,5 +8,6 @@ async def bsf_management_discovery(params):
                 headers={'Accept': 'application/json,application/problem+json'},
                 params=params
             )
+    conf.logger.info(response.text)
     res = response.json()
     return {'code': response.status_code, 'response': res}
