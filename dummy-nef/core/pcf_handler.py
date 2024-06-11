@@ -120,12 +120,6 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
                                                             tsn_qos=tsn_qos_c)}
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
-    try:
-        ser = json.dumps(app_session_context.to_dict())
-    except Exception as e:
-        conf.logger.info(f"serialization error: {e!r}")
-        return
-
     conf.logger.info("Creating app session for as session with qos at PCF")
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
