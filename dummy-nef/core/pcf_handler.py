@@ -134,7 +134,8 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
             data=json.dumps(app_session_context.to_dict())
         )
         conf.logger.info(f"Response {response.status_code} for creating app session. Content:")
-        conf.logger.debug(response.text)
+        # conf.logger.debug(response.text)
+        conf.logger.info(response.text)
     return response
 
 async def pcf_policy_authorization_delete(subId: str=None):
