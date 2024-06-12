@@ -155,16 +155,19 @@ async def nf_status_subscribe(nf_types):
             conf.logger.info(f"Response for {nf_type} status subscribe. Content:")
             conf.logger.info(response.text)
             if response.status_code == httpx.codes.CREATED:
-                data = response.json()
-                sub = SubscriptionData.from_dict(data)
-                conf.logger.info(f"{nf_type} Subscription created until {sub.validity_time}")
-                conf.logger.info(f"Resource location: {response.headers['location']}")
+                data = await response.json()
                 try:
-                    res = await subscriptionData.subscription_data_insert(sub, response.headers['location'])
+                    sub = SubscriptionData.from_dict(data)
+                    conf.logger.info(f"{nf_type} Subscription created until {sub.validity_time}")
+                    conf.logger.info(f"Resource location: {response.headers['location']}")
+                    try:
+                        res = await subscriptionData.subscription_data_insert(sub, response.headers['location'])
+                    except Exception as e:
+                        conf.logger.error(e)
+                        if not res:
+                            conf.logger.info("Error saving subscription")
                 except Exception as e:
-                    conf.logger.error(e)
-                    if not res:
-                        conf.logger.info("Error saving subscription")
+                    conf.logger.info("Can't decode response message!")
             else:
                 conf.logger.info(f"{nf_type} Subscription not created")
 

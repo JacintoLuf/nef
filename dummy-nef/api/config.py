@@ -34,12 +34,12 @@ class Settings():
             'charsets': 'utf-8',
         }
 
-        service_names = [
-            ('3gpp-monitoring-event','02481437'), # ts 29122 5.3.4-1 :1, 2, 3, 5, 6, 11, 13, 20, 23, 26
-            ('3gpp-traffic-influence','00000002'), # ts 29522 5.4.4-1 :2
-            ('3gpp-as-session-with-qos','00000920'), # ts 29122 5.14.4-1 :6, 9, 12
-            ('3gpp-ueid', '0')
-        ]
+        self.SERVICE_NAMES = {
+            '3gpp-monitoring-event': '02481437', # ts 29122 5.3.4-1 :1, 2, 3, 5, 6, 11, 13, 20, 23, 26
+            '3gpp-traffic-influence': '00000002', # ts 29522 5.4.4-1 :2
+            '3gpp-as-session-with-qos': '00000920', # ts 29122 5.14.4-1 :6, 9, 12
+            '3gpp-ueid': '0',
+        }
 
         try:
             config.load_incluster_config()
@@ -65,7 +65,7 @@ class Settings():
             self.HOSTS["NEF"] = [f"{svc.spec.cluster_ip}:{svc.spec.ports[0].port}"]
         
         except client.ApiException as e:
-            self.self.conf.logger.error(e)
+            self.logger.info(e)
             if os.getenv('MONGO_IP') is not None:
                 self.HOSTS["MONGODB"] = os.getenv('MONGO_IP')
                 self.MONGO_URI = "mongodb://"+self.HOSTS["MONGODB"]+"/nef" 
@@ -83,7 +83,7 @@ class Settings():
 
         self.SERVICE_LIST = {}
 
-        for svc_name, supp_feat in service_names:
+        for svc_name, supp_feat in self.SERVICE_NAMES:
             base_svc = self.create_svc(svc_name, supp_feat)
             self.SERVICE_LIST[svc_name] = base_svc
 
