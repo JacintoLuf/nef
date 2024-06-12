@@ -524,7 +524,7 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
         if sub_id:
             if qos_sub.request_test_notification:
                 test_notif = {'subscription': qos_sub.notification_destination}
-                background_tasks.add_task(send_notification, test_notif.__str__, qos_sub.notification_destination)
+                background_tasks.add_task(send_notification, test_notif, qos_sub.notification_destination)
             qos_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{sub_id}"
             conf.logger.info(f"Resource stored at {qos_sub.__self} with ID: {sub_id}")
             headers = conf.GLOBAL_HEADERS
