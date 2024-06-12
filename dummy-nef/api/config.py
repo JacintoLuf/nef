@@ -83,9 +83,9 @@ class Settings():
 
         self.SERVICE_LIST = {}
 
-        for svc_name, supp_feat in self.SERVICE_NAMES:
-            base_svc = self.create_svc(svc_name, supp_feat)
-            self.SERVICE_LIST[svc_name] = base_svc
+        for key in self.SERVICE_NAMES.keys():
+            base_svc = self.create_svc(key, self.SERVICE_NAMES[key])
+            self.SERVICE_LIST[key] = base_svc
 
         self.NEF_PROFILE = NFProfile(
             nf_instance_id=self.API_UUID,
