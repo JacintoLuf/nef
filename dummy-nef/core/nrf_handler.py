@@ -35,6 +35,7 @@ async def nrf_discovery():
 
     else:
         for nf in list(conf.NF_SCOPES.keys()):
+            conf.logger.info(f"scope: {nf}")
             async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
                 response = await client.get(
                     f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/nf-instances",
