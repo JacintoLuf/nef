@@ -90,7 +90,7 @@ async def nrf_heartbeat():
 @repeat_every(seconds=86400)
 async def status_subscribe():
     try:
-        await nrf_handler.nf_status_subscribe(list(conf.NF_SCOPES.keys()))
+        nrf_handler.nf_status_subscribe(list(conf.NF_SCOPES.keys()))
     except Exception as e:
         conf.logger.error(e)
 
