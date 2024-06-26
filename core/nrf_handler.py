@@ -153,7 +153,7 @@ async def nf_status_subscribe(nf_types):
                 headers=conf.GLOBAL_HEADERS,
                 data=json.dumps(sub.to_dict())
             )
-            conf.logger.info(f"Response for {nf_type} status subscribe. Content:")
+            conf.logger.info(f"Response for {nf_type} status subscribe. status: {response.status_code}")
             conf.logger.info(response.text)
             if response.status_code == httpx.codes.CREATED:
                 data = response.json()
