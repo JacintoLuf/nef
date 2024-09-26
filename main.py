@@ -467,6 +467,7 @@ async def qget():
 
 @app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
 async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTasks):
+    conf.logger.info("\n\n---------------------------------------------------------------------")
     conf.logger.info("Initiating As Session With QoS request process")
 
     try:
@@ -499,7 +500,10 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
     if qos_sub.alt_qo_s_references and not qos_sub.notification_destination:
         conf.logger.info("no notif destination")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
-
+    
+    conf.logger.info("\n------------------------------qos sub---------------------------------------\n")
+    conf.logger.info(qos_sub.to_str())
+    conf.logger.info("\n---------------------------------------------------------------------\n")
     # if "BSF" in conf.HOSTS.keys():
     #     bsf_params = {}
     #     if qos_sub.ue_ipv4_addr:
@@ -529,9 +533,12 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
             conf.logger.info(f"Resource stored at {qos_sub.__self} with ID: {sub_id}")
             headers = conf.GLOBAL_HEADERS
             headers['location'] = qos_sub.__self
+            conf.logger.info("---------------------------------------------------------------------\n\n")
             return JSONResponse(status_code=httpx.codes.CREATED, content=qos_sub.to_dict(), headers=headers)
         else:
+            conf.logger.info("---------------------------------------------------------------------\n\n")
             return Response(status_code=httpx.codes.INTERNAL_SERVER_ERROR, content="Error creating resource!")
+    conf.logger.info("---------------------------------------------------------------------\n\n")
     return Response(status_code=httpx.codes.INTERNAL_SERVER_ERROR, content="Unknown server error!")
 
 @app.put("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")

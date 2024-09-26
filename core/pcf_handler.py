@@ -98,7 +98,7 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
             setattr(req_data, attr_name, attr_val)
 
     req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}/up_path_change"
-    req_data.supp_feat = conf.SERVICE_NAMES['3gpp-as-session-with-qos']
+    req_data.supp_feat = 'ffffff' # conf.SERVICE_NAMES['3gpp-as-session-with-qos']
     tsn_qos_c = None
     if as_session_qos_sub.tsc_qos_req:
         tsn_qos_c = TsnQosContainer(
@@ -110,16 +110,23 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
     med_sub_cmp = {}
     for idx, f in enumerate(as_session_qos_sub.flow_info):
         med_sub_cmp[f"{idx}"] = MediaSubComponent(f_num=f.flow_id, f_descs=f.flow_descriptions)
-    req_data.med_components = {'1': MediaComponent(qos_reference=as_session_qos_sub.qos_reference,
-                                                            alt_ser_reqs=as_session_qos_sub.alt_qo_s_references,
-                                                            alt_ser_reqs_data=as_session_qos_sub.alt_qos_reqs,
-                                                            med_comp_n=1,
-                                                            f_status="ENABLED",
-                                                            med_type="AUDIO",
-                                                            med_sub_comps=med_sub_cmp,
-                                                            tsn_qos=tsn_qos_c)}
+    med_comps = MediaComponent(qos_reference=as_session_qos_sub.qos_reference,
+                               alt_ser_reqs=as_session_qos_sub.alt_qo_s_references,
+                               alt_ser_reqs_data=as_session_qos_sub.alt_qos_reqs,
+                               med_comp_n=1,
+                               f_status="ENABLED",
+                               med_type="AUDIO",
+                               med_sub_comps=med_sub_cmp,
+                               tsn_qos=tsn_qos_c)
+    req_data.med_components = {'med_comp_1': med_comps}
+    conf.logger.info("\n--------------------------------med comps------------------------------\n")
+    conf.logger.info(med_comps.to_str())
+    conf.logger.info("\n---------------------------------------------------------------------\n")    
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
+    conf.logger.info("\n-------------------------app session context--------------------------------------------\n")
+    conf.logger.info(app_session_context.to_str())
+    conf.logger.info("\n---------------------------------------------------------------------\n")
     conf.logger.info("Creating app session for as session with qos at PCF")
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
