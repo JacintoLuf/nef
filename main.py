@@ -500,23 +500,23 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
         conf.logger.info("no notif destination")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
 
-    if "BSF" in conf.HOSTS.keys():
-        bsf_params = {}
-        if qos_sub.ue_ipv4_addr:
-            bsf_params['ipv4Addr'] = qos_sub.ue_ipv4_addr
-        elif qos_sub.ue_ipv6_addr:
-            bsf_params['ipv6Prefix'] = qos_sub.ue_ipv6_addr
-        elif qos_sub.mac_addr:
-            bsf_params['macAddr48'] = qos_sub.mac_addr
+    # if "BSF" in conf.HOSTS.keys():
+    #     bsf_params = {}
+    #     if qos_sub.ue_ipv4_addr:
+    #         bsf_params['ipv4Addr'] = qos_sub.ue_ipv4_addr
+    #     elif qos_sub.ue_ipv6_addr:
+    #         bsf_params['ipv6Prefix'] = qos_sub.ue_ipv6_addr
+    #     elif qos_sub.mac_addr:
+    #         bsf_params['macAddr48'] = qos_sub.mac_addr
 
-        res = await bsf_handler.bsf_management_discovery(bsf_params)
-        if res['code'] != httpx.codes.OK:
-            raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
-        pcf_binding = PcfBinding.from_dict(res['response'])
-        response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
+    #     res = await bsf_handler.bsf_management_discovery(bsf_params)
+    #     if res['code'] != httpx.codes.OK:
+    #         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
+    #     pcf_binding = PcfBinding.from_dict(res['response'])
+    #     response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
     
-    else:
-        response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
+    # else:
+    response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
     
     if response.status_code == httpx.codes.CREATED:
         conf.logger.info("Storing request and generating 'As Aession With QoS' resource.")

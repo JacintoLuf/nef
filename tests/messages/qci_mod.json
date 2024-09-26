@@ -1,3 +1,27 @@
 {
-    
+    "supportedFeatures": "ffffff",
+    "dnn": "internet",
+    "snssai": 
+        {
+            "sst": 1,
+            "sd": "111111"
+        },
+    "notificationDestination": "http://af:8080/notif",
+    "flowInfo": 
+        [
+            {
+                "flowId": 1,
+                "flowDescriptions": ["permit out 17 from any to any", "permit in 17 from any to any", "permit in udp from any to any", "permit out udp from any to any"]
+            }
+        ],
+    "altQosReqs":
+        [
+            {
+                "altQosParamSetRef":"string",
+                "gbrUl":"50000000 bps",
+                "gbrDl":"50000000 bps",
+                "pdb":"1"
+            }
+        ],
+    "ueIpv4Addr": "10.45.0.2"
 }

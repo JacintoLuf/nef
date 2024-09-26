@@ -20,7 +20,9 @@ nef_ip = None
 test_type = None
 test_param = None
 ueransim_addr = None
-phone_usr = 'u0_a143'
+ue_addr = '10.45.0.2'
+ue_usr = 'u0_a154'
+ue_pwd = '1234'
 # workbook = Workbook()
 # sheet = workbook.active
 
