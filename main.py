@@ -518,7 +518,7 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
     #         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
     #     pcf_binding = PcfBinding.from_dict(res['response'])
     #     response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
-    
+
     # else:
 
     response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
@@ -548,7 +548,7 @@ async def qos_put(scsAsId: str, subId: str, data: Request):
         qosSub = AsSessionWithQoSSubscription.from_dict(data.json())
         await asSessionWithQoSSub.as_session_with_qos_subscription_update(scsAsId=scsAsId, subId=subId, sub=qosSub.to_dict())
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # "Failed to update subscription"
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
 @app.patch("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
@@ -557,7 +557,7 @@ async def qos_patch(scAsId: str, subId: str, data: Request):
         qosSub = AsSessionWithQoSSubscription.from_dict(data.json())
         await asSessionWithQoSSub.as_session_with_qos_subscription_update(scsAsId=scAsId, subId=subId, sub=qosSub.to_dict(), partial=True)
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # "Failed to update subscription"
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
 @app.get("/qdelete/{subId}")
