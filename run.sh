@@ -61,7 +61,7 @@ if [ "$OLD_COMMIT" != "$NEW_COMMIT" ]; then
 
   # Build the new Docker image
   echo "Building image!"
-  docker build -t nef .
+  docker build -t nef --network=host .
 
   # Tag the image and push it to the repository
   echo "Pushing image!"
