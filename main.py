@@ -520,6 +520,7 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
     #     response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
     
     # else:
+    
     response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
     
     if response.status_code == httpx.codes.CREATED:
