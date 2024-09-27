@@ -518,6 +518,7 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
     #         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
     #     pcf_binding = PcfBinding.from_dict(res['response'])
     #     response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
+    
     # else:
 
     response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
