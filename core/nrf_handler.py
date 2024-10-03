@@ -157,6 +157,7 @@ async def nf_status_subscribe(nf_types):
             conf.logger.info(response.text)
             if response.status_code == httpx.codes.CREATED:
                 data = response.json()
+                conf.logger.info(f"Response data: {data}")
                 try:
                     sub = SubscriptionData.from_dict(data)
                     conf.logger.info(f"{nf_type} Subscription created until {sub.validity_time}")

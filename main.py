@@ -172,6 +172,19 @@ async def nrf_notif(request: Request):
     conf.logger.info(request.method)
     conf.logger.info(request.body)
 
+@app.put("/up_path_change")
+async def up_path_chg_notif(request: Request):
+    conf.logger.info(request.method)
+    conf.logger.info(request.text)
+    try:
+        data = await request.json()
+    except Exception as e:
+        conf.logger.info(f"{e!r}")
+    evt_notif = EventNotification()
+    if data:
+        conf.logger.info(data)
+    return Response(status_code=httpx.codes.NO_CONTENT)
+
 @app.post("/up_path_change")
 async def up_path_chg_notif(request: Request):
     conf.logger.info(request.method)

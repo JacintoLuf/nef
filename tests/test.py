@@ -1,101 +1,130 @@
-import os, os.path
+# from openpyxl import Workbook
+import os
 import time
 import json
 import socket
+import paramiko
 import httpx
 import subprocess as sub
-# from pexpect import pxssh
 from threading import Thread
-# from openpyxl import Workbook
 
-dir_path = os.getcwd()
-file_type = '.pcap'
-files_count = len([f for f in os.listdir(dir_path) if f.endswith(file_type) and os.path.isfile(os.path.join(dir_path, f))])
-start = None
-end = None
+# Variables
+iperf_server_ip = '10.255.44.44'
+iperf_client_ip = '10.45.0.2'
+nef_ip = '10.255.38.58:7777'
+tcpdump_machine_ip = '10.255.44.44'  # Same as the iperf server (or another remote machine)
+test_duration = 90  # Duration of the iperf test in seconds
+results = []
+results_txt = []
 
-core = None
-iperf_server = None
-nef_ip = None
-test_type = None
-test_param = None
-ueransim_addr = None
-ue_addr = '10.45.0.2'
-ue_usr = 'u0_a154'
-ue_pwd = '1234'
-# workbook = Workbook()
-# sheet = workbook.active
+# Specify the directory where results will be saved
+results_dir = os.path.join(os.getcwd(), 'captures')
+# Ensure the 'results' folder exists
+if not os.path.exists(results_dir):
+    os.makedirs(results_dir)
+files_count =len([name for name in os.listdir(results_dir) if os.path.isfile(os.path.join(results_dir, name))])
 
-def define_vars():
-    core = str(input('testing core: ') or 'open5gs')
-    iperf_server = str(input('iperf server: ') or '10.255.32.102')
-    nef_ip = str(input('nef addr: ') or '10.255.38.50:7777')
-    test_type = int(input('test TI(1) or QoS(0): ') or 0)
-    test_param = str(input('test params: '))
-    ueransim_addr = str(input('address of ueransim machine: ') or '10.255.38.49')
+# SSH function to execute remote commands using Paramiko
+def ssh_execute(ip, username, password, command):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(ip, username=username, password=password)
+    stdin, stdout, stderr = ssh.exec_command(command)
+    return stdout, stderr
 
-def start_capture(p):
-    start_flag = False
-    for row in iter(p.stdout.readline, b''):
-        print(f"{row.rstrip()}/t at time {time.time()}")
+# Start iperf server on remote machine
+def start_iperf_server(server_ip, username, password):
+    print(f"Starting iperf3 server on {server_ip}...")
+    cmd = "iperf3 -s -D"
+    ssh_execute(server_ip, username, password, cmd)
 
-def ssh_login(addr, usr, pwd):
-    s = pxssh.pxssh()
-    if not s.login(addr, usr, pwd):
-        print(f"SSH into {addr} session failed on login with user {usr}.")
-        print(str(s))
-        return None
-    else:
-        print(f"SSH into {addr} session login successful with user {usr}")
-        s.sendline ('iperf3 -c 10.255.32.107 -B 10.46.0.3 -t 0')
-        s.prompt()         # match the prompt
-        print(s.before)     # print everything before the prompt.
-        time.sleep(60)
-        s.sendline(chr(3))
-        s.prompt()         # match the prompt
-        print(s.before)     # print everything before the prompt.
-        s.logout()
-        return s
+# Run iperf client on the UE (remote machine)
+def run_iperf_client(client_ip, username, password, bind_ip=None):
+    print(f"Starting iperf3 client on {client_ip}...")
+    cmd = f"iperf3 -c {iperf_server_ip} -B {bind_ip} -t {test_duration}"
+    stdout, stderr = ssh_execute(client_ip, username, password, cmd)
 
-config_vars = True
-start = False
+    throughput_results = []
+    for line in stdout:
+        results_txt.append(f'{time.time()}#: {line}')
+        if "receiver" in line:
+            print(f"iperf result: {line.strip()}")
+            # Collect throughput information (assuming it's second last item in the line)
+            throughput = line.split()[-2]
+            throughput_results.append(float(throughput))
+    
+    return throughput_results
 
-while not start:
-    inp = str(input('config variables? (Y/n)') or 'y')
-    if inp == 'y':
-        define_vars()
-    else:
-        inp = str(input('start simulation? (Y/n)') or 'y')
-        if inp == 'y':
-            start = True
+# Start tcpdump on remote machine
+def start_tcpdump(tcpdump_ip, username, password, capture_file):
+    print(f"Starting tcpdump on {tcpdump_ip}...")
+    cmd = f"sudo tcpdump -i any -w {capture_file} icmp"
+    ssh_execute(tcpdump_ip, username, password, cmd)
 
-if test_type == 1:
-    endpoint = nef_ip+'/3gpp-traffic-influence/v1/test/subscriptions'
-else:
-    endpoint = nef_ip+'/3gpp-as-session-with-qos/v1/test/subscriptions'
+# Change QoS via HTTP request
+def change_qos():
+    print("Changing QoS...")
+    endpoint = f'http://{nef_ip}/3gpp-as-session-with-qos/v1/test/subscriptions'
+    qos_message = {}
+    with open('captures/qos_mod.json', 'r') as file:
+        data = json.load(file)
+    
+    try:
+        response: httpx.Response = httpx.post(endpoint, json=qos_message)
+        response.raise_for_status()
+        print("QoS successfully changed.")
+    except httpx.HTTPStatusError as err:
+        print(f"Failed to change QoS. Error: {err}")
+    except Exception as e:
+        print(f"Error sending QoS update: {e}")
 
-hostname = socket.gethostname()
-ip_addr = socket.gethostbyname(hostname)
-print(f'Running test on machinhe {hostname} with ip: {ip_addr}')
+# Stop any running process (iperf3, tcpdump, etc.)
+def stop_process(remote_ip, username, password, process_name):
+    print(f"Stopping {process_name} on {remote_ip}...")
+    cmd = f"sudo pkill {process_name}"
+    ssh_execute(remote_ip, username, password, cmd)
 
-start = time.time()
-print(f"Starting capture at: {start}")
+# Main test function
+def run_test():    
+    # Capture file for tcpdump
+    capture_file = f'run_{files_count}.pcap'
+    
+    # Start iperf3 server on remote machine (iperf server)
+    iperf_server_thread = Thread(target=start_iperf_server, args=('10.255.44.44', 'nef', '1234'))
+    iperf_server_thread.start()
 
-f_name = f'run{files_count}-{core}'
-# p = sub.Popen(('sudo', 'tcpdump', f'host {iperf_server}', 'and tcp or udp', '-l', '-w', f'{f_name}.pcap'), stdout=sub.PIPE)
-p = sub.Popen(('sudo', 'tcpdump', '-i any', 'icmp', '-l'), stdout=sub.PIPE)
-capture_thread = Thread(target=start_capture, args=(p,), daemon=True)
-capture_thread.start()
+    # Start tcpdump on remote machine (same or different as iperf server)
+    tcpdump_thread = Thread(target=start_tcpdump, args=('10.255.32.147', 'nef', '1234', capture_file))
+    tcpdump_thread.start()
 
-# response = httpx.post(endpoint, json=json.loads(open(dir_path + f'/messages/{test_param}', 'r')))
-# print(response)
+    # Run iperf3 client from UEs (remote machine)
+    iperf_client_thread_1 = Thread(target=lambda: results.append(run_iperf_client('10.45.0.2', '', '')))
+    iperf_client_thread_2 = Thread(target=lambda: results.append(run_iperf_client('10.255.38.55', 'nef', '1234', '10.46.0.3')))
+    iperf_client_thread_1.start()
+    iperf_client_thread_2.start()
 
-pp = sub.Popen(('ping 8.8.8.8'), stdout=sub.DEVNULL)
-time.sleep(15)
-pp.terminate()
+    # Wait for 30 seconds and send QoS update
+    time.sleep(30)
+    # change_qos()
 
-p.terminate()
-end = time.time()
-print(f"Ending capture at: {end} ")
+    # Wait for the iperf tests to finish
+    iperf_client_thread_1.join()
+    iperf_client_thread_2.join()
 
-print(f"Elapsed run time: {end - start}")
+
+    # Stop iperf server and tcpdump after the test
+    stop_process('10.255.44.44', 'nef', '1234', "iperf3")
+    stop_process('10.255.32.147', 'nef', '1234', "tcpdump")
+
+    print("Test finished. Results collected.")
+
+    # Save results to file (for further analysis)
+    with open(f"throughput_results_{time.time()}.json", 'w') as f:
+        json.dump(results, f)
+    with open(f"test_{files_count}.json", 'w') as f:
+        for line in results_txt:
+            f.write(line + '\n')
+
+if __name__ == '__main__':
+    run_test()
+    print("All tasks completed.")

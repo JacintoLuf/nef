@@ -80,7 +80,7 @@ async def udm_ee_subscription_create(monEvtSub: MonitoringEventSubscription=None
         notify_correlation_id=1,
         second_callback_ref=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/udm-event-sub-callback"
     )
-    conf.logger.info(ee_sub.to_dict())
+    # conf.logger.info(ee_sub.to_dict())
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
             f"http://{conf.HOSTS['UDM'][0]}/nudm-ee/v1/{ueIdentity}/ee-subscriptions",
