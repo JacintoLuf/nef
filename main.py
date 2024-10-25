@@ -200,11 +200,36 @@ async def up_path_chg_notif(request: Request):
 
 #---------------------monitoring-event------------------------
 @app.get("/monget")
-async def get():
+async def mon_get():
     res = await monitoringEventSubscription.monitoring_event_subscriptionscription_get()
     if not res:
         return {'subs': []}
     return {'subs': res}
+
+@app.get("/mondelete/{subId}")
+async def mon_del(subId: str):
+    try:
+        res = await monitoringEventSubscription.monitoring_event_subscriptionscription_get(subId)
+        if not res:
+            raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
+        else:
+            contextId = res['location'].split('/')[-1]
+            async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
+                res = await client.post(
+                    f"{contextId}/delete",
+                    headers={'Accept': 'application/json,application/problem+json'},
+                )
+                conf.logger.info(f"Response {res.status_code} for deleting app session. Content:")
+                conf.logger.info(res.text)
+            if res.status_code != httpx.codes.NO_CONTENT:
+                conf.logger.info("Context not found!")
+                raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
+            res = await monitoringEventSubscription.monitoring_event_subscriptionscription_delete(subId)
+            if res == 1:
+                return Response(status_code=httpx.codes.NO_CONTENT)
+    except Exception as e:
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
+
 
 @app.get("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
 async def mon_evt_subs_get(scsAsId: str, subscriptionId: str):
@@ -288,35 +313,64 @@ async def mon_evt_sub_patch(scsAsId: str, subscriptionId: str, data: Request):
     try:
         data_dict = await data.json()
         mon_evt_sub = MonitoringEventSubscription.from_dict(data_dict)
-        await monitoringEventSubscription.monitoring_event_subscriptionscription_update(scsAsId, subscriptionId, mon_evt_sub.to_dict())
 
         if not (mon_evt_sub.excluded_external_ids and mon_evt_sub.excluded_msisdns and mon_evt_sub.added_external_ids and mon_evt_sub.added_msisdns):
             raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='At least one of "excludedExternalIds", "excludedMsisdns", "addedExternalIds" and/or "addedMsisdns"')
     
+        await monitoringEventSubscription.monitoring_event_subscriptionscription_update(scsAsId, subscriptionId, mon_evt_sub.to_dict())
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to update subscription'
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
 
-@app.get("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
-async def mon_evt_sub_get(scsAsId: str, subbscriptionId: str):
-    conf.logger.info(f"af id: {scsAsId}, sub id: {subbscriptionId}")
-    res = await monitoringEventSubscription.monitoring_event_subscriptionscription_get(scsAsId, subbscriptionId)
-    if not res:
-        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
-    return Response(content=res, status_code=httpx.codes.OK)
-
 @app.delete("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
-async def mon_evt_sub_delete():
-    return
+async def mon_evt_sub_delete(scsAsId: str, subscriptionId: str):
+    try:
+        res = await monitoringEventSubscription.monitoring_event_subscriptionscription_get(scsAsId, subscriptionId)
+        if not res:
+            raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
+        else:
+            contextId = res['location'].split('/')[-1]
+            async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
+                res = await client.post(
+                    f"{contextId}/delete",
+                    headers={'Accept': 'application/json,application/problem+json'},
+                )
+                conf.logger.info(f"Response {res.status_code} for deleting app session. Content:")
+                conf.logger.info(res.text)
+            if res.status_code != httpx.codes.NO_CONTENT:
+                conf.logger.info("Context not found!")
+                raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
+            res = await monitoringEventSubscription.monitoring_event_subscriptionscription_delete(scsAsId, subscriptionId)
+            if res == 1:
+                return Response(status_code=httpx.codes.NO_CONTENT)
+    except Exception as e:
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
 
 #---------------------traffic-influence------------------------
 # @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 @app.get("/tiget")
-async def get():
+async def tiget():
     res = await trafficInfluSub.traffic_influence_subscription_get()
     if not res:
         return {'subs': []}
     return {'subs': res}
+
+@app.get("/tidelete/{subId}")
+async def tidelete(subId: str):
+    scsAsId = "test_AF_1"
+    res = await trafficInfluSub.individual_traffic_influence_subscription_delete(scsAsId, subId)
+    if not res:
+        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
+    else:
+        contextId = res['location'].split('/')[-1]
+        res = await pcf_handler.pcf_policy_authorization_delete(contextId)
+        if res.status_code != httpx.codes.NO_CONTENT:
+            conf.logger.info("Context not found!")
+
+        res = await trafficInfluSub.individual_traffic_influence_subscription_delete(scsAsId, subId)
+        if res == 1:
+            return Response(status_code=httpx.codes.NO_CONTENT)
+    raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_get(afId: str, subId: str):
@@ -456,7 +510,33 @@ async def delete_ti(afId: str, subId: str):
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
 
+
+
 #---------------------as-session-with-qos------------------------
+@app.get("/qget")
+async def qget():
+    res = await asSessionWithQoSSub.as_session_with_qos_subscription_get()
+    if not res:
+        return {'subs': []}
+    return {'subs': res}
+
+@app.get("/qdelete/{subId}")
+async def qo_s_delete(subId: str):
+    scsAsId = "test_AF_1"
+    res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId, subId)
+    if not res:
+        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
+    else:
+        contextId = res['location'].split('/')[-1]
+        res = await pcf_handler.pcf_policy_authorization_delete(contextId)
+        if res.status_code != httpx.codes.NO_CONTENT:
+            conf.logger.info("Context not found!")
+
+        res = await asSessionWithQoSSub.as_session_with_qos_subscription_delete(scsAsId, subId)
+        if res == 1:
+            return Response(status_code=httpx.codes.NO_CONTENT)
+    raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
+
 @app.get("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
 async def qos_get(scsAsId: str, subId: str=None):
     res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId, subId)
@@ -470,13 +550,6 @@ async def qos_get_all(scsAsId: str):
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
     return Response(content=json.dumps(res), status_code=httpx.codes.OK)
-
-@app.get("/qget")
-async def qget():
-    res = await asSessionWithQoSSub.as_session_with_qos_subscription_get()
-    if not res:
-        return {'subs': []}
-    return {'subs': res}
 
 @app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
 async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTasks):
@@ -517,24 +590,23 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
     conf.logger.info("\n------------------------------qos sub---------------------------------------\n")
     conf.logger.info(qos_sub.to_str())
     conf.logger.info("\n---------------------------------------------------------------------\n")
-    # if "BSF" in conf.HOSTS.keys():
-    #     bsf_params = {}
-    #     if qos_sub.ue_ipv4_addr:
-    #         bsf_params['ipv4Addr'] = qos_sub.ue_ipv4_addr
-    #     elif qos_sub.ue_ipv6_addr:
-    #         bsf_params['ipv6Prefix'] = qos_sub.ue_ipv6_addr
-    #     elif qos_sub.mac_addr:
-    #         bsf_params['macAddr48'] = qos_sub.mac_addr
+    if "BSF" in conf.HOSTS.keys():
+        bsf_params = {}
+        if qos_sub.ue_ipv4_addr:
+            bsf_params['ipv4Addr'] = qos_sub.ue_ipv4_addr
+        elif qos_sub.ue_ipv6_addr:
+            bsf_params['ipv6Prefix'] = qos_sub.ue_ipv6_addr
+        elif qos_sub.mac_addr:
+            bsf_params['macAddr48'] = qos_sub.mac_addr
 
-    #     res = await bsf_handler.bsf_management_discovery(bsf_params)
-    #     if res['code'] != httpx.codes.OK:
-    #         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
-    #     pcf_binding = PcfBinding.from_dict(res['response'])
-    #     response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
+        res = await bsf_handler.bsf_management_discovery(bsf_params)
+        if res['code'] != httpx.codes.OK:
+            raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
+        pcf_binding = PcfBinding.from_dict(res['response'])
+        response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
 
-    # else:
-
-    response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
+    else:
+        response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
     
     if response.status_code == httpx.codes.CREATED:
         conf.logger.info("Storing request and generating 'As Aession With QoS' resource.")
@@ -572,23 +644,6 @@ async def qos_patch(scAsId: str, subId: str, data: Request):
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
     return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
-
-@app.get("/qdelete/{subId}")
-async def qo_s_delete(subId: str):
-    scsAsId = "test_AF_1"
-    res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId, subId)
-    if not res:
-        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
-    else:
-        contextId = res['location'].split('/')[-1]
-        res = await pcf_handler.pcf_policy_authorization_delete(contextId)
-        if res.status_code != httpx.codes.NO_CONTENT:
-            conf.logger.info("Context not found!")
-
-        res = await asSessionWithQoSSub.as_session_with_qos_subscription_delete(scsAsId, subId)
-        if res == 1:
-            return Response(status_code=httpx.codes.NO_CONTENT)
-    raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
     
 @app.delete("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
 async def qos_delete(scsAsId: str, subId: str):

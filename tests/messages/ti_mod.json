@@ -1,3 +1,97 @@
 {
-    
+    "1": {
+        "AfServiceId": "Service1",
+        "AfAppId": "App1",
+        "Dnn": "internet",
+        "Snssai": {
+            "Sst": 1,
+            "Sd": "010203"
+        },
+        "AnyUeInd": true,
+        "TrafficFilters": {
+            "FlowId": 1,
+            "FlowDescriptions": [
+                "permit out ip from 192.168.0.21 to 10.60.0.0/16"
+            ]
+        },
+        "TrafficRoutes": [{
+            "Dnai": "mec",
+            "RouteInfo": {
+                "Ipv4Addr":   "10.60.0.1",
+                "PortNumber": 0
+            }
+        }]
+    },
+    "2": {
+        "AfServiceId": "Service2",
+        "AfAppId": "App2",
+        "Dnn": "internet",
+        "Snssai": {
+            "Sst": 1,
+            "Sd": "010203"
+        },
+        "AnyUeInd": true,
+        "TrafficFilters": [{
+            "FlowId": 1,
+            "FlowDescriptions": [
+                "permit out ip from 192.168.0.22 to 10.60.0.0/16"
+            ]
+        }],
+        "TrafficRoutes": [{
+            "Dnai": "mec",
+            "RouteInfo": {
+                "Ipv4Addr": "10.60.0.1",
+                "PortNumber": 0
+            }
+        }]
+    },
+    "3": {
+        "AfServiceId": "Service3",
+        "AfAppId": "App3",
+        "Dnn": "internet",
+        "Snssai": {
+            "Sst": 1,
+            "Sd": "010203"
+        },
+        "Ipv4Addr": "10.60.0.10",
+        "TrafficFilters": [{
+            "FlowId": 1,
+            "FlowDescriptions": [
+                "permit out ip from 192.168.0.23 to 10.60.0.10"
+            ]
+        }],
+        "TrafficRoutes": [{
+            "Dnai": "mec",
+            "RouteInfo": {
+                "Ipv4Addr": "10.60.0.1",
+                "PortNumber": 0
+            }
+        }]
+    },
+    "4": {
+        "AfServiceId": "Service4",
+        "Dnn": "internet",
+        "Snssai": {
+            "Sst": 1,
+            "Sd": "010203"
+        },
+        "Ipv4Addr": "10.60.0.10"
+    },
+    "5": {
+        "AfServiceId": "Service5",
+        "AfAppId": "App5",
+        "TrafficFilters": [{
+            "FlowId": 1,
+            "FlowDescriptions": [
+                "permit out ip from 192.168.0.23 to 10.60.0.10"
+            ]
+        }],
+        "TrafficRoutes": [{
+            "Dnai": "mec",
+            "RouteInfo": {
+                "Ipv4Addr": "10.60.0.1",
+                "PortNumber": 0
+            }
+        }]
+    }
 }

@@ -1,0 +1,15 @@
+{
+    "1": {
+        "PfdId": "pfd1",
+        "FlowDescriptions": [
+            "permit in ip from 10.68.28.39 80 to any",
+            "permit out ip from any to 10.68.28.39 80"
+        ]
+    },
+    "2": {
+        "PfdId": "pfd2",
+        "Urls": [
+            "^http://test.example.com(/\\S*)?$"
+        ]
+    }
+}

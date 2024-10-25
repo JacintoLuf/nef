@@ -111,6 +111,7 @@ def run_test():
     iperf_client_thread_1.join()
     iperf_client_thread_2.join()
 
+    # delete session
 
     # Stop iperf server and tcpdump after the test
     stop_process('10.255.44.44', 'nef', '1234', "iperf3")

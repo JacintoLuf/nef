@@ -19,7 +19,7 @@ async def amf_event_exposure_subscribe():
         event_notify_uri=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/amf-event-sub-callback",
         nf_id=conf.API_UUID,
         any_ue=True
-        )
+    )
     amf_evt_sub = AmfCreateEventSubscription(subscription=amf_sub)
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
