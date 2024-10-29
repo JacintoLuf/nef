@@ -56,11 +56,10 @@ async def udm_ee_subscription_create(monEvtSub: MonitoringEventSubscription=None
             '2': MonitoringConfiguration(event_type="ACCESS_TYPE_REPORT"),
             '3': MonitoringConfiguration(event_type="PDN_CONNECTIVITY_STATUS"),
             '4': MonitoringConfiguration(event_type="UE_CONNECTION_MANAGEMENT_STATE"),
-            '5': MonitoringConfiguration(event_type="ACCESS_TYPE_REPORT"),
-            '6': MonitoringConfiguration(event_type="REGISTRATION_STATE_REPORT"),
-            '7': MonitoringConfiguration(event_type="CONNECTIVITY_STATE_REPORT"),
-            '8': MonitoringConfiguration(event_type="PDU_SES_REL"),
-            '9': MonitoringConfiguration(event_type="PDU_SES_EST")
+            '5': MonitoringConfiguration(event_type="REGISTRATION_STATE_REPORT"),
+            '6': MonitoringConfiguration(event_type="CONNECTIVITY_STATE_REPORT"),
+            '7': MonitoringConfiguration(event_type="PDU_SES_REL"),
+            '8': MonitoringConfiguration(event_type="PDU_SES_EST")
         }
         current_time = datetime.now(timezone.utc)
         validity_time = current_time + timedelta(days=1)

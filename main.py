@@ -64,10 +64,15 @@ async def exception_callback(request: Request, exc: Exception):
 @app.on_event("startup")
 async def startup():
     try:
-        conf.logger.info("Registering NEF...")
-        res = await nrf_handler.nf_register()
-        if res.status_code == httpx.codes.CREATED:
-            await nrf_heartbeat()
+        registered = False
+        while not registered:
+            conf.logger.info("Registering NEF...")
+            res = await nrf_handler.nf_register()
+            if res.status_code == httpx.codes.CREATED:
+                await nrf_heartbeat()
+                registered = True
+            else:
+                conf.logger.info("Registration failed!\nRestarting...")
         conf.logger.info("NF discovery...")
         await nrf_handler.nrf_discovery()
         conf.logger.info("NF status subscribe...")
@@ -97,8 +102,8 @@ async def status_subscribe():
 @app.on_event("shutdown")
 async def shutdown():
     conf.logger.info("shuting down...")
-    await nrf_handler.nf_deregister()
     await nrf_handler.nf_status_unsubscribe()
+    await nrf_handler.nf_deregister()
     # clean_db()
 
 @app.get("/")

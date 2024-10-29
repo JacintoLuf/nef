@@ -14,7 +14,7 @@ class Settings():
     def __init__(self):
         # logging.basicConfig(level=logging.DEBUG)
         logging.config.dictConfig(logconfig_dict)
-        logging.getLogger("httpx").setLevel(logging.ERROR)
+        logging.getLogger("httpx").setLevel(logging.INFO)
         self.logger = logging.getLogger(__name__)
 
         self.NAME = os.environ['NAME']
