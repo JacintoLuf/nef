@@ -29,6 +29,10 @@ async def amf_event_exposure_subscribe():
         )
         conf.logger.info(response.text)
 
+async def amf_event_exposure_subscription_create(app_session_id: str=None):
+
+    return
+
 async def amf_event_exposure_subscription_update(app_session_id: str=None):
     if app_session_id:
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:

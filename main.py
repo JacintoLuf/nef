@@ -72,7 +72,7 @@ async def startup():
                 await nrf_heartbeat()
                 registered = True
             else:
-                conf.logger.info("Registration failed!\nRestarting...")
+                conf.logger.info("Registration failed!\nRetrying...")
         conf.logger.info("NF discovery...")
         await nrf_handler.nrf_discovery()
         conf.logger.info("NF status subscribe...")
@@ -425,7 +425,7 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
             sub_id = trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
             if sub_id:
                 traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-trafficInfluence/v1/{afId}/subscriptions/{sub_id}"
-                traffic_sub.supp_feat = "0"
+                traffic_sub.supp_feat = "ffff"
                 headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
                 if traffic_sub.request_test_notification:
                     test_notif = EventNotification(af_trans_id=traffic_sub.af_trans_id)
