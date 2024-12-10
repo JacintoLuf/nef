@@ -26,10 +26,3 @@ fi
 
 # Delete previous existing deployment and service
 envsubst < nef-deployment.yaml | kubectl delete -n $NAMESPACE -f -
-
-# Find and delete the Docker image by name
-IMAGE_ID=$(docker images -q nef)
-if [ ! -z "$IMAGE_ID" ]; then
-  echo $IMAGE_ID
-  docker rmi -f $IMAGE_ID
-fi

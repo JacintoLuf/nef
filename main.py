@@ -164,6 +164,7 @@ async def amf_evt_sub_callback(request: Request):
 
 @app.post("/nnef-callback/udm-event-sub-callback")
 async def udm_evt_sub_callback(request: Request):
+    conf.logger.info("endpoint: /nnef-callback/udm-event-sub-callback")
     conf.logger.info(request.method)
     conf.logger.info(request.body)
     mon_evt_rep = MonitoringEventReport()
@@ -174,11 +175,13 @@ async def udm_evt_sub_callback(request: Request):
 
 @app.post("/nnrf-nfm/v1/subscriptions")
 async def nrf_notif(request: Request):
+    conf.logger.info("endpoint: /nnrf-nfm/v1/subscriptions")
     conf.logger.info(request.method)
     conf.logger.info(request.body)
 
 @app.put("/up_path_change")
 async def up_path_chg_notif(request: Request):
+    conf.logger.info("endpoint: /up_path_change")
     conf.logger.info(request.method)
     conf.logger.info(request.text)
     try:
@@ -192,6 +195,7 @@ async def up_path_chg_notif(request: Request):
 
 @app.post("/up_path_change")
 async def up_path_chg_notif(request: Request):
+    conf.logger.info("endpoint: /up_path_change")
     conf.logger.info(request.method)
     conf.logger.info(request.text)
     try:
