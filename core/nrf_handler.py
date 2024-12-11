@@ -159,7 +159,8 @@ async def nf_status_subscribe(nf_types):
                 data = response.json()
                 conf.logger.info(f"Response data: {data}")
                 try:
-                    sub = SubscriptionData.from_dict(data)
+                    bs = {k: val for k, val in data.items() if k != "validityTime"} ################################# test
+                    sub = SubscriptionData.from_dict(bs)
                     conf.logger.info(f"{nf_type} Subscription created until {sub.validity_time}")
                     conf.logger.info(f"Resource location: {response.headers['location']}")
                     try:

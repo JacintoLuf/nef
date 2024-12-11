@@ -3,10 +3,10 @@
     "notificationDestination": "http://af:7777/v1/callback",
     "snssai": {
       "sst": 1,
-      "sd": "111111"
+      "sd": "ffffff"
     },
     "dnn": "internet",
-    "qosReference": 9,
+    "qosReference": 5,
     "altQoSReferences": [
       1, 2, 8
     ],
