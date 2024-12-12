@@ -57,7 +57,7 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
     if not traffic_influ_sub.af_app_id:
         med_sub_cmp = {}
         for idx, f in enumerate(traffic_influ_sub.traffic_filters):
-            med_sub_cmp[f"{idx}"] = MediaSubComponent(f_num=f.flow_id, f_descs=f.flow_descriptions)
+            med_sub_cmp[f.flow_id] = MediaSubComponent(f_num=f.flow_id, f_descs=f.flow_descriptions)
         req_data.med_components = {'med_comp_1': MediaComponent(af_app_id=traffic_influ_sub.af_app_id,
                                                                 af_rout_req=rout_req,
                                                                 med_comp_n=1,
@@ -74,8 +74,7 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
             headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
             data=json.dumps(app_session_context.to_dict())
         )
-        conf.logger.info(f"Response {response.status_code} for creating app session. Content:")
-        conf.logger.info(response.text)
+        conf.logger.info(f"Response {response.status_code} for creating app session.\nContent: {response.text}")
     return response
 
 async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_session_qos_sub: AsSessionWithQoSSubscription=None):
@@ -110,8 +109,7 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
     med_sub_cmp = {}
     for idx, f in enumerate(as_session_qos_sub.flow_info):
         arr = [i for i in f.flow_descriptions]
-        conf.logger.info(f"f descs: {arr}")
-        med_sub_cmp[f"{idx}"] = MediaSubComponent(f_num=f.flow_id, f_descs=arr)
+        med_sub_cmp[f.flow_id] = MediaSubComponent(f_num=f.flow_id, f_descs=arr)
     med_comps = MediaComponent(qos_reference=as_session_qos_sub.qos_reference,
                                alt_ser_reqs=as_session_qos_sub.alt_qo_s_references,
                                alt_ser_reqs_data=as_session_qos_sub.alt_qos_reqs,
@@ -121,14 +119,12 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
                                med_sub_comps=med_sub_cmp,
                                tsn_qos=tsn_qos_c)
     req_data.med_components = {'med_comp_1': med_comps}
-    conf.logger.info("\n--------------------------------med comps------------------------------\n")
-    conf.logger.info(med_comps.to_str())
-    conf.logger.info("\n---------------------------------------------------------------------\n")    
+    conf.logger.info(f"--------------------------------med comps------------------------------\n\
+                     {med_comps.to_str()}\n---------------------------------------------------------------------")
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
-    conf.logger.info("\n-------------------------app session context--------------------------------------------\n")
-    conf.logger.info(app_session_context.to_str())
-    conf.logger.info("\n---------------------------------------------------------------------\n")
+    conf.logger.info(f"-------------------------app session context---------------------------\n\
+                    {app_session_context.to_str()}\n------------------------------------------------------------------------")
     conf.logger.info("Creating app session for as session with qos at PCF")
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
@@ -136,17 +132,15 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
             headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
             data=json.dumps(app_session_context.to_dict())
         )
-        conf.logger.info(f"Response {response.status_code} for creating app session. Content:")
-        conf.logger.info(response.text)
+        conf.logger.info(f"Response {response.status_code} for creating app session.\nContent: {response.text}")
     return response
 
 async def pcf_policy_authorization_delete(subId: str=None):
-    conf.logger.info("Deleting app session for as session with qos at PCF")
+    conf.logger.info(f"Deleting app session {subId} at PCF")
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
             f"http://{conf.HOSTS['PCF'][0]}/npcf-policyauthorization/v1/app-sessions/{subId}/delete",
             headers={'Accept': 'application/json,application/problem+json'},
         )
-        conf.logger.info(f"Response {response.status_code} for deleting app session. Content:")
-        conf.logger.info(response.text)
+        conf.logger.info(f"Response {response.status_code} for deleting app session.\nContent: {response.text}")
     return response
