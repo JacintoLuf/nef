@@ -43,15 +43,15 @@ import crud.monitoringEventSubscription as monitoringEventSubscription
 
 app = FastAPI(debug=True)
 # router = APIRouter(route_class=CustomRouter)
-@app.middleware('http')
-async def req_middleware(request: Request, call_next):
-    print(f"METHOD: {request.method}, URL: {request.url}")
-    conf.logger.info(f"REQUESTED - {request.method}: {request.url}")
-    if request.method in ["POST", "PUT", "PATCH"]:
-        body = await request.body()
-        conf.logger.info(f"body: {body}")
-    response = await call_next(request)
-    return response
+# @app.middleware('http')
+# async def req_middleware(request: Request, call_next):
+#     print(f"METHOD: {request.method}, URL: {request.url}")
+#     conf.logger.info(f"REQUESTED - {request.method}: {request.url}")
+#     if request.method in ["POST", "PUT", "PATCH"]:
+#         body = await request.body()
+#         conf.logger.info(f"body: {body}")
+#     response = await call_next(request)
+#     return response
 
 @app.exception_handler(Exception)
 async def exception_callback(request: Request, exc: Exception):
