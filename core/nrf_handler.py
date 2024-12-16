@@ -169,8 +169,8 @@ async def nf_status_subscribe(nf_types):
                                 setattr(res_sub, attr_name, val)
                             else:
                                 conf.logger.info(f"key {k} not found")
-                        except:
-                            conf.logger.info(f"error stting {k} with value {val}")
+                        except Exception as e:
+                            conf.logger.info(f"error stting {k} with value {val}\nERROR: {e!r}")
                             continue
                     # res_sub = SubscriptionData.from_dict(data)
                     conf.logger.info(f"{nf_type} Subscription created until {res_sub.validity_time}")
