@@ -154,23 +154,24 @@ async def nf_status_subscribe(nf_types):
                 data=json.dumps(sub.to_dict())
             )
             conf.logger.info(f"Response for {nf_type} status subscribe. status: {response.status_code}")
-            conf.logger.info(response.text)
+            # conf.logger.info(response.text)
             if response.status_code == httpx.codes.CREATED:
                 data = response.json()
+                conf.logger.info(f"Requested data: {sub.to_str()}")
                 conf.logger.info(f"Response data: {data}")
-                try:
-                    bs = {k: val for k, val in data.items() if k != "validityTime"} ################################# test
-                    sub = SubscriptionData.from_dict(bs)
-                    conf.logger.info(f"{nf_type} Subscription created until {sub.validity_time}")
-                    conf.logger.info(f"Resource location: {response.headers['location']}")
-                    try:
-                        res = await subscriptionData.subscription_data_insert(sub, response.headers['location'])
-                    except Exception as e:
-                        conf.logger.error(e)
-                        if not res:
-                            conf.logger.info("Error saving subscription")
-                except Exception as e:
-                    conf.logger.info("Can't decode response message!")
+                # try:
+                #     bs = {k: val for k, val in data.items() if k != "validityTime"} ################################# test
+                #     sub = SubscriptionData.from_dict(bs)
+                #     conf.logger.info(f"{nf_type} Subscription created until {sub.validity_time}")
+                #     conf.logger.info(f"Resource location: {response.headers['location']}")
+                #     try:
+                #         res = await subscriptionData.subscription_data_insert(sub, response.headers['location'])
+                #     except Exception as e:
+                #         conf.logger.error(e)
+                #         if not res:
+                #             conf.logger.info("Error saving subscription")
+                # except Exception as e:
+                #     conf.logger.info("Can't decode response message!")
             else:
                 conf.logger.info(f"{nf_type} Subscription not created")
 

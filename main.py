@@ -27,39 +27,37 @@ import crud.trafficInfluSub as trafficInfluSub
 import crud.asSessionWithQoSSub as asSessionWithQoSSub
 import crud.monitoringEventSubscription as monitoringEventSubscription
 
-class CustomRouter(APIRoute):
-    def get_route_handler(self) -> Callable:
-        original_route_handler = super().get_route_andler()
+# class CustomRouter(APIRoute):
+#     def get_route_handler(self) -> Callable:
+#         original_route_handler = super().get_route_handler()
         
-        async def custom_route_handler(request: Response) -> Response:
-            try:
-                response: Response = await original_route_handler(response)
-            except RequestValidationError as exc:
-                body = await request.body()
-                detail = {"errors": exc.errors(), "body": body.decode()}
-                raise HTTPException(status_code=500, detail=detail)
+#         async def custom_route_handler(request: Response) -> Response:
+#             try:
+#                 response: Response = await original_route_handler(response)
+#             except RequestValidationError as exc:
+#                 body = await request.body()
+#                 detail = {"errors": exc.errors(), "body": body.decode()}
+#                 raise HTTPException(status_code=500, detail=detail)
 
-        return custom_route_handler
+#         return custom_route_handler
 
 app = FastAPI(debug=True)
 # router = APIRouter(route_class=CustomRouter)
+@app.middleware('http')
+async def req_middleware(request: Request, call_next):
+    print(f"METHOD: {request.method}, URL: {request.url}")
+    conf.logger.info(f"REQUESTED - {request.method}: {request.url}")
+    if request.method in ["POST", "PUT", "PATCH"]:
+        body = await request.body()
+        conf.logger.info(f"body: {body}")
+    response = await call_next(request)
+    return response
 
 @app.exception_handler(Exception)
 async def exception_callback(request: Request, exc: Exception):
     conf.logger.info(f"Failed method {request.method} at URL {request.url}.")
     conf.logger.info(f"Exception message is {exc!r}.")
 
-# @app.middleware('http')
-# async def req_middleware(request: Request, call_next):
-#     try:
-#         response = await call_next(request)
-#         conf.logger.info(f"INFO - {request.method}: {request.url}")
-#         if request.method in ["POST", "PUT", "PATCH"]:
-#             body = await request.body()
-#             conf.logger.info(f"body: {body}")
-#     except RequestValidationError as exc:
-#         conf.logger.error(f"ERROR - {request.method}: {request.url}")
-#     return response
 
 @app.on_event("startup")
 async def startup():
@@ -77,10 +75,11 @@ async def startup():
         await nrf_handler.nrf_discovery()
         conf.logger.info("NF status subscribe...")
         await status_subscribe()
-        conf.logger.info("amf UE event subscription")
-        await amf_handler.amf_event_exposure_subscribe()
-        conf.logger.info("udm UE event subscription")
-        await udm_handler.udm_ee_subscription_create()
+        if conf.CORE != "open5gs":
+            conf.logger.info("amf UE event subscription")
+            await amf_handler.amf_event_exposure_subscribe()
+            conf.logger.info("udm UE event subscription")
+            await udm_handler.udm_ee_subscription_create()
     except Exception as e:
         conf.logger.info(f"Error starting up: {e}")
     # TLS dependant
