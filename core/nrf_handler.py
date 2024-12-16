@@ -159,19 +159,30 @@ async def nf_status_subscribe(nf_types):
                 data = response.json()
                 conf.logger.info(f"Requested data: {sub.to_str()}")
                 conf.logger.info(f"Response data: {data}")
-                # try:
-                #     bs = {k: val for k, val in data.items() if k != "validityTime"} ################################# test
-                #     sub = SubscriptionData.from_dict(bs)
-                #     conf.logger.info(f"{nf_type} Subscription created until {sub.validity_time}")
-                #     conf.logger.info(f"Resource location: {response.headers['location']}")
-                #     try:
-                #         res = await subscriptionData.subscription_data_insert(sub, response.headers['location'])
-                #     except Exception as e:
-                #         conf.logger.error(e)
-                #         if not res:
-                #             conf.logger.info("Error saving subscription")
-                # except Exception as e:
-                #     conf.logger.info("Can't decode response message!")
+                try:
+                    res_sub = SubscriptionData()
+                    for k, val in data.items():
+                        try:
+                            # if k in res_sub.attribute_map.values():
+                            attr_name = next((key for key, v in res_sub.attribute_map.items() if v == k), None)
+                            if attr_name:
+                                setattr(res_sub, attr_name, val)
+                            else:
+                                conf.logger.info(f"key {k} not found")
+                        except:
+                            conf.logger.info(f"error stting {k} with value {val}")
+                            continue
+                    # res_sub = SubscriptionData.from_dict(data)
+                    conf.logger.info(f"{nf_type} Subscription created until {res_sub.validity_time}")
+                    conf.logger.info(f"Resource location: {response.headers['location']}")
+                    try:
+                        res = await subscriptionData.subscription_data_insert(res_sub, response.headers['location'])
+                    except Exception as e:
+                        conf.logger.error(e)
+                        if not res:
+                            conf.logger.info("Error saving subscription")
+                except Exception as e:
+                    conf.logger.info("Can't decode response message!")
             else:
                 conf.logger.info(f"{nf_type} Subscription not created")
 

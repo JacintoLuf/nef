@@ -108,18 +108,18 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
 
     med_sub_cmp = {}
     for idx, f in enumerate(as_session_qos_sub.flow_info):
-        conf.logger.info(f"flow descriptions: {f.flow_descriptions}")
-        arr = [i for i in f.flow_descriptions]
-        med_sub_cmp[f.flow_id] = MediaSubComponent(f_num=f.flow_id, f_descs=arr) #fnum waht is
+        # conf.logger.info(f"flow descriptions: {f.flow_descriptions}")
+        # arr = [i for i in f.flow_descriptions]
+        med_sub_cmp[f.flow_id] = MediaSubComponent(f_num=f.flow_id, f_descs=f.flow_descriptions) #arr) #fnum waht is
     med_comps = MediaComponent(qos_reference=as_session_qos_sub.qos_reference,
                                alt_ser_reqs=as_session_qos_sub.alt_qo_s_references,
                                alt_ser_reqs_data=as_session_qos_sub.alt_qos_reqs,
-                               med_comp_n=1,
+                               med_comp_n=9,
                                f_status="ENABLED",
                                med_type="AUDIO",
                                med_sub_comps=med_sub_cmp,
                                tsn_qos=tsn_qos_c)
-    req_data.med_components = {'med_comp_1': med_comps}
+    req_data.med_components = {f'{med_comps.med_comp_n}': med_comps}
     conf.logger.info(f"--------------------------------med comps------------------------------\n\
                      {med_comps.to_str()}\n---------------------------------------------------------------------")
     app_session_context = AppSessionContext(asc_req_data=req_data)
