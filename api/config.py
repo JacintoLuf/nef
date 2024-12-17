@@ -106,6 +106,8 @@ class Settings():
             "UDR": "nudr-dr",
             "UDM": "nudm-sdm nudm-uecm nudm-ueau nudm-ee",
         }
+
+        self.REGISTERED = False
     
     
     def create_svc(self, svc_name, supp_feat, oauth=False):

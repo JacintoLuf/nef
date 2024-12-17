@@ -62,13 +62,12 @@ async def exception_callback(request: Request, exc: Exception):
 @app.on_event("startup")
 async def startup():
     try:
-        registered = False
-        while not registered:
+        while not conf.REGISTERED:
             conf.logger.info("Registering NEF...")
             res = await nrf_handler.nf_register()
             if res.status_code == httpx.codes.CREATED:
                 await nrf_heartbeat()
-                registered = True
+                conf.REGISTERED = True
             else:
                 conf.logger.info("Registration failed!\nRetrying...")
         conf.logger.info("NF discovery...")
@@ -86,10 +85,29 @@ async def startup():
     # conf.logger.info("Getting access token...")
     # res = await nrf_handler.nrf_get_access_token()
 
-
 @repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
 async def nrf_heartbeat():
-    await nrf_handler.nf_register_heart_beat()
+    while conf.REGISTERED:
+        res = await nrf_handler.nf_register_heart_beat()
+        if res.status_code == httpx.codes.NOT_FOUND:
+            conf.logger.info("Heartbeat failed: NF not found. Re-registering...")
+            conf.REGISTERED = False
+            await retry_registration() 
+
+async def retry_registration():
+    try:
+        while not conf.REGISTERED:
+            conf.logger.info("Re-registering NEF...")
+            res = await nrf_handler.nf_register()
+            if res.status_code == httpx.codes.CREATED:
+                conf.logger.info("Re-registration successful.")
+                conf.REGISTERED = True
+                await nrf_heartbeat()
+            else:
+                conf.logger.info("Re-registration failed. Retrying...")
+    except Exception as e:
+        conf.logger.error(f"Error during re-registration: {e}")
+
 
 @repeat_every(seconds=86400)
 async def status_subscribe():
