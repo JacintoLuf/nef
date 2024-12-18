@@ -89,7 +89,7 @@ async def startup():
 async def nrf_heartbeat():
     while conf.REGISTERED:
         res = await nrf_handler.nf_register_heart_beat()
-        if res.status_code == httpx.codes.NOT_FOUND:
+        if res != httpx.codes.OK:
             conf.logger.info("Heartbeat failed: NF not found. Re-registering...")
             conf.REGISTERED = False
             await retry_registration() 

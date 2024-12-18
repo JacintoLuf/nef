@@ -58,12 +58,13 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
         med_sub_cmp = {}
         for idx, f in enumerate(traffic_influ_sub.traffic_filters):
             med_sub_cmp[f.flow_id] = MediaSubComponent(f_num=f.flow_id, f_descs=f.flow_descriptions)
-        req_data.med_components = {'med_comp_1': MediaComponent(af_app_id=traffic_influ_sub.af_app_id,
-                                                                af_rout_req=rout_req,
-                                                                med_comp_n=1,
-                                                                f_status="ENABLED", #DISABLED
-                                                                med_type="AUDIO",
-                                                                med_sub_comps=med_sub_cmp)}
+        med_comps = MediaComponent(af_app_id=traffic_influ_sub.af_app_id,
+                                    af_rout_req=rout_req,
+                                    med_comp_n=1,
+                                    f_status="ENABLED", #DISABLED
+                                    med_type="AUDIO",
+                                    med_sub_comps=med_sub_cmp)
+        req_data.med_components = {f'{med_comps.med_comp_n}': med_comps}
     req_data.af_rout_req = rout_req
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
@@ -99,6 +100,7 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
     req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}/up_path_change"
     req_data.supp_feat = 'ffffff' # conf.SERVICE_NAMES['3gpp-as-session-with-qos']
     tsn_qos_c = None
+    # req_data.res_prio = "PRIO_1" ???????????????????
     if as_session_qos_sub.tsc_qos_req:
         tsn_qos_c = TsnQosContainer(
             max_tsc_burst_size=as_session_qos_sub.tsc_qos_req.max_tsc_burst_size,
@@ -118,6 +120,7 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
                                f_status="ENABLED",
                                med_type="AUDIO",
                                med_sub_comps=med_sub_cmp,
+                            #    res_prio="PRIO_1", ???????????????????
                                tsn_qos=tsn_qos_c)
     req_data.med_components = {f'{med_comps.med_comp_n}': med_comps}
     conf.logger.info(f"--------------------------------med comps------------------------------\n\
