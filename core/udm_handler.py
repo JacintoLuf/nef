@@ -36,7 +36,7 @@ async def udm_sdm_group_identifiers_translation(ext_group_id: str=None):
 
     return response
 
-async def udm_ee_subscription_create(monEvtSub: MonitoringEventSubscription=None, afId: str=None):
+async def udm_event_exposure_subscribe(monEvtSub: MonitoringEventSubscription=None, afId: str=None):
     if monEvtSub:
         ueIdentity = "anyUE"
         mon_conf = {'1': MonitoringConfiguration(event_type=monEvtSub.monitoring_type, immediate_flag=True if monEvtSub.maximum_number_of_reports==1 else False, af_id=afId)}
@@ -95,10 +95,14 @@ async def udm_ee_subscription_create(monEvtSub: MonitoringEventSubscription=None
         if response.headers['location']:
             res = createdEeSubscription.created_ee_subscriptionscription_insert(created_sub)
 
-async def udm_ee_subscription_udoate(monEvtSub: MonitoringEventSubscription=None, afId: str=None):
+async def udm_event_exposure_subscription_create(monEvtSub: MonitoringEventSubscription=None, afId: str=None):
 
     return
 
-async def udm_ee_subscription_delete(monEvtSub: MonitoringEventSubscription=None, afId: str=None):
+async def udm_event_exposure_subscription_update(monEvtSub: MonitoringEventSubscription=None, afId: str=None):
+
+    return
+
+async def udm_event_exposure_subscription_delete(monEvtSub: MonitoringEventSubscription=None, afId: str=None):
     
     return

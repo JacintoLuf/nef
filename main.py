@@ -78,7 +78,7 @@ async def startup():
             conf.logger.info("amf UE event subscription")
             await amf_handler.amf_event_exposure_subscribe()
             conf.logger.info("udm UE event subscription")
-            await udm_handler.udm_ee_subscription_create()
+            await udm_handler.udm_event_exposure_subscribe()
     except Exception as e:
         conf.logger.info(f"Error starting up: {e}")
     # TLS dependant
@@ -283,12 +283,34 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
 
-    if not mon_evt_sub.supported_features:
-        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"EVENT_FEATURE_MISMATCH. Supported features are {conf.SERVICE_LIST['nnef-evt']}")
+    # if not mon_evt_sub.supported_features:
+    #     raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"EVENT_FEATURE_MISMATCH. Supported features are {conf.SERVICE_LIST['nnef-evt']}")
     
-    if hex(int(mon_evt_sub.supported_features, 16)) and hex(int(conf.SERVICE_LIST['nnef-evt'], 16)) == hex(0):
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=f"EVENT_UNSUPPORTED. Supported features are {conf.SERVICE_LIST['nnef-evt']}")
+    # if hex(int(mon_evt_sub.supported_features, 16)) and hex(int(conf.SERVICE_LIST['nnef-evt'], 16)) == hex(0):
+    #     raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=f"EVENT_UNSUPPORTED. Supported features are {conf.SERVICE_LIST['nnef-evt']}")
     
+    if mon_evt_sub.monitoring_type == "LOCATION_REPORTING" and mon_evt_sub.accuracy not in ["CGI_ECGI","TA_RA","GEO_AREA","CIVIC_ADDR"]:
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="Invalid Accuracy value! Valid values: CGI_ECGI, TA_RA, GEO_AREA and CIVIC_ADDR")
+    
+    if mon_evt_sub.rep_period and mon_evt_sub.monitoring_type not in ["LOCATION_REPORTING", "NUMBER_OF_UES_IN_AN_AREA", "NUM_OF_REGD_UES", "NUM_OF_ESTD_PDU_SESSIONS"]:
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="Periodic Reporting not supported for this Monitoring type! Valid Monitoring types: LOCATION_REPORTING, NUMBER_OF_UES_IN_AN_AREA, NUM_OF_REGD_UES, NUM_OF_ESTD_PDU_SESSIONS")
+
+    if mon_evt_sub.monitoring_type not in ["LOCATION_REPORTING", "NUMBER_OF_UES_IN_AN_AREA"] and not mon_evt_sub.location_type:
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="Cannot parse message. Must include Location Type!")
+    
+    if mon_evt_sub.location_type == "LAST_KNOWN_LOCATION" and mon_evt_sub.maximum_number_of_reports != 1:
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="Cannot parse message. One-time reporting Monitoring type")
+    
+    if mon_evt_sub.monitoring_type in ["PDN_CONNECTIVITY_STATUS", " DOWNLINK_DATA_DELIVERY_STATUS"] and not (mon_evt_sub.dnn or mon_evt_sub.snssai):
+        #####################################
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="Cannot parse message. Monitoring type must contain Dnn and/or Snssai")
+    
+    if mon_evt_sub.maximum_number_of_reports == 1 and mon_evt_sub.monitor_expire_time:
+        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Cannot parse message. One time reporting must not contain expire time')
+    
+    # if mon_evt_sub:
+    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="")
+
     if mon_evt_sub.location_type or mon_evt_sub.accuracy or mon_evt_sub.minimum_report_interval:
         if not ((mon_evt_sub.external_id is not None)^(mon_evt_sub.msisdn is not None)^(mon_evt_sub.ipv4_addr is not None)^(mon_evt_sub.ipv6_addr is not None)^(mon_evt_sub.external_group_id is not None)):
             raise HTTPException(httpx.codes.BAD_REQUEST, detail='One of the properties "externalId", "msisdn", "ipv4Addr", "ipv6Addr" or "externalGroupId" shall be included for features "Location_notification" and "Communication_failure_notification"')
@@ -300,9 +322,6 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
     if not mon_evt_sub.monitoring_type or mon_evt_sub.notification_destination:
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Message shall include SCS/AS Identifier, "Monitoring Type", "Notification Destination Address" and pne of External Identifier, MSISDN or External Group Identifier')
 
-    if mon_evt_sub.maximum_number_of_reports == 1 and mon_evt_sub.monitor_expire_time:
-        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Cannot parse message.')
-    
     if (mon_evt_sub.reachability_type == "SMS" and mon_evt_sub.monitoring_type == "UE_REACHABILITY") or (mon_evt_sub.location_type == "LAST_KNOWN_LOCATION" and mon_evt_sub.monitoring_type == "LOCATION_REPORTING"):
         if mon_evt_sub.maximum_number_of_reports != 1:
             raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Only one-time reporting supported for this event.')
@@ -311,18 +330,31 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Only one-time reporting supported for this event.')
 
     if mon_evt_sub.monitoring_type in ['NUMBER_OF_UES_IN_AN_AREA']:
-        res = amf_handler.amf_event_exposure_subscribe()
+        res = amf_handler.amf_event_exposure_subscription_create()
     elif mon_evt_sub.monitoring_type in ['LOSS_OF_CONNECTIVITY','UE_REACHABILITY','LOCATION_REPORTING','CHANGE_OF_IMSI_IMEI_ASSOCIATION','ROAMING_STATUS','COMMUNICATION_FAILURE','AVAILABILITY_AFTER_DDN_FAILURE','PDN_CONNECTIVITY_STATUS','API_SUPPORT_CAPABILITY']:
-        res = udm_handler.udm_ee_subscription_create(mon_evt_sub, scsAsId)
+        res = udm_handler.udm_event_exposure_subscription_create(mon_evt_sub, scsAsId)
 
     if res.status_code == httpx.codes.CREATED:
+        # if mon_evt_sub.request_test_notification:
         if mon_evt_sub.maximum_number_of_reports > 1:
+            inserted = monitoringEventSubscription.monitoring_event_subscriptionscription_insert(scsAsId, mon_evt_sub, res.headers['location'])
+            location = f"http://{conf.HOSTS['NEF'][0]}/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{res}"
+            mon_evt_sub._self = location
+            #mon_evt_sub.monitor_expire_time = 1 hr
+            headers = conf.GLOBAL_HEADERS
+            headers['location'] = location
+            return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
+        elif mon_evt_sub.maximum_number_of_reports == 1:
             inserted = monitoringEventSubscription.monitoring_event_subscriptionscription_insert(scsAsId, mon_evt_sub, res.headers['location'])
             location = f"http://{conf.HOSTS['NEF'][0]}/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{res}"
             mon_evt_sub._self = location
             headers = conf.GLOBAL_HEADERS
             headers['location'] = location
             return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
+    else:
+        return res ################################
+        
+
 
 @app.put("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
 async def mon_evt_sub_put(scsAsId: str, subscriptionId: str, data: Request):

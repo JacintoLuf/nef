@@ -1,5 +1,6 @@
 import json
 import httpx
+import uuid
 from api.config import conf
 from models.amf_create_event_subscription import AmfCreateEventSubscription
 from models.amf_event_subscription import AmfEventSubscription
@@ -30,7 +31,14 @@ async def amf_event_exposure_subscribe():
         conf.logger.info(response.text)
 
 async def amf_event_exposure_subscription_create(app_session_id: str=None):
-
+    amf_sub = AmfEventSubscription(
+        # event_list=[amf_evt, amf_evt2],
+        event_notify_uri=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/amf-event-sub-callback",
+        nf_id=conf.API_UUID,
+        any_ue=True,
+        source_nf_type="AF"
+    )
+    # monitoring expiry time update in case recieved from amf or udm
     return
 
 async def amf_event_exposure_subscription_update(app_session_id: str=None):
