@@ -11,19 +11,23 @@ from models.amf_event_mode import AmfEventMode
 async def amf_event_exposure_subscribe():
     amf_evt = AmfEvent(
         type="REGISTRATION_STATE_REPORT",
-        immediate_flag=True
+        immediate_flag=True,
+        max_reports=100
     )
     amf_evt2 = AmfEvent(
         type="CONNECTIVITY_STATE_REPORT",
-        immediate_flag=True
+        immediate_flag=True,
+        max_reports=100
     )
     amf_evt3 = AmfEvent(
         type="LOSS_OF_CONNECTIVITY",
-        immediate_flag=True
+        immediate_flag=True,
+        max_reports=100
     )
     amf_evt4 = AmfEvent(
         type="UES_IN_AREA_REPORT",
-        immediate_flag=True
+        immediate_flag=True,
+        max_reports=100
     )
     amf_sub = AmfEventSubscription(
         event_list=[amf_evt, amf_evt2, amf_evt3, amf_evt4],
@@ -66,7 +70,15 @@ async def amf_event_exposure_subscription_create(monEvtSub: MonitoringEventSubsc
         source_nf_type="AF"
     )
     # monitoring expiry time update in case recieved from amf or udm
-    return
+    amf_evt_sub = AmfCreateEventSubscription(subscription=amf_sub)
+    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
+        response = await client.post(
+            f"http://{conf.HOSTS['AMF'][0]}/namf-evts/v1/subscriptions",
+            headers=conf.GLOBAL_HEADERS,
+            data=json.dumps(amf_evt_sub.to_dict())
+        )
+        conf.logger.info(f"Event sub response: {response.text}")
+    return response
 
 async def amf_event_exposure_subscription_update(app_session_id: str=None):
     if app_session_id:

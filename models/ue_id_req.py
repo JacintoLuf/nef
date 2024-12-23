@@ -5,14 +5,14 @@ from datetime import date, datetime  # noqa: F401
 
 from typing import List, Dict  # noqa: F401
 
-from openapi_server.models.base_model_ import Model
-from openapi_server.models.ip_addr import IpAddr
-from openapi_server.models.snssai import Snssai
+from models.base_model_ import Model
+from models.ip_addr import IpAddr
+from models.snssai import Snssai
 import re
-from openapi_server import util
+import util
 
-from openapi_server.models.ip_addr import IpAddr  # noqa: E501
-from openapi_server.models.snssai import Snssai  # noqa: E501
+from models.ip_addr import IpAddr  # noqa: E501
+from models.snssai import Snssai  # noqa: E501
 import re  # noqa: E501
 
 class UeIdReq(Model):
