@@ -3,6 +3,7 @@ import json
 import datetime
 from datetime import datetime, timezone, timedelta
 from api.config import conf
+from models.ue_id_req import UeIdReq
 from models.monitoring_event_subscription import MonitoringEventSubscription
 from models.ee_subscription import EeSubscription
 from models.created_ee_subscription import CreatedEeSubscription
@@ -10,13 +11,23 @@ from models.monitoring_configuration import MonitoringConfiguration
 from models.reporting_options import ReportingOptions
 import crud.createdEeSubscription as createdEeSubscription
 
-async def udm_sdm_id_translation(ueId: str=None):
+async def udm_sdm_id_translation(ueId: str=None, ue_req: UeIdReq=None):
     conf.logger.info(f"id to translate {ueId}")
+    params = {}
+    if ue_req:
+        if ue_req.app_port_id:
+            params['app-port-id'] = ue_req.app_port_id
+        if ue_req.mtc_provider_id:
+            params['mtc-provider-info'] = ue_req.mtc_provider_id
+        if ue_req.af_id:
+            params['ad-id'] = ue_req.af_id
+
     try:
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.get(
                 f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v1/{ueId}/id-translation-result",
-                headers=conf.GLOBAL_HEADERS
+                headers=conf.GLOBAL_HEADERS,
+                params=params
             )
             conf.logger.info(response.text)
     except Exception as e:
@@ -33,7 +44,6 @@ async def udm_sdm_group_identifiers_translation(ext_group_id: str=None):
             params=params
         )
         conf.logger.info(response.text)
-
     return response
 
 async def udm_event_exposure_subscribe(monEvtSub: MonitoringEventSubscription=None, afId: str=None):

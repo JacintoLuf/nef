@@ -8,6 +8,7 @@ from fastapi_utils.tasks import repeat_every
 from typing import Callable, Coroutine
 from session import clean_db
 from api.config import conf
+from models.problem_details import ProblemDetails
 from models.pcf_binding import PcfBinding
 from models.monitoring_event_subscription import MonitoringEventSubscription
 from models.monitoring_event_report import MonitoringEventReport
@@ -15,6 +16,8 @@ from models.monitoring_event_reports import MonitoringEventReports
 from models.traffic_influ_sub import TrafficInfluSub
 from models.traffic_influ_sub_patch import TrafficInfluSubPatch
 from models.event_notification import EventNotification
+from models.ue_id_req import UeIdReq
+from models.ue_id_info import UeIdInfo
 from models.as_session_with_qo_s_subscription import AsSessionWithQoSSubscription
 import core.nrf_handler as nrf_handler
 import core.amf_handler as amf_handler
@@ -137,8 +140,20 @@ async def send_notification(data: str, link: str):
         )
         conf.logger.info(response.text)
 
-@app.get("/ue/{supi}")
-async def ue_info(supi: str):
+@app.get("/ue/{ipv4}")
+async def ue_info(ipv4: str):
+    supi = None
+    if "BSF" in conf.HOSTS.keys():
+        bsf_params = {'ipv4Addr': ipv4}
+
+        res = await bsf_handler.bsf_management_discovery(bsf_params)
+        if res['code'] != httpx.codes.OK:
+            raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
+        pcf_binding = PcfBinding.from_dict(res['response'])
+        if not pcf_binding.supi:
+            raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="UE_ID_NOT_AVAILABLE")
+        supi = pcf_binding.supi
+        
     params = {'dataset-names': ['AMF', 'SM']}
     res = ""
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
@@ -166,12 +181,6 @@ async def ue_info(supi: str):
         res += response.text
         conf.logger.info(f"ue data v2:\n {response.text}")
     return res
-
-@app.get("/{ueid}/translate")
-async def translate_id(ueid: str):
-    translated_id = await udm_handler.udm_sdm_id_translation(ueid)
-    conf.logger.info(f"translated id: {translated_id}")
-    return translated_id
 
 #-----------------------------callback endpoints---------------------------------
 @app.post("/nnef-callback/amf-event-sub-callback")
@@ -307,7 +316,11 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
     
     if mon_evt_sub.maximum_number_of_reports == 1 and mon_evt_sub.monitor_expire_time:
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Cannot parse message. One time reporting must not contain expire time')
-    
+
+    if (mon_evt_sub.reachability_type == "SMS" and mon_evt_sub.monitoring_type == "UE_REACHABILITY") or (mon_evt_sub.location_type == "LAST_KNOWN_LOCATION" and mon_evt_sub.monitoring_type == "LOCATION_REPORTING"):
+        if mon_evt_sub.maximum_number_of_reports != 1:
+            raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Only one-time reporting supported for this event.')
+            
     # if mon_evt_sub:
     #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="")
 
@@ -322,17 +335,15 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
     if not mon_evt_sub.monitoring_type or mon_evt_sub.notification_destination:
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Message shall include SCS/AS Identifier, "Monitoring Type", "Notification Destination Address" and pne of External Identifier, MSISDN or External Group Identifier')
 
-    if (mon_evt_sub.reachability_type == "SMS" and mon_evt_sub.monitoring_type == "UE_REACHABILITY") or (mon_evt_sub.location_type == "LAST_KNOWN_LOCATION" and mon_evt_sub.monitoring_type == "LOCATION_REPORTING"):
-        if mon_evt_sub.maximum_number_of_reports != 1:
-            raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Only one-time reporting supported for this event.')
-
     if mon_evt_sub.monitoring_type == "NUMBER_OF_UES_IN_AN_AREA" and mon_evt_sub.maximum_number_of_reports != 1:
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Only one-time reporting supported for this event.')
 
+    elif mon_evt_sub.monitoring_type in ['LOSS_OF_CONNECTIVITY','UE_REACHABILITY','LOCATION_REPORTING','CHANGE_OF_IMSI_IMEI_ASSOCIATION','ROAMING_STATUS','COMMUNICATION_FAILURE','PDN_CONNECTIVITY_STATUS','AVAILABILITY_AFTER_DDN_FAILURE','API_SUPPORT_CAPABILITY']:
+        res = await udm_handler.udm_event_exposure_subscription_create(mon_evt_sub, scsAsId)
     if mon_evt_sub.monitoring_type in ['NUMBER_OF_UES_IN_AN_AREA']:
-        res = amf_handler.amf_event_exposure_subscription_create()
-    elif mon_evt_sub.monitoring_type in ['LOSS_OF_CONNECTIVITY','UE_REACHABILITY','LOCATION_REPORTING','CHANGE_OF_IMSI_IMEI_ASSOCIATION','ROAMING_STATUS','COMMUNICATION_FAILURE','AVAILABILITY_AFTER_DDN_FAILURE','PDN_CONNECTIVITY_STATUS','API_SUPPORT_CAPABILITY']:
-        res = udm_handler.udm_event_exposure_subscription_create(mon_evt_sub, scsAsId)
+        if mon_evt_sub.external_group_id:
+            internal_id = await udm_handler.udm_sdm_group_identifiers_translation(mon_evt_sub.external_group_id)
+        res = await amf_handler.amf_event_exposure_subscription_create(internal_id)
 
     if res.status_code == httpx.codes.CREATED:
         # if mon_evt_sub.request_test_notification:
@@ -717,6 +728,44 @@ async def qos_delete(scsAsId: str, subId: str):
         if res == 1:
             return Response(status_code=httpx.codes.NO_CONTENT)
     raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
+
+
+
+#----------------------------------ue-id------------------------------
+@app.post("/3gpp-as-session-with-qos/v1/retrieve")
+async def ue_id_retrieval(data: Request):
+    try:
+        data_dict = await data.json()
+        ue_req = UeIdReq().from_dict(data_dict)
+    except ValueError as e:
+        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"Failed to parse message. Err: {e.__str__}")
+    except Exception as e:
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
+    
+    if ue_req.ue_ip_addr and ue_req.ue_mac_addr:
+        raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of UeIpAddr, UeMacAddr")
+
+    if ue_req.ip_domain and not ue_req.ue_ip_addr:
+        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail="Cannot parse message. No UE ip address.")
+
+    if "BSF" in conf.HOSTS.keys():
+        bsf_params = {}
+        if ue_req.ue_ip_addr:
+            bsf_params['ipv4Addr'] = ue_req.ue_ip_addr
+        elif ue_req.ue_mac_addr:
+            bsf_params['macAddr48'] = ue_req.ue_mac_addr
+
+        res = await bsf_handler.bsf_management_discovery(bsf_params)
+        if res['code'] != httpx.codes.OK:
+            raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
+        pcf_binding = PcfBinding.from_dict(res['response'])
+        if not pcf_binding.supi:
+            raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="UE_ID_NOT_AVAILABLE") ###############################3
+
+    translated_id = await udm_handler.udm_sdm_id_translation(pcf_binding.supi, ue_req)
+
+    ue_info = UeIdInfo(external_id=translated_id)
+    return Response(status_code=httpx.codes.OK, content=ue_info)
 
 #----------------------clean db-------------------
 #
