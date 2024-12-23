@@ -28,7 +28,8 @@ async def amf_event_exposure_subscribe():
             headers=conf.GLOBAL_HEADERS,
             data=json.dumps(amf_evt_sub.to_dict())
         )
-        conf.logger.info(response.text)
+        conf.logger.info(f"AMF UE event status code: {response.status_code}")
+        conf.logger.info(f"AMF UE event resposne: {response.text}")
 
 async def amf_event_exposure_subscription_create(app_session_id: str=None):
     amf_sub = AmfEventSubscription(

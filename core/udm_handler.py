@@ -29,7 +29,8 @@ async def udm_sdm_id_translation(ueId: str=None, ue_req: UeIdReq=None):
                 headers=conf.GLOBAL_HEADERS,
                 params=params
             )
-            conf.logger.info(response.text)
+            conf.logger.info(f"UDM UE event status code: {response.status_code}")
+            conf.logger.info(f"UDM UE event resposne: {response.text}")
     except Exception as e:
         conf.logger.info(e.__str__)
     return response

@@ -1,4 +1,5 @@
 import json
+from time import sleep
 import httpx
 from fastapi import APIRouter, FastAPI, Request, Response, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
@@ -78,10 +79,11 @@ async def startup():
         conf.logger.info("NF status subscribe...")
         await status_subscribe()
         if conf.CORE != "open5gs":
+            sleep(15)
             conf.logger.info("amf UE event subscription")
             await amf_handler.amf_event_exposure_subscribe()
             conf.logger.info("udm UE event subscription")
-            await udm_handler.udm_event_exposure_subscribe()
+            res = await udm_handler.udm_event_exposure_subscribe()
     except Exception as e:
         conf.logger.info(f"Error starting up: {e}")
     # TLS dependant
