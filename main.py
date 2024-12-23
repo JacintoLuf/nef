@@ -154,6 +154,7 @@ async def ue_info(ipv4: str):
         pcf_binding = PcfBinding.from_dict(res['response'])
         if not pcf_binding.supi:
             raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="UE_ID_NOT_AVAILABLE")
+        conf.logger.info(f"SUPI: {pcf_binding.supi}")
         supi = pcf_binding.supi
         
     params = {'dataset-names': ['AMF', 'SM']}
