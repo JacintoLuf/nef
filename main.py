@@ -78,12 +78,12 @@ async def startup():
         await nrf_handler.nrf_discovery()
         conf.logger.info("NF status subscribe...")
         await status_subscribe()
-        if conf.CORE != "open5gs":
-            sleep(15)
-            conf.logger.info("amf UE event subscription")
-            await amf_handler.amf_event_exposure_subscribe()
-            conf.logger.info("udm UE event subscription")
-            res = await udm_handler.udm_event_exposure_subscribe()
+        # if conf.CORE != "open5gs":
+        #     sleep(15)
+        conf.logger.info("amf UE event subscription")
+        await amf_handler.amf_event_exposure_subscribe()
+        conf.logger.info("udm UE event subscription")
+        res = await udm_handler.udm_event_exposure_subscribe()
     except Exception as e:
         conf.logger.info(f"Error starting up: {e}")
     # TLS dependant
