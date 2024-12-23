@@ -173,14 +173,16 @@ async def nf_status_subscribe(nf_types):
                             continue
                     # res_sub = SubscriptionData.from_dict(data)
                     conf.logger.info(f"{nf_type} Subscription created until {res_sub.validity_time}")
-                    conf.logger.info(f"Resource location: {response.headers['location']}")
+                    conf.logger.info(f"headers: {response.headers}")
+                    # conf.logger.info(f"Resource location: {response.headers['location']}")
                     try:
                         res = await subscriptionData.subscription_data_insert(res_sub, response.headers['location'])
                     except Exception as e:
-                        conf.logger.error(e)
+                        conf.logger.error(f"{e!r}")
                         if not res:
                             conf.logger.info("Error saving subscription")
                 except Exception as e:
+                    conf.logger.error(f"{e!r}")
                     conf.logger.info("Can't decode response message!")
             else:
                 conf.logger.info(f"{nf_type} Subscription not created")
