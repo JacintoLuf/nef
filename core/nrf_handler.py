@@ -176,7 +176,7 @@ async def nf_status_subscribe(nf_types):
                     # conf.logger.info(f"headers: {response.headers}")
                     # conf.logger.info(f"Resource location: {response.headers['location']}")
                     try:
-                        res = await subscriptionData.subscription_data_insert(res_sub)
+                        res = await subscriptionData.subscription_data_insert(data['subscriptionId'], res_sub)
                     except Exception as e:
                         conf.logger.error(f"{e!r}")
                         if not res:

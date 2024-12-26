@@ -12,9 +12,9 @@ async def subscription_data_get():
         docs.append(doc)
     return docs or None
 
-async def subscription_data_insert(sub: SubscriptionData):
+async def subscription_data_insert(subId: str, sub: SubscriptionData):
     collection = db["subscription_data"]
-    subId = token_bytes(16)
+    # subId = token_bytes(16)
     document = {'_id': subId, 'sub': sub.to_dict()}
     try:
         result = await collection.insert_one(document)
