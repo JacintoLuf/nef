@@ -1,5 +1,6 @@
 import httpx
 import json
+import uuid
 import datetime
 from datetime import datetime, timezone, timedelta
 from api.config import conf
@@ -86,8 +87,7 @@ async def udm_event_exposure_subscribe(monEvtSub: MonitoringEventSubscription=No
         monitoring_configurations=mon_conf,
         reporting_options=repo_opt,
         # supported_features="",
-        epc_applied_ind=False,
-        notify_correlation_id=1,
+        notify_correlation_id=str(uuid.uuid4()),
         second_callback_ref=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/udm-event-sub-callback"
     )
     # conf.logger.info(ee_sub.to_dict())
@@ -106,9 +106,49 @@ async def udm_event_exposure_subscribe(monEvtSub: MonitoringEventSubscription=No
         if response.headers['location']:
             res = createdEeSubscription.created_ee_subscriptionscription_insert(created_sub)
 
-async def udm_event_exposure_subscription_create(monEvtSub: MonitoringEventSubscription=None, afId: str=None):
+async def udm_event_exposure_subscription_create(monEvtSub: MonitoringEventSubscription=None, ueIdentity: str=None, afId: str=None):
+    
+    mon_configs = MonitoringConfiguration(
+        event_type=monEvtSub.monitoring_type,
+        # location_reporting_configuration= monEvtSub.location_area if monEvtSub.monitoring_type == "LOCATION_REPORTING" else None,
+        # association_type=,
+        # datalink_report_cfg=,
+        # loss_connectivity_cfg=,
+        maximum_latency=monEvtSub.maximum_latency if monEvtSub.monitoring_type == "UE_REACHABILITY_FOR_DATA" else None,
+        maximum_response_time=monEvtSub.maximum_response_time if monEvtSub.monitoring_type == "UE_REACHABILITY_FOR_DATA" else None,
+        suggested_packet_num_dl=monEvtSub.suggested_number_of_dl_packets if monEvtSub.monitoring_type == "UE_REACHABILITY_FOR_DATA" else None,
+        # reachability_for_data_cfg=monEvtSub if monEvtSub.monitoring_type == "UE_REACHABILITY_FOR_DATA" else None,
+        pdu_session_status_cfg=monEvtSub if monEvtSub.monitoring_type == "PDN_CONNECTIVITY_STATUS" else None,
+        afId=afId,
+        idle_status_ind=monEvtSub.idle_status_indication if monEvtSub.monitoring_type == "UE_REACHABILITY_FOR_DATA" or monEvtSub.monitoring_type == "AVAILABILITY_AFTER_DDN_FAILURE" else None
+        )
+    
+    rep_opts = ReportingOptions(
+        report_mode="PERIODIC" if monEvtSub.maximum_number_of_reports or monEvtSub.monitor_expire_time else "ON_EVENT_DETECTION",
+        max_num_of_reports=monEvtSub.maximum_number_of_reports,
+        expiry=monEvtSub.monitor_expire_time,
+        # sampling_ratio=monEvtSub,
+        report_period=monEvtSub.rep_period,
+        # notif_flag=monEvtSub
+    )
 
-    return
+    ee_sub = EeSubscription(
+        callback_reference=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/udm-event-sub-callback",
+        monitoring_configurations=mon_configs,
+        reporting_options=rep_opts,
+        # supported_features="fffff",
+        notify_correlation_id=str(uuid.uuid4()),
+        second_callback_ref=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/udm-event-sub-callback"
+    )
+
+    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
+        response = await client.post(
+            f"http://{conf.HOSTS['UDM'][0]}/nudm-ee/v1/{ueIdentity}/ee-subscriptions",
+            headers=conf.GLOBAL_HEADERS,
+            data=json.dumps(ee_sub.to_dict())
+        )
+        conf.logger.info(response.text)
+    return response
 
 async def udm_event_exposure_subscription_update(monEvtSub: MonitoringEventSubscription=None, afId: str=None):
 

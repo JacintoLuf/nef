@@ -50,7 +50,7 @@ async def amf_event_exposure_subscription_create(monEvtSub: MonitoringEventSubsc
     amf_events = [AmfEvent(
         type=monEvtSub.monitoring_type,
         max_reports=monEvtSub.maximum_number_of_reports,
-        max_response_time=monEvtSub.maximum_response_time if monEvtSub.monitoring_typ == "UE_REACHABILITY" else None,
+        max_response_time=monEvtSub.maximum_response_time if monEvtSub.monitoring_type == "UE_REACHABILITY" else None,
         )]
     amf_event_mode = AmfEventMode(
         trigger="ONE_TIME" if monEvtSub.maximum_number_of_reports==1 else "PERIODIC" if monEvtSub.rep_period else "CONTINUOUS",

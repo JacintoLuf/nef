@@ -346,7 +346,8 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
     if mon_evt_sub.monitoring_type in ['NUMBER_OF_UES_IN_AN_AREA']:
         if mon_evt_sub.external_group_id:
             internal_id = await udm_handler.udm_sdm_group_identifiers_translation(mon_evt_sub.external_group_id)
-            res = await amf_handler.amf_event_exposure_subscription_create(internal_id)
+            if internal_id:
+                res = await amf_handler.amf_event_exposure_subscription_create(internal_id)
         else:
             res = await amf_handler.amf_event_exposure_subscription_create(mon_evt_sub, scsAsId)
 
