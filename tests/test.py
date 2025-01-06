@@ -72,6 +72,9 @@ def change_qos():
     try:
         response: httpx.Response = httpx.post(endpoint, json=qos_message)
         response.raise_for_status()
+        print(f"elapsed time: {response.elapsed}")
+        if response.headers['X-ElapsedTime Header']:
+            print(f"header elapsed time: {response.headers['X-ElapsedTime Header']}")
         print("QoS successfully changed.")
     except httpx.HTTPStatusError as err:
         print(f"Failed to change QoS. Error: {err}")

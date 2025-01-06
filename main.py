@@ -1,5 +1,5 @@
 import json
-from time import sleep
+from time import time, sleep
 import httpx
 from fastapi import APIRouter, FastAPI, Request, Response, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
@@ -271,22 +271,31 @@ async def mon_del(subId: str):
 
 @app.get("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
 async def mon_evt_subs_get(scsAsId: str, subscriptionId: str):
+    start_time = time.time()
     conf.logger.info(f"af id: {scsAsId}, subscription id: {subscriptionId}")
     res = await monitoringEventSubscription.monitoring_event_subscriptionscription_get(scsAsId, subscriptionId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
-    return Response(content=res, status_code=httpx.codes.OK)
+    end_time = (time.time() - start_time) * 1000
+    headers = conf.GLOBAL_HEADERS
+    headers.update({'X-ElapsedTime Header': end_time})
+    return Response(content=res, headers=headers, status_code=httpx.codes.OK)
 
 @app.get("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions")
 async def mon_evt_subs_get_all(scsAsId: str):
+    start_time = time.time()
     conf.logger.info(f"af id: {scsAsId}")
     res = await monitoringEventSubscription.monitoring_event_subscriptionscription_get(scsAsId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
-    return Response(content=res, status_code=httpx.codes.OK)
+    end_time = (time.time() - start_time) * 1000
+    headers = conf.GLOBAL_HEADERS
+    headers.update({'X-ElapsedTime Header': end_time})
+    return Response(content=res, headers=headers, status_code=httpx.codes.OK)
 
 @app.post("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions")
 async def mon_evt_subs_post(scsAsId: str, data: Request):
+    start_time = time.time()
     try:
         data_dict = await data.json()
         mon_evt_sub = MonitoringEventSubscription.from_dict(data_dict)
@@ -360,6 +369,9 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
             #mon_evt_sub.monitor_expire_time = 1 hr
             headers = conf.GLOBAL_HEADERS
             headers['location'] = location
+            end_time = (time.time() - start_time) * 1000
+            headers = conf.GLOBAL_HEADERS
+            headers.update({'X-ElapsedTime Header': end_time})
             return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
         elif mon_evt_sub.maximum_number_of_reports == 1:
             inserted = monitoringEventSubscription.monitoring_event_subscriptionscription_insert(scsAsId, mon_evt_sub, res.headers['location'])
@@ -367,6 +379,9 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
             mon_evt_sub._self = location
             headers = conf.GLOBAL_HEADERS
             headers['location'] = location
+            end_time = (time.time() - start_time) * 1000
+            headers = conf.GLOBAL_HEADERS
+            headers.update({'X-ElapsedTime Header': end_time})
             return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
     else:
         return res ################################
@@ -375,16 +390,21 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
 
 @app.put("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
 async def mon_evt_sub_put(scsAsId: str, subscriptionId: str, data: Request):
+    start_time = time.time()
     try:
         data_dict = await data.json()
         mon_evt_sub = MonitoringEventSubscription.from_dict(data_dict)
         await monitoringEventSubscription.monitoring_event_subscriptionscription_update(scsAsId, subscriptionId, mon_evt_sub.to_dict())
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to update subscription'
-    return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
+    end_time = (time.time() - start_time) * 1000
+    headers = conf.GLOBAL_HEADERS
+    headers.update({'X-ElapsedTime Header': end_time})
+    return Response(status_code=httpx.codes.OK, headers=headers, content="The subscription was updated successfully.")
 
 @app.patch("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
 async def mon_evt_sub_patch(scsAsId: str, subscriptionId: str, data: Request):
+    start_time = time.time()
     try:
         data_dict = await data.json()
         mon_evt_sub = MonitoringEventSubscription.from_dict(data_dict)
@@ -395,10 +415,14 @@ async def mon_evt_sub_patch(scsAsId: str, subscriptionId: str, data: Request):
         await monitoringEventSubscription.monitoring_event_subscriptionscription_update(scsAsId, subscriptionId, mon_evt_sub.to_dict())
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to update subscription'
-    return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
+    end_time = (time.time() - start_time) * 1000
+    headers = conf.GLOBAL_HEADERS
+    headers.update({'X-ElapsedTime Header': end_time})
+    return Response(status_code=httpx.codes.OK, headers=headers, content="The subscription was updated successfully.")
 
 @app.delete("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
 async def mon_evt_sub_delete(scsAsId: str, subscriptionId: str):
+    start_time = time.time()
     try:
         res = await monitoringEventSubscription.monitoring_event_subscriptionscription_get(scsAsId, subscriptionId)
         if not res:
@@ -417,7 +441,10 @@ async def mon_evt_sub_delete(scsAsId: str, subscriptionId: str):
                 raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
             res = await monitoringEventSubscription.monitoring_event_subscriptionscription_delete(scsAsId, subscriptionId)
             if res == 1:
-                return Response(status_code=httpx.codes.NO_CONTENT)
+                end_time = (time.time() - start_time) * 1000
+                headers = conf.GLOBAL_HEADERS
+                headers.update({'X-ElapsedTime Header': end_time})
+                return Response(status_code=httpx.codes.NO_CONTENT, headers=headers)
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
 
@@ -449,21 +476,30 @@ async def tidelete(subId: str):
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_get(afId: str, subId: str):
+    start_time = time.time()
     conf.logger.info(f"af id: {afId}, sub id: {subId}")
     res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
-    return Response(content=json.dumps(res), status_code=httpx.codes.OK)
+    end_time = (time.time() - start_time) * 1000
+    headers = conf.GLOBAL_HEADERS
+    headers.update({'X-ElapsedTime Header': end_time})
+    return Response(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 async def ti_get_all(afId: str):
+    start_time = time.time()
     res = await trafficInfluSub.traffic_influence_subscription_get(afId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
-    return Response(content=json.dumps(res), status_code=httpx.codes.OK)
+    end_time = (time.time() - start_time) * 1000
+    headers = conf.GLOBAL_HEADERS
+    headers.update({'X-ElapsedTime Header': end_time})
+    return Response(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
 
 @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 async def traffic_influ_create(afId: str, data: Request, background_tasks: BackgroundTasks):
+    start_time = time.time()
     conf.logger.info("Initiating Traffic Influence request process")
 
     try:
@@ -500,6 +536,9 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
                 if traffic_sub.request_test_notification:
                     test_notif = EventNotification(af_trans_id=traffic_sub.af_trans_id)
                     background_tasks.add_task(send_notification, test_notif.to_dict(), traffic_sub.notification_destination)
+                end_time = (time.time() - start_time) * 1000
+                headers = conf.GLOBAL_HEADERS
+                headers.update({'X-ElapsedTime Header': end_time})
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
                 conf.logger.info("Server error")
@@ -541,6 +580,9 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
                 conf.logger.info(f"Resource stored at {traffic_sub.__self} with ID: {sub_id}")
                 headers = conf.GLOBAL_HEADERS
                 headers['location'] = traffic_sub.__self
+                end_time = (time.time() - start_time) * 1000
+                headers = conf.GLOBAL_HEADERS
+                headers.update({'X-ElapsedTime Header': end_time})
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
                 conf.logger.info("Server error")
@@ -549,25 +591,34 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
 
 @app.put("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_put(afId: str, subId: str, data: Request):
+    start_time = time.time()
     try:
         data_dict = await data.json()
         traffic_sub = TrafficInfluSub.from_dict(data_dict)
         res = await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=traffic_sub.to_dict())
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
-    return Response(status_code=httpx.codes.OK, content=res)
+    end_time = (time.time() - start_time) * 1000
+    headers = conf.GLOBAL_HEADERS
+    headers.update({'X-ElapsedTime Header': end_time})
+    return Response(status_code=httpx.codes.OK, headers=headers, content=res)
 
 @app.patch("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_patch(afId: str, subId: str, data: Request):
+    start_time = time.time()
     try:
         traffic_sub = TrafficInfluSubPatch.from_dict(data.json())
         res = await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=traffic_sub.to_dict(), partial=True)
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
-    return Response(status_code=httpx.codes.OK, content=res)
+    end_time = (time.time() - start_time) * 1000
+    headers = conf.GLOBAL_HEADERS
+    headers.update({'X-ElapsedTime Header': end_time})
+    return Response(status_code=httpx.codes.OK, headers=headers, content=res)
 
 @app.delete("/3gpp-trafficInfluence/v1/{afId}/subscriptions/{subId}")
 async def delete_ti(afId: str, subId: str):
+    start_time = time.time()
     try:
         res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
         if not res:
@@ -581,7 +632,10 @@ async def delete_ti(afId: str, subId: str):
 
             res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
             if res == 1:
-                return Response(status_code=httpx.codes.NO_CONTENT)
+                end_time = (time.time() - start_time) * 1000
+                headers = conf.GLOBAL_HEADERS
+                headers.update({'X-ElapsedTime Header': end_time})
+                return Response(status_code=httpx.codes.NO_CONTENT, headers=headers)
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
 
@@ -614,20 +668,29 @@ async def qo_s_delete(subId: str):
 
 @app.get("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
 async def qos_get(scsAsId: str, subId: str=None):
+    start_time = time.time()
     res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId, subId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
-    return Response(content=json.dumps(res), status_code=httpx.codes.OK)
+    end_time = (time.time() - start_time) * 1000
+    headers = conf.GLOBAL_HEADERS
+    headers.update({'X-ElapsedTime Header': end_time})
+    return Response(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
 
 @app.get("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
 async def qos_get_all(scsAsId: str):
+    start_time = time.time()
     res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
-    return Response(content=json.dumps(res), status_code=httpx.codes.OK)
+    end_time = (time.time() - start_time) * 1000
+    headers = conf.GLOBAL_HEADERS
+    headers.update({'X-ElapsedTime Header': end_time})
+    return Response(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
 
 @app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
 async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTasks):
+    start_time = time.time()
     conf.logger.info("\n---------------------------------------------------------------------\nInitiating As Session With QoS request process\n\
                      ---------------------------------------------------------------------")
 
@@ -694,7 +757,10 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
             conf.logger.info(f"Resource stored at {qos_sub.__self} with ID: {sub_id}")
             headers = conf.GLOBAL_HEADERS
             headers['location'] = qos_sub.__self
-            return JSONResponse(status_code=httpx.codes.CREATED, content=qos_sub.to_dict(), headers=headers)
+            end_time = (time.time() - start_time) * 1000
+            headers = conf.GLOBAL_HEADERS
+            headers.update({'X-ElapsedTime Header': end_time})
+            return JSONResponse(status_code=httpx.codes.CREATED, headers=headers, content=qos_sub.to_dict(), headers=headers)
         else:
             conf.logger.info("Error creating resource")
             #delete from pcf
@@ -703,24 +769,33 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
 
 @app.put("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
 async def qos_put(scsAsId: str, subId: str, data: Request):
+    start_time = time.time()
     try:
         qosSub = AsSessionWithQoSSubscription.from_dict(data.json())
         await asSessionWithQoSSub.as_session_with_qos_subscription_update(scsAsId=scsAsId, subId=subId, sub=qosSub.to_dict())
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
-    return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
+    end_time = (time.time() - start_time) * 1000
+    headers = conf.GLOBAL_HEADERS
+    headers.update({'X-ElapsedTime Header': end_time})
+    return Response(status_code=httpx.codes.OK, headers=headers, content="The subscription was updated successfully.")
 
 @app.patch("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
 async def qos_patch(scAsId: str, subId: str, data: Request):
+    start_time = time.time()
     try:
         qosSub = AsSessionWithQoSSubscription.from_dict(data.json())
         await asSessionWithQoSSub.as_session_with_qos_subscription_update(scsAsId=scAsId, subId=subId, sub=qosSub.to_dict(), partial=True)
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
-    return Response(status_code=httpx.codes.OK, content="The subscription was updated successfully.")
+    end_time = (time.time() - start_time) * 1000
+    headers = conf.GLOBAL_HEADERS
+    headers.update({'X-ElapsedTime Header': end_time})
+    return Response(status_code=httpx.codes.OK, headers=headers, content="The subscription was updated successfully.")
     
 @app.delete("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
 async def qos_delete(scsAsId: str, subId: str):
+    start_time = time.time()
     res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId, subId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
@@ -732,14 +807,18 @@ async def qos_delete(scsAsId: str, subId: str):
             raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
         res = await asSessionWithQoSSub.as_session_with_qos_subscription_delete(scsAsId, subId)
         if res == 1:
-            return Response(status_code=httpx.codes.NO_CONTENT)
+            end_time = (time.time() - start_time) * 1000
+            headers = conf.GLOBAL_HEADERS
+            headers.update({'X-ElapsedTime Header': end_time})
+            return Response(status_code=httpx.codes.NO_CONTENT, headers=headers)
     raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
 
 
 
 #----------------------------------ue-id------------------------------
-@app.post("/3gpp-as-session-with-qos/v1/retrieve")
+@app.post("/3gpp-ue-id/v1/retrieve")
 async def ue_id_retrieval(data: Request):
+    start_time = time.time()
     try:
         data_dict = await data.json()
         ue_req = UeIdReq().from_dict(data_dict)
@@ -771,7 +850,10 @@ async def ue_id_retrieval(data: Request):
     translated_id = await udm_handler.udm_sdm_id_translation(pcf_binding.supi, ue_req)
 
     ue_info = UeIdInfo(external_id=translated_id)
-    return Response(status_code=httpx.codes.OK, content=ue_info)
+    end_time = (time.time() - start_time) * 1000
+    headers = conf.GLOBAL_HEADERS
+    headers.update({'X-ElapsedTime Header': end_time})
+    return Response(status_code=httpx.codes.OK, headers=headers, content=ue_info)
 
 #----------------------clean db-------------------
 #
