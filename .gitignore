@@ -133,3 +133,4 @@ dmypy.json
 ####################
 # Test captures
 tests/captures
+.codegpt

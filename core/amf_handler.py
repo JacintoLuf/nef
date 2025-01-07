@@ -11,23 +11,27 @@ from models.amf_event_mode import AmfEventMode
 async def amf_event_exposure_subscribe():
     amf_evt = AmfEvent(
         type="REGISTRATION_STATE_REPORT",
-        immediate_flag=True,
-        max_reports=100
+        # immediate_flag=True,
+        max_reports=100,
+        report_ue_reachable=True
     )
     amf_evt2 = AmfEvent(
         type="CONNECTIVITY_STATE_REPORT",
-        immediate_flag=True,
-        max_reports=100
+        # immediate_flag=True,
+        max_reports=100,
+        report_ue_reachable=True
     )
     amf_evt3 = AmfEvent(
         type="LOSS_OF_CONNECTIVITY",
-        immediate_flag=True,
-        max_reports=100
+        # immediate_flag=True,
+        max_reports=100,
+        report_ue_reachable=True
     )
     amf_evt4 = AmfEvent(
         type="UES_IN_AREA_REPORT",
-        immediate_flag=True,
-        max_reports=100
+        # immediate_flag=True,
+        max_reports=100,
+        report_ue_reachable=True
     )
     amf_sub = AmfEventSubscription(
         event_list=[amf_evt, amf_evt2, amf_evt3, amf_evt4],
