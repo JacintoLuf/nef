@@ -760,7 +760,7 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
             end_time = (time.time() - start_time) * 1000
             headers = conf.GLOBAL_HEADERS
             headers.update({'X-ElapsedTime Header': end_time})
-            return JSONResponse(status_code=httpx.codes.CREATED, headers=headers, content=qos_sub.to_dict())
+            return JSONResponse(status_code=httpx.codes.CREATED, content=qos_sub.to_dict())
         else:
             conf.logger.info("Error creating resource")
             #delete from pcf
