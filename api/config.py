@@ -111,12 +111,14 @@ class Settings():
     
     
     def create_svc(self, svc_name, supp_feat, oauth=False):
+        version = NFServiceVersion(api_version_in_uri='v1', api_full_version='1.0.0')
+        ip_ep = IpEndPoint(ipv4_address=self.HOSTS["NEF"][0][:-5], transport="TCP", port=7777)
         return NFService(service_instance_id=str(uuid.uuid4()),
             service_name=svc_name,
-            versions=[NFServiceVersion(api_version_in_uri="v1", api_full_version=f"https://{self.HOSTS["NEF"][0]}/{svc_name}/v1")],
+            versions=[version],
             scheme="http",
             nf_service_status="REGISTERED",
-            ip_end_points=[IpEndPoint(ipv4_address=self.HOSTS["NEF"][0][:-5], transport="TCP", port=7777)],
+            ip_end_points=[ip_ep],
             api_prefix=self.NAME,
             supported_features=supp_feat,
             oauth2_required=oauth
