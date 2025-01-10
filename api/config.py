@@ -125,7 +125,7 @@ class Settings():
             ip_end_points=[ip_ep],
             api_prefix=self.NAME,
             supported_features=supp_feat,
-            oauth2_required=str(oauth).lower()
+            # oauth2_required=str(oauth).lower()
         )
 
     def set_nf_endpoints(self, profiles: List[NFProfile] = None, instances = None):
