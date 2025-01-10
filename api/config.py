@@ -81,11 +81,12 @@ class Settings():
                 self.HOSTS["NRF"] = "10.102.176.115:7777"
                 self.logger.info("NRFs manually resolved: "+self.HOSTS["NRF"])
 
-        self.SERVICE_LIST = {}
 
-        for key in self.SERVICE_NAMES.keys():
-            base_svc = self.create_svc(key, self.SERVICE_NAMES[key])
-            self.SERVICE_LIST[key] = base_svc
+        # for key in self.SERVICE_NAMES.keys():
+        #     base_svc = self.create_svc(key, self.SERVICE_NAMES[key])
+        #     self.SERVICE_LIST[key] = base_svc
+
+        self.SERVICE_LIST = [self.create_svc(svc, self.SERVICE_NAMES[svc]) for svc in self.SERVICE_NAMES.keys()]
 
         self.NEF_PROFILE = NFProfile(
             nf_instance_id=self.API_UUID,
@@ -93,7 +94,8 @@ class Settings():
             nf_status="REGISTERED",
             heart_beat_timer=3600,
             ipv4_addresses=[self.HOSTS["NEF"][0][:-5]],
-            nf_service_list=self.SERVICE_LIST,
+            nf_services=self.SERVICE_LIST,
+            # nf_service_list=self.SERVICE_LIST,
             nef_info=None
         )
 
