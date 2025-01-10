@@ -97,7 +97,7 @@ class Settings():
             nf_status="REGISTERED",
             heart_beat_timer=3600,
             ipv4_addresses=[self.HOSTS["NEF"][0][:-5]],
-            nf_services=self.SERVICE_LIST,
+            nf_services=self.SERVICE_LIST if conf.SERVICE_LIST else None,
             # nf_service_list=self.SERVICE_LIST,
             nef_info=None
         )
