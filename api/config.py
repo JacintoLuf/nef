@@ -41,6 +41,39 @@ class Settings():
             '3gpp-ueid': '0',
         }
 
+        self.QCI_MAP = {"1": "AUDIO",
+                        "2": "VIDEO",
+                        "3": "MESSAGE",
+                        "4": "VIDEO",
+                        "5": "",
+                        "6": "",
+                        "7": "",
+                        "8": "",
+                        "9": "",
+                        "65": "VOICE",
+                        "66": "VOICE",
+                        "67": "VIDEO",
+                        "69": "",
+                        "70": "DATA",
+                        "71": "VIDEO",
+                        "72": "VIDEO",
+                        "73": "VIDEO",
+                        "74": "VIDEO",
+                        "75": "MESSAGE",
+                        "76": "VIDEO",
+                        "79": "MESSAGE",
+                        "80": "",
+                        "82": "",
+                        "83": "MESSAGE",
+                        "84": "",
+                        "85": "MESSAGE",
+                        "86": "MESSAGE",
+                        "87": "DATA",
+                        "88": "DATA",
+                        "89": "VIDEO",
+                        "90": "VIDEO",
+                        }
+
         try:
             config.load_incluster_config()
             v1 = client.CoreV1Api()
