@@ -86,7 +86,7 @@ class Settings():
         #     base_svc = self.create_svc(key, self.SERVICE_NAMES[key])
         #     self.SERVICE_LIST[key] = base_svc
 
-        self.SERVICE_LIST = [self.create_svc(svc, self.SERVICE_NAMES[svc], False) for svc in self.SERVICE_NAMES.keys()]
+        self.SERVICE_LIST = [self.create_svc(svc, self.SERVICE_NAMES[svc]) for svc in self.SERVICE_NAMES.keys()]
 
         self.logger.info(self.SERVICE_LIST)
 
@@ -125,7 +125,7 @@ class Settings():
             ip_end_points=[ip_ep],
             api_prefix=self.NAME,
             supported_features=supp_feat,
-            oauth2_required=oauth
+            oauth2_required=str(oauth).lower()
         )
 
     def set_nf_endpoints(self, profiles: List[NFProfile] = None, instances = None):
