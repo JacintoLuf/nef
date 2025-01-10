@@ -69,7 +69,7 @@ async def startup():
         while not conf.REGISTERED:
             conf.logger.info("Registering NEF...")
             res = await nrf_handler.nf_register()
-            if res.status_code == httpx.codes.CREATED:
+            if res.status_code in [httpx.codes.OK, httpx.codes.CREATED, httpx.codes.NO_CONTENT]:
                 await nrf_heartbeat()
                 conf.REGISTERED = True
             else:
