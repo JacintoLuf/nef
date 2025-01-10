@@ -88,7 +88,7 @@ class Settings():
 
         self.SERVICE_LIST = [self.create_svc(svc, self.SERVICE_NAMES[svc], False) for svc in self.SERVICE_NAMES.keys()]
 
-        conf.logger.info(self.SERVICE_LIST)
+        self.logger.info(self.SERVICE_LIST)
 
         self.NEF_PROFILE = NFProfile(
             nf_instance_id=self.API_UUID,
