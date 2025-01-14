@@ -129,8 +129,9 @@ async def nf_register_heart_beat():
         # if response.status_code == httpx.codes.OK:
         #     new_nef_profile = NFProfile.from_dict(response.json())
         #     conf.logger.info(f"new profile {json.dumps(new_nef_profile)}")
-        if response.status_code != httpx.codes.OK:
-            conf.logger.info(response.text)
+        conf.logger.info(f"heart beat registration response {response.text}")
+        # if response.status_code != httpx.codes.OK:
+        #     conf.logger.info(response.text)
     return response.status_code
 
 async def nf_status_subscribe(nf_types):
