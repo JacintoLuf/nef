@@ -97,7 +97,7 @@ async def udm_event_exposure_subscribe(monEvtSub: MonitoringEventSubscription=No
             headers=conf.GLOBAL_HEADERS,
             data=json.dumps(ee_sub.to_dict())
         )
-        conf.logger.info(response.text)
+        conf.logger.info(f"UDM event subscribe resposne: {response.text}")
 
     if response.status_code==httpx.codes.CREATED:
         res_data = response.json()

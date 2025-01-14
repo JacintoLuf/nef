@@ -32,10 +32,11 @@ async def nrf_discovery():
                     p = conf.update_values(i)
                     profiles.append(NFProfile.from_dict(p))
                     res = await nfProfile.insert_one(p)
+            else:
+                conf.logger.info(f"{nf} not found!")
 
     else:
         for nf in list(conf.NF_SCOPES.keys()):
-            conf.logger.info(f"Discovering: {nf}")
             async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
                 response = await client.get(
                     f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/nf-instances",
@@ -45,6 +46,8 @@ async def nrf_discovery():
             if response.json():
                 r = response.json()
                 hrefs += [item["href"] for item in r["_links"]["items"]]
+            else:
+                conf.logger.info(f"{nf} not found!")
 
         for href in hrefs:
             async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
@@ -126,40 +129,31 @@ async def nf_register_heart_beat():
                 },
             data = json.dumps([{ "op": "replace", "path": "/nfStatus", "value": "REGISTERED" }])
         )
-        # if response.status_code == httpx.codes.OK:
-        #     new_nef_profile = NFProfile.from_dict(response.json())
-        #     conf.logger.info(f"new profile {json.dumps(new_nef_profile)}")
-        conf.logger.info(f"heart beat registration response {response.text}")
-        # if response.status_code != httpx.codes.OK:
-        #     conf.logger.info(response.text)
     return response.status_code
 
 async def nf_status_subscribe(nf_types):
-    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
+    for nf_type in nf_types:
         current_time = datetime.now(timezone.utc)
         validity_time = current_time + timedelta(days=1)
         formatted_time = validity_time.strftime("%Y-%m-%dT%H:%M:%SZ")
         sub = SubscriptionData(
             nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}/nnrf-nfm/v1/subscriptions",
             req_nf_instance_id=conf.NEF_PROFILE.nf_instance_id,
+            subscr_cond=SubscrCond(nf_type=nf_type),
             validity_time=formatted_time,
             req_nf_type="NEF",
             requester_features="1"
         )
-        for nf_type in nf_types:
+        async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             conf.logger.info(f"{nf_type} status subscribe")
-            sub.subscr_cond = SubscrCond(nf_type=nf_type)
             response = await client.post(
                 f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/subscriptions",
                 headers=conf.GLOBAL_HEADERS,
                 data=json.dumps(sub.to_dict())
             )
-            conf.logger.info(f"Response for {nf_type} status subscribe. status: {response.status_code}")
-            # conf.logger.info(response.text)
             if response.status_code == httpx.codes.CREATED:
+                conf.logger.info(f"{nf_type} status subscription created!")
                 data = response.json()
-                conf.logger.info(f"Requested data: {sub.to_str()}")
-                conf.logger.info(f"Response data: {data}")
                 try:
                     res_sub = SubscriptionData()
                     for k, val in data.items():
@@ -175,8 +169,6 @@ async def nf_status_subscribe(nf_types):
                             continue
                     # res_sub = SubscriptionData.from_dict(data)
                     conf.logger.info(f"{nf_type} Subscription created until {res_sub.validity_time}")
-                    # conf.logger.info(f"headers: {response.headers}")
-                    # conf.logger.info(f"Resource location: {response.headers['location']}")
                     try:
                         res = await subscriptionData.subscription_data_insert(data['subscriptionId'], res_sub)
                     except Exception as e:

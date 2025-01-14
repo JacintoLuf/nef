@@ -69,7 +69,6 @@ async def startup():
     try:
         conf.logger.info("Registering NEF...")
         res = await nrf_handler.nf_register()
-        conf.logger.info(f"res: {res.status_code}")
         if res.status_code in [httpx.codes.OK, httpx.codes.CREATED, httpx.codes.NO_CONTENT]:
             conf.REGISTERED = True
             await nrf_heartbeat()
@@ -80,8 +79,7 @@ async def startup():
         await nrf_handler.nrf_discovery()
         conf.logger.info("NF status subscribe...")
         await status_subscribe()
-        # if conf.CORE != "open5gs":
-        #     sleep(15)
+        asyncio.sleep(5)
         conf.logger.info("amf UE event subscription")
         await amf_handler.amf_event_exposure_subscribe()
         conf.logger.info("udm UE event subscription")
