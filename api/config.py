@@ -147,7 +147,11 @@ class Settings():
 
         self.REGISTERED = False
     
-    
+
+    def update_uuid(self):
+        self.API_UUID = str(uuid.uuid4())
+        self.NEF_PROFILE.nf_instance_id = self.API_UUID
+
     def create_svc(self, svc_name, supp_feat, oauth=False):
         version = NFServiceVersion(api_version_in_uri='v1', api_full_version='1.0.0')
         ip_ep = IpEndPoint(ipv4_address=self.HOSTS["NEF"][0][:-5], transport="TCP", port=7777)

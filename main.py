@@ -75,6 +75,7 @@ async def startup():
                 conf.REGISTERED = True
             else:
                 conf.logger.info("Registration failed!\nRetrying...")
+                conf.update_uuid()
         conf.logger.info("NF discovery...")
         await nrf_handler.nrf_discovery()
         conf.logger.info("NF status subscribe...")
@@ -105,7 +106,7 @@ async def retry_registration():
         while not conf.REGISTERED:
             conf.logger.info("Re-registering NEF...")
             res = await nrf_handler.nf_register()
-            if res.status_code == httpx.codes.CREATED:
+            if res.status_code in [httpx.codes.OK, httpx.codes.CREATED, httpx.codes.NO_CONTENT]:
                 conf.logger.info("Re-registration successful.")
                 conf.REGISTERED = True
                 await nrf_heartbeat()
