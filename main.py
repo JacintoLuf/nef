@@ -1,3 +1,4 @@
+import asyncio
 import json
 from time import time, sleep
 import httpx
@@ -110,6 +111,7 @@ async def retry_registration():
                 await nrf_heartbeat()
             else:
                 conf.logger.info("Re-registration failed. Retrying...")
+                await asyncio.sleep(5)
     except Exception as e:
         conf.logger.error(f"Error during re-registration: {e}")
 
