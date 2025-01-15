@@ -46,7 +46,9 @@ async def amf_event_exposure_subscribe():
             headers=conf.GLOBAL_HEADERS,
             data=json.dumps(amf_evt_sub.to_dict())
         )
-        conf.logger.info(f"AMF event subscribe resposne: {response.text}")
+        conf.logger.info(f"AMF event subscribe headers: {response.headers}")
+        conf.logger.info(f"AMF event subscribe resposne({response.status_code}): {response.text}")
+    return response
 
 async def amf_event_exposure_subscription_create(monEvtSub: MonitoringEventSubscription=None, afId: str=None, int_group_id: str = None):
 

@@ -79,18 +79,18 @@ async def startup():
         await nrf_handler.nrf_discovery()
         conf.logger.info("NF status subscribe...")
         await status_subscribe()
-        asyncio.sleep(5)
+        await asyncio.sleep(5)
         conf.logger.info("amf UE event subscription")
         await amf_handler.amf_event_exposure_subscribe()
         conf.logger.info("udm UE event subscription")
         res = await udm_handler.udm_event_exposure_subscribe()
     except Exception as e:
-        conf.logger.info(f"Error starting up: {e}")
+        conf.logger.info(f"Error starting up: {e!r}")
     # TLS dependant
     # conf.logger.info("Getting access token...")
     # res = await nrf_handler.nrf_get_access_token()
 
-@repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer - 2)
+@repeat_every(seconds=conf.NEF_PROFILE.heart_beat_timer)
 async def nrf_heartbeat():
     res = await nrf_handler.nf_register_heart_beat()
     if res not in [httpx.codes.OK, httpx.codes.CREATED, httpx.codes.NO_CONTENT]:

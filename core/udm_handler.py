@@ -97,17 +97,16 @@ async def udm_event_exposure_subscribe(monEvtSub: MonitoringEventSubscription=No
             headers=conf.GLOBAL_HEADERS,
             data=json.dumps(ee_sub.to_dict())
         )
-        conf.logger.info(f"UDM event subscribe resposne: {response.text}")
+        conf.logger.info(f"UDM event subscribe headers: {response.headers}")
+        conf.logger.info(f"UDM event subscribe resposne({response.status_code}): {response.text}")
 
     if response.status_code==httpx.codes.CREATED:
         res_data = response.json()
-        conf.logger.info(f"udm response data: {res_data}")
         created_sub = CreatedEeSubscription.from_dict(res_data)
-        if response.headers['location']:
-            res = createdEeSubscription.created_ee_subscriptionscription_insert(created_sub)
+        res = createdEeSubscription.created_ee_subscriptionscription_insert(created_sub)
+    return response
 
 async def udm_event_exposure_subscription_create(monEvtSub: MonitoringEventSubscription=None, ueIdentity: str=None, afId: str=None):
-    
     mon_configs = MonitoringConfiguration(
         event_type=monEvtSub.monitoring_type,
         # location_reporting_configuration= monEvtSub.location_area if monEvtSub.monitoring_type == "LOCATION_REPORTING" else None,

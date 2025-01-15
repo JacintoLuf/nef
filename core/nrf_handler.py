@@ -187,10 +187,12 @@ async def nf_status_unsubscribe(subId=None):
         for sub in subs:
             async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
                 response = await client.delete(
-                    f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/subscriptions/{sub['subscription_id']}",
+                    f"http://{conf.HOSTS['NRF'][0]}/nnrf-nfm/v1/subscriptions/{sub['subscriptionId']}",
                     headers=conf.GLOBAL_HEADERS
                 )
-        conf.logger.info(response.text)
+                conf.logger.info(f"Unsubscribing {sub['subscrCond']['nfType']} status with ID: {sub['subscriptionId']}")
+            if response.status_code in [httpx.codes.OK, httpx.codes.NO_CONTENT]:
+                conf.logger.info(f"{sub['subscrCond']['nfType']} status unsubscribed")
     else:
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.delete(
