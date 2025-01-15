@@ -110,7 +110,7 @@ async def retry_registration():
                 conf.logger.info("Re-registration failed. Retrying...")
                 await asyncio.sleep(5)
     except Exception as e:
-        conf.logger.error(f"Error during re-registration: {e}")
+        conf.logger.error(f"Error during re-registration: {e!r}")
 
 
 @repeat_every(seconds=86400)
@@ -194,12 +194,10 @@ async def amf_evt_sub_callback(request: Request):
 async def udm_evt_sub_callback(request: Request):
     conf.logger.info("endpoint: /nnef-callback/udm-event-sub-callback")
     conf.logger.info(request.method)
+    conf.logger.info(request.headers)
     conf.logger.info(request.body)
-    mon_evt_rep = MonitoringEventReport()
-    return Response(status_code=httpx.codes.OK, headers=conf.GLOBAL_HEADERS, content={
-        # 'MonitoringEventSubscription': mon_evt_sub.to_dict(),
-        'MonitoringEventReport': mon_evt_rep.to_dict()
-    })
+    # mon_evt_rep = MonitoringEventReport()
+    return Response(status_code=httpx.codes.OK, headers=conf.GLOBAL_HEADERS)
 
 @app.post("/nnrf-nfm/v1/subscriptions")
 async def nrf_notif(request: Request):
@@ -234,6 +232,15 @@ async def up_path_chg_notif(request: Request):
     if data:
         conf.logger.info(data)
     return Response(status_code=httpx.codes.NO_CONTENT)
+
+
+# @app.get("/udm_ee_subs")
+
+# @app.get("/amf_ee_subs")
+
+# @app.get("/pcf_ti_subs")
+
+# @app.get("/pcf_qos_subs")
 
 #---------------------monitoring-event------------------------
 @app.get("/monget")

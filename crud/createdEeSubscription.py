@@ -16,9 +16,9 @@ async def created_ee_subscriptionscription_get(subId: str=None):
             docs.append(doc)
         return None if not docs else docs
 
-async def created_ee_subscriptionscription_insert(sub: CreatedEeSubscription, location: str=None):
+async def created_ee_subscriptionscription_insert(subId: str, sub: CreatedEeSubscription, location: str=None):
     collection = db["created_ee_subscription"]
-    subId = str(uuid.uuid4().hex)
+    # subId = str(uuid.uuid4().hex)
     document = {'_id': subId, 'sub': sub.to_dict(), 'location': location}
     try:
         result = await collection.insert_one(document)

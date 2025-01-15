@@ -10,6 +10,8 @@ from models.ee_subscription import EeSubscription
 from models.created_ee_subscription import CreatedEeSubscription
 from models.monitoring_configuration import MonitoringConfiguration
 from models.reporting_options import ReportingOptions
+from models.location_reporting_configuration import LocationReportingConfiguration
+from models.pdu_session_status_cfg import PduSessionStatusCfg
 import crud.createdEeSubscription as createdEeSubscription
 
 async def udm_sdm_id_translation(ueId: str=None, ue_req: UeIdReq=None):
@@ -49,45 +51,25 @@ async def udm_sdm_group_identifiers_translation(ext_group_id: str=None):
     return response
 
 async def udm_event_exposure_subscribe(monEvtSub: MonitoringEventSubscription=None, afId: str=None):
-    if monEvtSub:
-        ueIdentity = "anyUE"
-        mon_conf = {'1': MonitoringConfiguration(event_type=monEvtSub.monitoring_type, immediate_flag=True if monEvtSub.maximum_number_of_reports==1 else False, af_id=afId)}
-        repo_opt = ReportingOptions(
-            report_mode=None,
-            max_num_of_reports=monEvtSub.maximum_number_of_reports,
-            expiry=monEvtSub.monitor_expire_time,
-            sampling_ratio=monEvtSub.sampling_interval,
-            guard_time=monEvtSub.group_report_guard_time,
-            report_period=monEvtSub.rep_period,
-            notif_flag=None
-        )
-    else:
-        ueIdentity = "anyUE"
-        mon_conf = {
-            '1': MonitoringConfiguration(event_type="LOSS_OF_CONNECTIVITY"),
-            '2': MonitoringConfiguration(event_type="ACCESS_TYPE_REPORT"),
-            '3': MonitoringConfiguration(event_type="PDN_CONNECTIVITY_STATUS"),
-            '4': MonitoringConfiguration(event_type="UE_CONNECTION_MANAGEMENT_STATE"),
-            '5': MonitoringConfiguration(event_type="REGISTRATION_STATE_REPORT"),
-            '6': MonitoringConfiguration(event_type="CONNECTIVITY_STATE_REPORT"),
-            '7': MonitoringConfiguration(event_type="PDU_SES_REL"),
-            '8': MonitoringConfiguration(event_type="PDU_SES_EST")
-        }
-        current_time = datetime.now(timezone.utc)
-        validity_time = current_time + timedelta(days=1)
-        formatted_time = validity_time.strftime("%Y-%m-%dT%H:%M:%SZ")
-        repo_opt = ReportingOptions(
-            report_mode="ON_EVENT_DETECTION",
-            max_num_of_reports=1000,
-            expiry=formatted_time
-        )
+    ueIdentity = "anyUE"
+    loc_conf = LocationReportingConfiguration(current_location=False)
+    pdu_conf = PduSessionStatusCfg("internet")
+    mon_conf = {
+        '1': MonitoringConfiguration(event_type="LOSS_OF_CONNECTIVITY"),
+        '2': MonitoringConfiguration(event_type="LOCATION_REPORTING", location_reporting_configuration=loc_conf),
+        '3': MonitoringConfiguration(event_type="PDN_CONNECTIVITY_STATUS", pdu_session_status_cfg=pdu_conf),
+    }
+    repo_opt = ReportingOptions(
+        report_mode="ON_EVENT_DETECTION",
+        max_num_of_reports=1000,
+    )
 
     ee_sub = EeSubscription(
         callback_reference=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/udm-event-sub-callback",
         monitoring_configurations=mon_conf,
         reporting_options=repo_opt,
-        # supported_features="",
-        notify_correlation_id=str(uuid.uuid4()),
+        # supported_features="1",
+        notify_correlation_id=str(uuid.uuid4().hex),
         second_callback_ref=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/udm-event-sub-callback"
     )
     # conf.logger.info(ee_sub.to_dict())
@@ -103,11 +85,11 @@ async def udm_event_exposure_subscribe(monEvtSub: MonitoringEventSubscription=No
     if response.status_code==httpx.codes.CREATED:
         res_data = response.json()
         created_sub = CreatedEeSubscription.from_dict(res_data)
-        res = createdEeSubscription.created_ee_subscriptionscription_insert(created_sub)
+        res = await createdEeSubscription.created_ee_subscriptionscription_insert(created_sub.ee_subscription.subscription_id, created_sub)
     return response
 
 async def udm_event_exposure_subscription_create(monEvtSub: MonitoringEventSubscription=None, ueIdentity: str=None, afId: str=None):
-    mon_configs = MonitoringConfiguration(
+    mon_configs = {'1': MonitoringConfiguration(
         event_type=monEvtSub.monitoring_type,
         # location_reporting_configuration= monEvtSub.location_area if monEvtSub.monitoring_type == "LOCATION_REPORTING" else None,
         # association_type=,
@@ -120,7 +102,7 @@ async def udm_event_exposure_subscription_create(monEvtSub: MonitoringEventSubsc
         pdu_session_status_cfg=monEvtSub if monEvtSub.monitoring_type == "PDN_CONNECTIVITY_STATUS" else None,
         afId=afId,
         idle_status_ind=monEvtSub.idle_status_indication if monEvtSub.monitoring_type == "UE_REACHABILITY_FOR_DATA" or monEvtSub.monitoring_type == "AVAILABILITY_AFTER_DDN_FAILURE" else None
-        )
+    )}
     
     rep_opts = ReportingOptions(
         report_mode="PERIODIC" if monEvtSub.maximum_number_of_reports or monEvtSub.monitor_expire_time else "ON_EVENT_DETECTION",
@@ -128,7 +110,6 @@ async def udm_event_exposure_subscription_create(monEvtSub: MonitoringEventSubsc
         expiry=monEvtSub.monitor_expire_time,
         # sampling_ratio=monEvtSub,
         report_period=monEvtSub.rep_period,
-        # notif_flag=monEvtSub
     )
 
     ee_sub = EeSubscription(
