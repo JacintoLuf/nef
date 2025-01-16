@@ -52,11 +52,11 @@ async def udm_sdm_group_identifiers_translation(ext_group_id: str=None):
 
 async def udm_event_exposure_subscribe(monEvtSub: MonitoringEventSubscription=None, afId: str=None):
     ueIdentity = "anyUE"
-    loc_conf = LocationReportingConfiguration(current_location=False)
+    loc_conf = LocationReportingConfiguration(current_location=True)
     pdu_conf = PduSessionStatusCfg("internet")
     mon_conf = {
         # '1': MonitoringConfiguration(event_type="LOSS_OF_CONNECTIVITY"),
-        # '2': MonitoringConfiguration(event_type="LOCATION_REPORTING", location_reporting_configuration=loc_conf),
+        '2': MonitoringConfiguration(event_type="LOCATION_REPORTING", location_reporting_configuration=loc_conf),
         '3': MonitoringConfiguration(event_type="PDN_CONNECTIVITY_STATUS", immediate_flag=True, pdu_session_status_cfg=pdu_conf),
     }
     # repo_opt = ReportingOptions(
