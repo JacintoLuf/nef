@@ -8,13 +8,12 @@ from models.amf_created_event_subscription import AmfCreatedEventSubscription
 from models.amf_event_subscription import AmfEventSubscription
 from models.amf_event import AmfEvent
 from models.amf_event_mode import AmfEventMode
-import crud.amfCreatedEventSubscription as amfCreatedEventSubscription
 
 async def amf_event_exposure_subscribe():
     evt_list = [
         AmfEvent(
             type="REGISTRATION_STATE_REPORT",
-            # immediate_flag=True,
+            immediate_flag=True,
             # max_reports=100,
             # report_ue_reachable=True
         ),
@@ -32,7 +31,7 @@ async def amf_event_exposure_subscribe():
         # )
         AmfEvent(
             type="UES_IN_AREA_REPORT",
-            # immediate_flag=True,
+            immediate_flag=True,
             # max_reports=100,
             report_ue_reachable=True
         )
@@ -52,8 +51,16 @@ async def amf_event_exposure_subscribe():
                 headers=conf.GLOBAL_HEADERS,
                 data=json.dumps(amf_evt_sub.to_dict())
             )
-            # conf.logger.info(f"AMF event subscribe headers: {response.headers}")
-            conf.logger.info(f"AMF {evt.type} event subscribe resposne({response.status_code}): {response.text}")
+            try:
+                data_dict = await response.json()
+                created_evt = AmfCreatedEventSubscription.from_dict(data_dict)
+                if not created_evt.report_list:
+                    conf.logger.info(f"AMF {evt.type} event subscribe resposne({response.status_code}): {response.text}")
+                else:
+                    for report in created_evt.report_list:
+                        conf.logger.info(f"{report.type}: {report}")
+            except Exception as e:
+                conf.logger.info(e.__str__)
 
     # if response.status_code==httpx.codes.CREATED:
     #     res_data = response.json()

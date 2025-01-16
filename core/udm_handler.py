@@ -57,17 +57,17 @@ async def udm_event_exposure_subscribe(monEvtSub: MonitoringEventSubscription=No
     mon_conf = {
         # '1': MonitoringConfiguration(event_type="LOSS_OF_CONNECTIVITY"),
         # '2': MonitoringConfiguration(event_type="LOCATION_REPORTING", location_reporting_configuration=loc_conf),
-        '3': MonitoringConfiguration(event_type="PDN_CONNECTIVITY_STATUS", pdu_session_status_cfg=pdu_conf),
+        '3': MonitoringConfiguration(event_type="PDN_CONNECTIVITY_STATUS", immediate_flag=True, pdu_session_status_cfg=pdu_conf),
     }
-    repo_opt = ReportingOptions(
-        report_mode="ON_EVENT_DETECTION",
-        # max_num_of_reports=1000,
-    )
+    # repo_opt = ReportingOptions(
+    #     report_mode="ON_EVENT_DETECTION",
+    #     max_num_of_reports=1000,
+    # )
 
     ee_sub = EeSubscription(
         callback_reference=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/udm-event-sub-callback",
         monitoring_configurations=mon_conf,
-        reporting_options=repo_opt,
+        # reporting_options=repo_opt,
         # supported_features="1",
         notify_correlation_id=str(uuid.uuid4().hex),
         second_callback_ref=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/udm-event-sub-callback"
@@ -79,13 +79,20 @@ async def udm_event_exposure_subscribe(monEvtSub: MonitoringEventSubscription=No
             headers=conf.GLOBAL_HEADERS,
             data=json.dumps(ee_sub.to_dict())
         )
-        conf.logger.info(f"UDM event subscribe headers: {response.headers}")
-        conf.logger.info(f"UDM event subscribe resposne({response.status_code}): {response.text}")
-
-    if response.status_code==httpx.codes.CREATED:
-        res_data = response.json()
-        created_sub = CreatedEeSubscription.from_dict(res_data)
-        res = await createdEeSubscription.created_ee_subscriptionscription_insert(ee_sub.notify_correlation_id, created_sub)
+        try:
+            data_dict = await response.json()
+            created_evt = CreatedEeSubscription.from_dict(data_dict)
+            if not created_evt.event_reports:
+                conf.logger.info(f"UDM event subscribe resposne({response.status_code}): {response.text}")
+            else:
+                for report in created_evt.report_list:
+                    conf.logger.info(f"{report.event_type}: {report}")
+        except Exception as e:
+            conf.logger.info(e.__str__)
+    # if response.status_code==httpx.codes.CREATED:
+    #     res_data = response.json()
+    #     created_sub = CreatedEeSubscription.from_dict(res_data)
+    #     res = await createdEeSubscription.created_ee_subscriptionscription_insert(ee_sub.notify_correlation_id, created_sub)
     return response
 
 async def udm_event_exposure_subscription_create(monEvtSub: MonitoringEventSubscription=None, ueIdentity: str=None, afId: str=None):
