@@ -60,7 +60,7 @@ async def amf_event_exposure_subscribe():
                     for report in created_evt.report_list:
                         conf.logger.info(f"{report.type}: {report}")
             except Exception as e:
-                conf.logger.info(e.__str__)
+                conf.logger.info(e)
 
     # if response.status_code==httpx.codes.CREATED:
     #     res_data = response.json()

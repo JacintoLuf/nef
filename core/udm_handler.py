@@ -88,7 +88,7 @@ async def udm_event_exposure_subscribe(monEvtSub: MonitoringEventSubscription=No
                 for report in created_evt.report_list:
                     conf.logger.info(f"{report.event_type}: {report}")
         except Exception as e:
-            conf.logger.info(e.__str__)
+            conf.logger.info(e)
     # if response.status_code==httpx.codes.CREATED:
     #     res_data = response.json()
     #     created_sub = CreatedEeSubscription.from_dict(res_data)
