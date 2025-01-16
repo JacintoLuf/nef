@@ -51,16 +51,17 @@ async def amf_event_exposure_subscribe():
                 headers=conf.GLOBAL_HEADERS,
                 data=json.dumps(amf_evt_sub.to_dict())
             )
-            try:
-                data_dict = await response.json()
-                created_evt = AmfCreatedEventSubscription.from_dict(data_dict)
-                if not created_evt.report_list:
-                    conf.logger.info(f"AMF {evt.type} event subscribe resposne({response.status_code}): {response.text}")
-                else:
-                    for report in created_evt.report_list:
-                        conf.logger.info(f"{report.type}: {report}")
-            except Exception as e:
-                conf.logger.info("error")
+        try:
+            data_dict = await response.json()
+            created_evt = AmfCreatedEventSubscription.from_dict(data_dict)
+            if not created_evt.report_list:
+                conf.logger.info(f"AMF {evt.type} event subscribe resposne({response.status_code}): {response.text}")
+            else:
+                conf.logger.info(f"AMF {evt.type} event subscribe resposne({response.status_code}): {response.text}")
+                for report in created_evt.report_list:
+                    conf.logger.info(f"{report.type}: {report}")
+        except Exception as e:
+            conf.logger.info("error")
 
     # if response.status_code==httpx.codes.CREATED:
     #     res_data = response.json()
