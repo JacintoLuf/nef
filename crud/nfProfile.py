@@ -32,7 +32,7 @@ async def insert_one(profile):
         return result.modified_count or result.upserted_id
     except DuplicateKeyError:
         conf.logger.info("duplicate key")
-        return None
+        return -1
     except Exception as e:
         conf.logger.error(e)
         return None

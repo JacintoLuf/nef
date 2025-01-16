@@ -18,11 +18,10 @@ async def subscription_data_insert(subId: str, sub: SubscriptionData):
     document = {'_id': subId, 'sub': sub.to_dict()}
     try:
         result = await collection.insert_one(document)
-        conf.logger.info(result.inserted_id)
         return result.inserted_id
     except DuplicateKeyError:
         conf.logger.info("duplicate key")
-        return None
+        return -1
     except Exception as e:
         conf.logger.error(e)
         return None

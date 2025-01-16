@@ -362,7 +362,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
         if mon_evt_sub.external_group_id:
             internal_id = await udm_handler.udm_sdm_group_identifiers_translation(mon_evt_sub.external_group_id)
             if internal_id:
-                res = await amf_handler.amf_event_exposure_subscription_create(internal_id)
+                res = await amf_handler.amf_event_exposure_subscription_create(mon_evt_sub, scsAsId, internal_id)
         else:
             res = await amf_handler.amf_event_exposure_subscription_create(mon_evt_sub, scsAsId)
 
@@ -370,7 +370,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
         # if mon_evt_sub.request_test_notification:
         if mon_evt_sub.maximum_number_of_reports > 1:
             inserted = monitoringEventSubscription.monitoring_event_subscriptionscription_insert(scsAsId, mon_evt_sub, res.headers['location'])
-            location = f"http://{conf.HOSTS['NEF'][0]}/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{res}"
+            location = f"http://{conf.HOSTS['NEF'][0]}/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{inserted}"
             mon_evt_sub._self = location
             #mon_evt_sub.monitor_expire_time = 1 hr
             headers = conf.GLOBAL_HEADERS
@@ -381,7 +381,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
             return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
         elif mon_evt_sub.maximum_number_of_reports == 1:
             inserted = monitoringEventSubscription.monitoring_event_subscriptionscription_insert(scsAsId, mon_evt_sub, res.headers['location'])
-            location = f"http://{conf.HOSTS['NEF'][0]}/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{res}"
+            location = f"http://{conf.HOSTS['NEF'][0]}/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{inserted}"
             mon_evt_sub._self = location
             headers = conf.GLOBAL_HEADERS
             headers['location'] = location

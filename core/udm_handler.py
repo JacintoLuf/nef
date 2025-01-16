@@ -23,7 +23,7 @@ async def udm_sdm_id_translation(ueId: str=None, ue_req: UeIdReq=None):
         if ue_req.mtc_provider_id:
             params['mtc-provider-info'] = ue_req.mtc_provider_id
         if ue_req.af_id:
-            params['ad-id'] = ue_req.af_id
+            params['af-id'] = ue_req.af_id
 
     try:
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
@@ -55,13 +55,13 @@ async def udm_event_exposure_subscribe(monEvtSub: MonitoringEventSubscription=No
     loc_conf = LocationReportingConfiguration(current_location=False)
     pdu_conf = PduSessionStatusCfg("internet")
     mon_conf = {
-        '1': MonitoringConfiguration(event_type="LOSS_OF_CONNECTIVITY"),
-        '2': MonitoringConfiguration(event_type="LOCATION_REPORTING", location_reporting_configuration=loc_conf),
+        # '1': MonitoringConfiguration(event_type="LOSS_OF_CONNECTIVITY"),
+        # '2': MonitoringConfiguration(event_type="LOCATION_REPORTING", location_reporting_configuration=loc_conf),
         '3': MonitoringConfiguration(event_type="PDN_CONNECTIVITY_STATUS", pdu_session_status_cfg=pdu_conf),
     }
     repo_opt = ReportingOptions(
         report_mode="ON_EVENT_DETECTION",
-        max_num_of_reports=1000,
+        # max_num_of_reports=1000,
     )
 
     ee_sub = EeSubscription(
@@ -85,7 +85,7 @@ async def udm_event_exposure_subscribe(monEvtSub: MonitoringEventSubscription=No
     if response.status_code==httpx.codes.CREATED:
         res_data = response.json()
         created_sub = CreatedEeSubscription.from_dict(res_data)
-        res = await createdEeSubscription.created_ee_subscriptionscription_insert(created_sub.ee_subscription.subscription_id, created_sub)
+        res = await createdEeSubscription.created_ee_subscriptionscription_insert(ee_sub.notify_correlation_id, created_sub)
     return response
 
 async def udm_event_exposure_subscription_create(monEvtSub: MonitoringEventSubscription=None, ueIdentity: str=None, afId: str=None):
