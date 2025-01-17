@@ -1,0 +1,69 @@
+dbURI: "mongodb://{{ .Release.Name }}-mongodb/open5gs"
+
+populate:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: gradiant/open5gs-dbctl
+    tag: 0.10.3
+    pullPolicy: IfNotPresent
+  initCommands: 
+  # example of initCommands:
+    - open5gs-dbctl add_ue_with_slice 208990000000002 fd4b1e644a2dd4d2c8c03cf5fe12238d 28a182edf3c70667a90a66c619cec91f internet 1 111111
+    - open5gs-dbctl add_ue_with_slice 208990000000003 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+    - open5gs-dbctl add_ue_with_slice 208990000000004 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+    - open5gs-dbctl add_ue_with_slice 208990000000005 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+
+# Common
+mongodb:
+  enabled: true
+  auth:
+    enabled: false
+smf:
+  enabled: true
+upf:
+  enabled: false
+webui:
+  enabled: true
+
+# 4G
+hss:
+  enabled: false
+  mongodb:
+    enabled: false
+mme:
+  enabled: false
+pcrf:
+  enabled: false
+  mongodb:
+    enabled: false
+sgwc:
+  enabled: false
+sgwu:
+  enabled: false
+
+# 5G
+amf:
+  enabled: true
+ausf:
+  enabled: true
+bsf:
+  enabled: true
+nrf:
+  enabled: true
+nssf:
+  enabled: true
+pcf:
+  enabled: true
+  mongodb:
+    enabled: false
+scp:
+  enabled: true
+  mongodb:
+    enabled: false
+udm:
+  enabled: true
+udr:
+  enabled: true
+  mongodb:
+    enabled: false
