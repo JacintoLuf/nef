@@ -81,7 +81,7 @@ async def udm_event_exposure_subscribe(monEvtSub: MonitoringEventSubscription=No
         )
         try:
             conf.logger.info(f"UDM event subscribe resposne({response.status_code}): {response.text}")
-            data_dict = await response.json()
+            data_dict = response.json()
             created_evt = CreatedEeSubscription.from_dict(data_dict)
             for report in created_evt.report_list:
                 conf.logger.info(f"{report.event_type}: {report}")
