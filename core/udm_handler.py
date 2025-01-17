@@ -80,11 +80,13 @@ async def udm_event_exposure_subscribe(monEvtSub: MonitoringEventSubscription=No
             data=json.dumps(ee_sub.to_dict())
         )
         try:
-            conf.logger.info(f"UDM event subscribe resposne({response.status_code}): {response.text}")
             data_dict = response.json()
             created_evt = CreatedEeSubscription.from_dict(data_dict)
-            for report in created_evt.report_list:
-                conf.logger.info(f"{report.event_type}: {report}")
+            if not created_evt.event_reports:
+                conf.logger.info(f"UDM event subscribe resposne({response.status_code}): No reports")
+            else:
+                for report in created_evt.event_reports:
+                    conf.logger.info(f"{report.event_type}: {report}")
         except Exception as e:
             conf.logger.info(e)
     # if response.status_code==httpx.codes.CREATED:

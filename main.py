@@ -8,6 +8,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
 from fastapi_utils.tasks import repeat_every
 from typing import Callable, Coroutine
+from models.amf_created_event_subscription import AmfCreatedEventSubscription
 from session import clean_db
 from api.config import conf
 from models.problem_details import ProblemDetails
@@ -15,6 +16,7 @@ from models.pcf_binding import PcfBinding
 from models.monitoring_event_subscription import MonitoringEventSubscription
 from models.monitoring_event_report import MonitoringEventReport
 from models.monitoring_event_reports import MonitoringEventReports
+from models.created_ee_subscription import CreatedEeSubscription
 from models.traffic_influ_sub import TrafficInfluSub
 from models.traffic_influ_sub_patch import TrafficInfluSubPatch
 from models.event_notification import EventNotification
@@ -27,6 +29,7 @@ import core.bsf_handler as bsf_handler
 import core.pcf_handler as pcf_handler
 import core.udm_handler as udm_handler
 import core.udr_handler as udr_handler
+import core.af_handler as af_handler
 import crud.nfProfile as nfProfile
 import crud.trafficInfluSub as trafficInfluSub
 import crud.asSessionWithQoSSub as asSessionWithQoSSub
@@ -356,18 +359,27 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
     if mon_evt_sub.monitoring_type == "NUMBER_OF_UES_IN_AN_AREA" and mon_evt_sub.maximum_number_of_reports != 1:
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Only one-time reporting supported for this event.')
 
-    elif mon_evt_sub.monitoring_type in ['LOSS_OF_CONNECTIVITY','UE_REACHABILITY','LOCATION_REPORTING','CHANGE_OF_IMSI_IMEI_ASSOCIATION','ROAMING_STATUS','COMMUNICATION_FAILURE','PDN_CONNECTIVITY_STATUS','AVAILABILITY_AFTER_DDN_FAILURE','API_SUPPORT_CAPABILITY']:
+    if mon_evt_sub.monitoring_type in ['LOSS_OF_CONNECTIVITY','UE_REACHABILITY','LOCATION_REPORTING','CHANGE_OF_IMSI_IMEI_ASSOCIATION','ROAMING_STATUS','COMMUNICATION_FAILURE','PDN_CONNECTIVITY_STATUS','AVAILABILITY_AFTER_DDN_FAILURE','API_SUPPORT_CAPABILITY']:
         res = await udm_handler.udm_event_exposure_subscription_create(mon_evt_sub, scsAsId)
-    if mon_evt_sub.monitoring_type in ['NUMBER_OF_UES_IN_AN_AREA']:
+        data = res.json()
+        created_evt = CreatedEeSubscription.from_dict(data)
+        if created_evt.event_reports:
+            mon_evt_sub.monitoring_event_report = af_handler.af_imidiate_report(mon_rep=created_evt.event_reports)
+    if mon_evt_sub.monitoring_type in ['NUMBER_OF_UES_IN_AN_AREA', 'REGISTRATION_STATE_REPORT', 'CONNECTIVITY_STATE_REPORT']:
         if mon_evt_sub.external_group_id:
             internal_id = await udm_handler.udm_sdm_group_identifiers_translation(mon_evt_sub.external_group_id)
             if internal_id:
                 res = await amf_handler.amf_event_exposure_subscription_create(mon_evt_sub, scsAsId, internal_id)
         else:
             res = await amf_handler.amf_event_exposure_subscription_create(mon_evt_sub, scsAsId)
+        data = res.json()
+        created_evt = AmfCreatedEventSubscription.from_dict(data_dict)
+        if not created_evt.report_list:
+            mon_evt_sub.monitoring_event_report = af_handler.af_imidiate_report(amf_evt_rep=created_evt.report_list)
 
     if res.status_code == httpx.codes.CREATED:
-        # if mon_evt_sub.request_test_notification:
+        if mon_evt_sub.request_test_notification:
+            mon_evt_sub
         if mon_evt_sub.maximum_number_of_reports > 1:
             inserted = monitoringEventSubscription.monitoring_event_subscriptionscription_insert(scsAsId, mon_evt_sub, res.headers['location'])
             location = f"http://{conf.HOSTS['NEF'][0]}/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{inserted}"
@@ -390,7 +402,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
             headers.update({'X-ElapsedTime Header': end_time})
             return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
     else:
-        return res ################################
+        return Response(status_code=res.status_code, headers=headers, content="Subscription creation failed!")
         
 
 

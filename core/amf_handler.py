@@ -37,31 +37,29 @@ async def amf_event_exposure_subscribe():
         )
     ]
     
-    for evt in evt_list:
-        amf_sub = AmfEventSubscription(
-            event_list=[evt],
-            event_notify_uri=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/amf-event-sub-callback",
-            nf_id=conf.API_UUID,
-            any_ue=True
+    amf_sub = AmfEventSubscription(
+        event_list=evt_list,
+        event_notify_uri=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/amf-event-sub-callback",
+        nf_id=conf.API_UUID,
+        any_ue=True
+    )
+    amf_evt_sub = AmfCreateEventSubscription(subscription=amf_sub)
+    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
+        response = await client.post(
+            f"http://{conf.HOSTS['AMF'][0]}/namf-evts/v1/subscriptions",
+            headers=conf.GLOBAL_HEADERS,
+            data=json.dumps(amf_evt_sub.to_dict())
         )
-        amf_evt_sub = AmfCreateEventSubscription(subscription=amf_sub)
-        async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
-            response = await client.post(
-                f"http://{conf.HOSTS['AMF'][0]}/namf-evts/v1/subscriptions",
-                headers=conf.GLOBAL_HEADERS,
-                data=json.dumps(amf_evt_sub.to_dict())
-            )
-        try:
-            data_dict = response.json()
-            created_evt = AmfCreatedEventSubscription.from_dict(data_dict)
-            if not created_evt.report_list:
-                conf.logger.info(f"AMF {evt.type} event subscribe resposne({response.status_code}): {response.text}")
-            else:
-                conf.logger.info(f"AMF {evt.type} event subscribe resposne({response.status_code}): {response.text}")
-                for report in created_evt.report_list:
-                    conf.logger.info(f"{report.type}: {report}")
-        except Exception as e:
-            conf.logger.info(e)
+    try:
+        data_dict = response.json()
+        created_evt = AmfCreatedEventSubscription.from_dict(data_dict)
+        if not created_evt.report_list:
+            conf.logger.info(f"AMF event subscribe resposne({response.status_code}): No reports")
+        else:
+            for report in created_evt.report_list:
+                conf.logger.info(f"{report.type}: {report}")
+    except Exception as e:
+        conf.logger.info(e)
 
     # if response.status_code==httpx.codes.CREATED:
     #     res_data = response.json()
