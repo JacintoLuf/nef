@@ -837,8 +837,10 @@ async def ue_id_retrieval(data: Request):
     start_time = time()
     try:
         data_dict = await data.json()
+        conf.logger.info(data_dict)
         ue_req = UeIdReq.from_dict(data_dict)
         conf.logger.info(f"translating: {ue_req}")
+        ue_req.ue_ip_addr = data_dict['ueIpAddr']
     except ValueError as e:
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"Failed to parse message. Err: {e.__str__}")
     except Exception as e:
