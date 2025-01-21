@@ -837,7 +837,8 @@ async def ue_id_retrieval(data: Request):
     start_time = time()
     try:
         data_dict = await data.json()
-        ue_req = UeIdReq().from_dict(data_dict)
+        ue_req = UeIdReq.from_dict(data_dict)
+        conf.logger.info(f"translating: {ue_req}")
     except ValueError as e:
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"Failed to parse message. Err: {e.__str__}")
     except Exception as e:
@@ -867,8 +868,8 @@ async def ue_id_retrieval(data: Request):
 
     ue_info = UeIdInfo(external_id=translated_id)
     end_time = (time() - start_time) * 1000
-    # headers = conf.GLOBAL_HEADERS
-    headers = {'X-ElapsedTime Header': end_time}
+    headers = conf.GLOBAL_HEADERS
+    headers.update({'X-ElapsedTime Header': end_time})
     return Response(status_code=httpx.codes.OK, headers=headers, content=ue_info)
 
 #----------------------clean db-------------------
