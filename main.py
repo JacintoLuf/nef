@@ -867,8 +867,8 @@ async def ue_id_retrieval(data: Request):
 
     ue_info = UeIdInfo(external_id=translated_id)
     end_time = (time() - start_time) * 1000
-    headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime Header': end_time})
+    # headers = conf.GLOBAL_HEADERS
+    headers = {'X-ElapsedTime Header': end_time}
     return Response(status_code=httpx.codes.OK, headers=headers, content=ue_info)
 
 #----------------------clean db-------------------
