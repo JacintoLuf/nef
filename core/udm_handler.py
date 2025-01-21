@@ -140,7 +140,3 @@ async def udm_event_exposure_subscription_create(monEvtSub: MonitoringEventSubsc
 async def udm_event_exposure_subscription_update(monEvtSub: MonitoringEventSubscription=None, afId: str=None):
 
     return
-
-async def udm_event_exposure_subscription_delete(monEvtSub: MonitoringEventSubscription=None, afId: str=None):
-    
-    return

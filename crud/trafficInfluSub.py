@@ -6,6 +6,11 @@ from models.traffic_influ_sub import TrafficInfluSub
 from models.traffic_influ_sub_patch import TrafficInfluSubPatch
 
 
+async def check_id(subId: str):
+    collection = db["traffic_influ_sub"]
+    exists = await collection.find_one({'_id': subId})
+    return True if exists else False
+
 async def traffic_influence_subscription_get(afId: str=None, subId: str=None):
     collection = db["traffic_influ_sub"]
     if afId and subId:
@@ -16,6 +21,9 @@ async def traffic_influence_subscription_get(afId: str=None, subId: str=None):
         async for doc in collection.find({'afId': afId}):
             docs.append(doc)
         return None if not docs else docs
+    elif subId:
+        doc = await collection.find_one({'_id': subId})
+        return None if not doc else doc
     else:
         #------security breach-----------
         docs = []

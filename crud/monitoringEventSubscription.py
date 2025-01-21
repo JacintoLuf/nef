@@ -22,7 +22,7 @@ async def monitoring_event_subscriptionscription_get(scsAsId: str=None, subId: s
             docs.append(doc)
         return None if not docs else docs
 
-async def monitoring_event_subscriptionscription_insert(scsAsId: str, sub: MonitoringEventSubscription, location: str):
+async def monitoring_event_subscriptionscription_insert(scsAsId: str, sub: MonitoringEventSubscription, location: str = None):
     collection = db["monitoring_event_subscription"]
     subId = str(uuid.uuid4().hex)
     document = {'_id': subId, 'scsAsId': scsAsId, 'sub': sub.to_dict(), 'location': location}

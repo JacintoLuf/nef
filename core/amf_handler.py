@@ -73,6 +73,7 @@ async def amf_event_exposure_subscription_create(monEvtSub: MonitoringEventSubsc
         type=monEvtSub.monitoring_type,
         max_reports=monEvtSub.maximum_number_of_reports,
         max_response_time=monEvtSub.maximum_response_time if monEvtSub.monitoring_type == "UE_REACHABILITY" else None,
+        immediate_flag=monEvtSub.immediate_rep
         )]
     amf_event_mode = AmfEventMode(
         trigger="ONE_TIME" if monEvtSub.maximum_number_of_reports==1 else "PERIODIC" if monEvtSub.rep_period else "CONTINUOUS",
@@ -103,17 +104,6 @@ async def amf_event_exposure_subscription_create(monEvtSub: MonitoringEventSubsc
     return response
 
 async def amf_event_exposure_subscription_update(app_session_id: str=None):
-    if app_session_id:
-        async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
-            response = await client.post(
-                f"http://{conf.HOSTS['AMF'][0]}/namf-evts/v1/subscriptions",
-                headers=conf.GLOBAL_HEADERS
-            )
-            conf.logger.info(response.text)
-        return response.json()
-    return None
-
-async def amf_event_exposure_subscription_delete(app_session_id: str=None):
     if app_session_id:
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.post(

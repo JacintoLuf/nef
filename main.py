@@ -20,6 +20,7 @@ from models.created_ee_subscription import CreatedEeSubscription
 from models.traffic_influ_sub import TrafficInfluSub
 from models.traffic_influ_sub_patch import TrafficInfluSubPatch
 from models.event_notification import EventNotification
+from models.nsmf_event_exposure_notification import NsmfEventExposureNotification
 from models.ue_id_req import UeIdReq
 from models.ue_id_info import UeIdInfo
 from models.as_session_with_qo_s_subscription import AsSessionWithQoSSubscription
@@ -208,42 +209,39 @@ async def nrf_notif(request: Request):
     conf.logger.info(request.method)
     conf.logger.info(request.body)
 
-@app.put("/up_path_change")
-async def up_path_chg_notif(request: Request):
+@app.post("/up_path_change/{subId}")
+# @app.post("/up_path_change")
+async def up_path_chg_notif(subId: str, request: Request):
+# async def up_path_chg_notif(request: Request):
     conf.logger.info("endpoint: /up_path_change")
     conf.logger.info(request.method)
     conf.logger.info(request.text)
+    ##############################################################
     try:
         data = await request.json()
+        smf_notif = NsmfEventExposureNotification(data)
+        notifs = smf_notif.event_notifs
     except Exception as e:
-        conf.logger.info(f"{e!r}")
-    evt_notif = EventNotification()
-    if data:
-        conf.logger.info(data)
+        conf.logger.info(e.__str__)
+    for notif in notifs:
+        evt_notif = EventNotification(
+            dnai_chg_type=notif.dnai_chg_type,
+            source_traffic_route=notif.source_tra_routing,
+            subscribed_event=notif.event,
+            target_traffic_route=notif.target_tra_routing,
+            source_dnai=notif.source_dnai,
+            target_dnai=notif.target_dnai,
+            gpsi=notif.gpsi,
+            src_ue_ipv4_addr=notif.source_ue_ipv4_addr,
+            src_ue_ipv6_prefix=notif.source_ue_ipv6_prefix,
+            tgt_ue_ipv4_addr=notif.target_ue_ipv4_addr,
+            tgt_ue_ipv6_prefix=notif.target_ue_ipv6_prefix,
+            ue_mac=notif.ue_mac,
+        )
+        res = await af_handler.af_up_path_chg_notif(subId, evt_notif)
     return Response(status_code=httpx.codes.NO_CONTENT)
 
-@app.post("/up_path_change")
-async def up_path_chg_notif(request: Request):
-    conf.logger.info("endpoint: /up_path_change")
-    conf.logger.info(request.method)
-    conf.logger.info(request.text)
-    try:
-        data = await request.json()
-    except Exception as e:
-        conf.logger.info(f"{e!r}")
-    evt_notif = EventNotification()
-    if data:
-        conf.logger.info(data)
-    return Response(status_code=httpx.codes.NO_CONTENT)
 
-
-# @app.get("/udm_ee_subs")
-
-# @app.get("/amf_ee_subs")
-
-# @app.get("/pcf_ti_subs")
-
-# @app.get("/pcf_qos_subs")
 
 #---------------------monitoring-event------------------------
 @app.get("/monget")
@@ -374,29 +372,31 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
             res = await amf_handler.amf_event_exposure_subscription_create(mon_evt_sub, scsAsId)
         data = res.json()
         created_evt = AmfCreatedEventSubscription.from_dict(data_dict)
-        if not created_evt.report_list:
+        if created_evt.report_list:
             mon_evt_sub.monitoring_event_report = af_handler.af_imidiate_report(amf_evt_rep=created_evt.report_list)
 
     if res.status_code == httpx.codes.CREATED:
         if mon_evt_sub.request_test_notification:
             mon_evt_sub
         if mon_evt_sub.maximum_number_of_reports > 1:
-            inserted = monitoringEventSubscription.monitoring_event_subscriptionscription_insert(scsAsId, mon_evt_sub, res.headers['location'])
-            location = f"http://{conf.HOSTS['NEF'][0]}/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{inserted}"
-            mon_evt_sub._self = location
-            #mon_evt_sub.monitor_expire_time = 1 hr
-            headers = conf.GLOBAL_HEADERS
-            headers['location'] = location
+            if res.headers['location']:
+                inserted = monitoringEventSubscription.monitoring_event_subscriptionscription_insert(scsAsId, mon_evt_sub, res.headers['location'])
+                location = f"http://{conf.HOSTS['NEF'][0]}/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{inserted}"
+                mon_evt_sub._self = location
+                #mon_evt_sub.monitor_expire_time = 1 hr
+                headers = conf.GLOBAL_HEADERS
+                headers['location'] = location
             end_time = (time.time() - start_time) * 1000
             headers = conf.GLOBAL_HEADERS
             headers.update({'X-ElapsedTime Header': end_time})
             return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
         elif mon_evt_sub.maximum_number_of_reports == 1:
-            inserted = monitoringEventSubscription.monitoring_event_subscriptionscription_insert(scsAsId, mon_evt_sub, res.headers['location'])
-            location = f"http://{conf.HOSTS['NEF'][0]}/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{inserted}"
-            mon_evt_sub._self = location
-            headers = conf.GLOBAL_HEADERS
-            headers['location'] = location
+            if res.headers['location']:
+                inserted = monitoringEventSubscription.monitoring_event_subscriptionscription_insert(scsAsId, mon_evt_sub, res.headers['location'])
+                location = f"http://{conf.HOSTS['NEF'][0]}/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{inserted}"
+                mon_evt_sub._self = location
+                headers = conf.GLOBAL_HEADERS
+                headers['location'] = location
             end_time = (time.time() - start_time) * 1000
             headers = conf.GLOBAL_HEADERS
             headers.update({'X-ElapsedTime Header': end_time})
@@ -446,10 +446,10 @@ async def mon_evt_sub_delete(scsAsId: str, subscriptionId: str):
         if not res:
             raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
         else:
-            contextId = res['location'].split('/')[-1]
+            location = res['location']
             async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
                 res = await client.post(
-                    f"{contextId}/delete",
+                    location,
                     headers={'Accept': 'application/json,application/problem+json'},
                 )
                 conf.logger.info(f"Response {res.status_code} for deleting app session. Content:")

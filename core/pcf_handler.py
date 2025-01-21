@@ -25,7 +25,7 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
                 return res
     return None
 
-async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_influ_sub: TrafficInfluSub=None):
+async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_influ_sub: TrafficInfluSub=None, subId: str=None):
     host_addr = f"{binding.pcf_ip_end_points[0].ipv4_address}:7777" if binding is not None else conf.HOSTS['PCF'][0]
 
     req_data = AppSessionContextReqData()
@@ -39,8 +39,8 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
             setattr(req_data, 'ue_mac', attr_val)
         elif attr_name == 'snssai':
             setattr(req_data, 'slice_info', attr_val)
-        elif attr_name == 'notification_destination':
-            setattr(req_data, 'notif_uri', attr_val)
+        # elif attr_name == 'notification_destination':
+        #     setattr(req_data, 'notif_uri', attr_val)
         elif hasattr(req_data, attr_name) and attr_val:
             setattr(req_data, attr_name, attr_val)
 
