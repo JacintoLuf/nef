@@ -837,10 +837,7 @@ async def ue_id_retrieval(data: Request):
     start_time = time()
     try:
         data_dict = await data.json()
-        conf.logger.info(data_dict)
         ue_req = UeIdReq.from_dict(data_dict)
-        conf.logger.info(f"translating: {ue_req}")
-        ue_req.ue_ip_addr = data_dict['ueIpAddr']
     except ValueError as e:
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"Failed to parse message. Err: {e.__str__}")
     except Exception as e:
@@ -855,7 +852,10 @@ async def ue_id_retrieval(data: Request):
     if "BSF" in conf.HOSTS.keys():
         bsf_params = {}
         if ue_req.ue_ip_addr:
-            bsf_params['ipv4Addr'] = ue_req.ue_ip_addr
+            if ue_req.ue_ip_addr.ipv4_addr:
+                bsf_params['ipv4Addr'] = ue_req.ue_ip_addr.ipv4_addr
+            if ue_req.ue_ip_addr.ipv6_addr:
+                bsf_params['ipv6Addr'] = ue_req.ue_ip_addr.ipv6_addr
         elif ue_req.ue_mac_addr:
             bsf_params['macAddr48'] = ue_req.ue_mac_addr
 
