@@ -214,9 +214,7 @@ async def nrf_notif(request: Request):
 async def up_path_chg_notif(subId: str, request: Request):
 # async def up_path_chg_notif(request: Request):
     conf.logger.info("endpoint: /up_path_change")
-    conf.logger.info(request.method)
     conf.logger.info(request.text)
-    ##############################################################
     try:
         data = await request.json()
         smf_notif = NsmfEventExposureNotification(data)
