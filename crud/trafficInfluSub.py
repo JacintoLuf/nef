@@ -31,10 +31,10 @@ async def traffic_influence_subscription_get(afId: str=None, subId: str=None):
             docs.append(doc)
         return None if not docs else docs
 
-async def traffic_influence_subscription_insert(afId: str, sub: TrafficInfluSub, location: str):
+async def traffic_influence_subscription_insert(afId: str, sub: TrafficInfluSub, location: str, _id: str=None):
     collection = db["traffic_influ_sub"]
-    subId = str(uuid.uuid4().hex)
-    document = {'_id': subId, 'afId': afId, 'sub': sub.to_dict(), 'location': location}
+    # subId = str(uuid.uuid4().hex)
+    document = {'_id': _id, 'afId': afId, 'sub': sub.to_dict(), 'location': location}
     try:
         result = await collection.insert_one(document)
         conf.logger.info(result.inserted_id)

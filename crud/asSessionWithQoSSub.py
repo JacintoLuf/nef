@@ -6,6 +6,11 @@ from models.as_session_with_qo_s_subscription import AsSessionWithQoSSubscriptio
 from models.as_session_with_qo_s_subscription_patch import AsSessionWithQoSSubscriptionPatch
 
 
+async def check_id(subId: str):
+    collection = db["as_session_with_qos_sub"]
+    exists = await collection.find_one({'_id': subId})
+    return True if exists else False
+
 async def as_session_with_qos_subscription_get(scsAsId: str=None, subId: str=None):
     collection = db["as_session_with_qos_sub"]
     if subId:
@@ -23,10 +28,10 @@ async def as_session_with_qos_subscription_get(scsAsId: str=None, subId: str=Non
             docs.append(doc)
         return None if not docs else docs
 
-async def as_session_with_qos_subscription_insert(scsAsId: str, sub: AsSessionWithQoSSubscription, location: str):
+async def as_session_with_qos_subscription_insert(scsAsId: str, sub: AsSessionWithQoSSubscription, location: str, _id: str=None):
     collection = db["as_session_with_qos_sub"]
-    subId = str(uuid.uuid4().hex)
-    document = {'_id': subId, 'scsAsId': scsAsId, 'sub': sub.to_dict(), 'location': location}
+    # subId = str(uuid.uuid4().hex)
+    document = {'_id': _id, 'scsAsId': scsAsId, 'sub': sub.to_dict(), 'location': location}
     try:
         result = await collection.insert_one(document)
         conf.logger.info(result.inserted_id)

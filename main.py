@@ -1,6 +1,7 @@
 import asyncio
 import json
 from time import time, sleep
+import uuid
 import httpx
 from fastapi import APIRouter, FastAPI, Request, Response, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
@@ -356,7 +357,10 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Only one-time reporting supported for this event.')
 
     if mon_evt_sub.monitoring_type in ['LOSS_OF_CONNECTIVITY','UE_REACHABILITY','LOCATION_REPORTING','CHANGE_OF_IMSI_IMEI_ASSOCIATION','ROAMING_STATUS','COMMUNICATION_FAILURE','PDN_CONNECTIVITY_STATUS','AVAILABILITY_AFTER_DDN_FAILURE','API_SUPPORT_CAPABILITY']:
-        res = await udm_handler.udm_event_exposure_subscription_create(mon_evt_sub, scsAsId)
+        _id = str(uuid.uuid4().hex)
+        while monitoringEventSubscription.check_id(_id):
+            _id = str(uuid.uuid4().hex)
+        res = await udm_handler.udm_event_exposure_subscription_create(mon_evt_sub, scsAsId, _id)
         data = res.json()
         created_evt = CreatedEeSubscription.from_dict(data)
         if created_evt.event_reports:
@@ -365,9 +369,15 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
         if mon_evt_sub.external_group_id:
             internal_id = await udm_handler.udm_sdm_group_identifiers_translation(mon_evt_sub.external_group_id)
             if internal_id:
-                res = await amf_handler.amf_event_exposure_subscription_create(mon_evt_sub, scsAsId, internal_id)
+                _id = str(uuid.uuid4().hex)
+                while monitoringEventSubscription.check_id(_id):
+                    _id = str(uuid.uuid4().hex)
+                res = await amf_handler.amf_event_exposure_subscription_create(mon_evt_sub, scsAsId, internal_id, _id)
         else:
-            res = await amf_handler.amf_event_exposure_subscription_create(mon_evt_sub, scsAsId)
+            _id = str(uuid.uuid4().hex)
+            while monitoringEventSubscription.check_id(_id):
+                _id = str(uuid.uuid4().hex)
+            res = await amf_handler.amf_event_exposure_subscription_create(mon_evt_sub, scsAsId, _id=_id)
         data = res.json()
         created_evt = AmfCreatedEventSubscription.from_dict(data_dict)
         if created_evt.report_list:
@@ -378,7 +388,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
             mon_evt_sub
         if mon_evt_sub.maximum_number_of_reports > 1:
             if res.headers['location']:
-                inserted = monitoringEventSubscription.monitoring_event_subscriptionscription_insert(scsAsId, mon_evt_sub, res.headers['location'])
+                inserted = monitoringEventSubscription.monitoring_event_subscriptionscription_insert(scsAsId, mon_evt_sub, res.headers['location'], _id)
                 location = f"http://{conf.HOSTS['NEF'][0]}/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{inserted}"
                 mon_evt_sub._self = location
                 #mon_evt_sub.monitor_expire_time = 1 hr
@@ -390,7 +400,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
             return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
         elif mon_evt_sub.maximum_number_of_reports == 1:
             if res.headers['location']:
-                inserted = monitoringEventSubscription.monitoring_event_subscriptionscription_insert(scsAsId, mon_evt_sub, res.headers['location'])
+                inserted = monitoringEventSubscription.monitoring_event_subscriptionscription_insert(scsAsId, mon_evt_sub, res.headers['location'], _id)
                 location = f"http://{conf.HOSTS['NEF'][0]}/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{inserted}"
                 mon_evt_sub._self = location
                 headers = conf.GLOBAL_HEADERS
@@ -581,13 +591,19 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
                 raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
             
             pcf_binding = PcfBinding.from_dict(res['response'])
-            res = await pcf_handler.pcf_policy_authorization_create_ti(pcf_binding, traffic_sub)
+            _id = str(uuid.uuid4().hex)
+            while trafficInfluSub.check_id(_id):
+                _id = str(uuid.uuid4().hex)
+            res = await pcf_handler.pcf_policy_authorization_create_ti(pcf_binding, traffic_sub, _id)
         else:
-            res = await pcf_handler.pcf_policy_authorization_create_ti(traffic_influ_sub=traffic_sub)
+            _id = str(uuid.uuid4().hex)
+            while trafficInfluSub.check_id(_id):
+                _id = str(uuid.uuid4().hex)
+            res = await pcf_handler.pcf_policy_authorization_create_ti(traffic_influ_sub=traffic_sub, _id=_id)
         
         if res.status_code == httpx.codes.CREATED:
             conf.logger.info("Storing request and generating 'Traffic Influence' resource.")
-            sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
+            sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'], _id)
             if sub_id:
                 if traffic_sub.request_test_notification:
                     test_notif = EventNotification(af_trans_id=traffic_sub.af_trans_id)
@@ -757,14 +773,20 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
         if res['code'] != httpx.codes.OK:
             raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
         pcf_binding = PcfBinding.from_dict(res['response'])
-        response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub)
+        _id = str(uuid.uuid4().hex)
+        while asSessionWithQoSSub.check_id(_id):
+            _id = str(uuid.uuid4().hex)
+        response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub, _id)
 
     else:
-        response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub)
+        _id = str(uuid.uuid4().hex)
+        while asSessionWithQoSSub.check_id(_id):
+            _id = str(uuid.uuid4().hex)
+        response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub, _id=_id)
     
     if response.status_code == httpx.codes.CREATED:
         conf.logger.info("Storing request and generating 'As Aession With QoS' resource.")
-        sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'])
+        sub_id = await asSessionWithQoSSub.as_session_with_qos_subscription_insert(scsAsId, qos_sub, response.headers['Location'], _id)
         if sub_id:
             if qos_sub.request_test_notification:
                 test_notif = {'subscription': qos_sub.notification_destination}

@@ -56,7 +56,7 @@ extraDeploy: []
 image:
   registry: docker.io
   repository: gradiant/open5gs
-  tag: "2.7.0"
+  tag: "2.7.2"
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -73,7 +73,7 @@ image:
   pullSecrets: []
   ## Set to true if you would like to see extra information on logs
   ##
-  debug: true
+  debug: false
 
 config:
   logLevel: info

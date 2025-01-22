@@ -56,7 +56,7 @@ extraDeploy: []
 image:
   registry: docker.io
   repository: gradiant/open5gs
-  tag: "2.7.0"
+  tag: "2.7.2"
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -73,7 +73,7 @@ image:
   pullSecrets: []
   ## Set to true if you would like to see extra information on logs
   ##
-  debug: true
+  debug: false
 
 config:
   logLevel: info
@@ -81,11 +81,13 @@ config:
   upf:
     gtpu:
       dev: ""
-      advertise: "10.255.38.47"
+      advertise: ""
   subnetList:
-    - subnet: 10.45.0.1/16
-      dnn: internet1
+    - subnet: 10.45.0.0/16
+      gateway: 10.45.0.1
+      dnn: internet
       dev: ogstun
+      mask: 16
       createDev: true
       enableNAT: true
 ## @param customOpen5gsConfig overwrite open5gs configuration file
@@ -190,39 +192,26 @@ podAntiAffinityPreset: soft
 ## @param nodeAffinityPreset.values Node label values to match. Ignored if `affinity` is set.
 ##
 nodeAffinityPreset:
-  type: "hard"
+  type: ""
   ## E.g.
   ## key: "kubernetes.io/e2e-az-name"
   ##
-  key: "env"
+  key: ""
   ## E.g.
   ## values:
   ##   - e2e-az1
   ##   - e2e-az2
   ##
-  values: 
-#[]
-    - open5gs
+  values: []
 ## @param affinity Affinity for pod assignment
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
 ## Note: podAffinityPreset, podAntiAffinityPreset, and nodeAffinityPreset will be ignored when it's set
 ##
-affinity: 
-#{}
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: "env"
-              operator: "In"
-              values:
-                - open5gs
+affinity: {}
 ## @param nodeSelector Node labels for pod assignment. Evaluated as a template.
 ## ref: https://kubernetes.io/docs/user-guide/node-selection/
 ##
-nodeSelector: 
-#{}
-  env: open5gs
+nodeSelector: {}
 ## open5gs-upf container's resource requests and limits
 ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
 ## @param resources.requests [object] The requested resources for the init container
@@ -331,8 +320,7 @@ services:
   gtpu:
     ## @param service.type Kubernetes Service type
     ##
-    type: NodePort
-        # ClusterIP
+    type: ClusterIP
     ## @param service.ports.gtpu Service HTTP port
     ##
     ports:
@@ -351,12 +339,11 @@ services:
     ##   gtpu: <to set explicitly, choose port between 30000-32767>
     ##
     nodePorts:
-      gtpu: "2152"
+      gtpu: ""
     ## @param service.externalTrafficPolicy Enable client source IP preservation
     ## ref https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
     ##
-    externalTrafficPolicy: Local
-                           #Cluster
+    externalTrafficPolicy: Cluster
     ## @param service.clusterIP %%MAIN_CONTAINER_NAME%% service Cluster IP
     ## e.g.:
     ## clusterIP: None

@@ -25,7 +25,7 @@ async def pcf_policy_authorization_get(app_session_id: str=None):
                 return res
     return None
 
-async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_influ_sub: TrafficInfluSub=None, subId: str=None):
+async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_influ_sub: TrafficInfluSub=None, _id: str=None):
     host_addr = f"{binding.pcf_ip_end_points[0].ipv4_address}:7777" if binding is not None else conf.HOSTS['PCF'][0]
 
     req_data = AppSessionContextReqData()
@@ -44,7 +44,7 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
         elif hasattr(req_data, attr_name) and attr_val:
             setattr(req_data, attr_name, attr_val)
 
-    req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}/up_path_change"
+    req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}/up_path_change/{_id}"
     req_data.supp_feat = conf.SERVICE_NAMES['3gpp-traffic-influence']
     rout_req = AfRoutingRequirement(
             app_reloc=not traffic_influ_sub.app_relo_ind,
@@ -78,7 +78,7 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
         conf.logger.info(f"Response {response.status_code} for creating app session.\nContent: {response.text}")
     return response
 
-async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_session_qos_sub: AsSessionWithQoSSubscription=None):
+async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_session_qos_sub: AsSessionWithQoSSubscription=None, _id: str=None):
     host_addr = f"{binding.pcf_ip_end_points[0].ipv4_address}:7777" if binding is not None else conf.HOSTS['PCF'][0]
 
     req_data = AppSessionContextReqData()
@@ -92,12 +92,12 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
             setattr(req_data, 'ue_mac', attr_val)
         elif attr_name == 'snssai':
             setattr(req_data, 'slice_info', attr_val)
-        elif attr_name == 'notification_destination':
-            setattr(req_data, 'notif_uri', attr_val)
+        # elif attr_name == 'notification_destination':
+        #     setattr(req_data, 'notif_uri', attr_val)
         elif hasattr(req_data, attr_name) and attr_val:
             setattr(req_data, attr_name, attr_val)
 
-    req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}/up_path_change"
+    req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}/up_path_change/{_id}"
     req_data.supp_feat = 'ffffff' # conf.SERVICE_NAMES['3gpp-as-session-with-qos']
     tsn_qos_c = None
     # req_data.res_prio = "PRIO_1" ???????????????????

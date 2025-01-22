@@ -95,7 +95,7 @@ async def udm_event_exposure_subscribe(monEvtSub: MonitoringEventSubscription=No
     #     res = await createdEeSubscription.created_ee_subscriptionscription_insert(ee_sub.notify_correlation_id, created_sub)
     return response
 
-async def udm_event_exposure_subscription_create(monEvtSub: MonitoringEventSubscription=None, ueIdentity: str=None, afId: str=None):
+async def udm_event_exposure_subscription_create(monEvtSub: MonitoringEventSubscription=None, ueIdentity: str=None, afId: str=None, _id: str=None):
     mon_configs = {'1': MonitoringConfiguration(
         event_type=monEvtSub.monitoring_type,
         # location_reporting_configuration= monEvtSub.location_area if monEvtSub.monitoring_type == "LOCATION_REPORTING" else None,
@@ -120,12 +120,12 @@ async def udm_event_exposure_subscription_create(monEvtSub: MonitoringEventSubsc
     )
 
     ee_sub = EeSubscription(
-        callback_reference=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/udm-event-sub-callback",
+        callback_reference=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/udm-event-sub-callback/{_id}",
         monitoring_configurations=mon_configs,
         reporting_options=rep_opts,
         # supported_features="fffff",
         notify_correlation_id=str(uuid.uuid4()),
-        second_callback_ref=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/udm-event-sub-callback"
+        second_callback_ref=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/udm-event-sub-callback/{_id}"
     )
 
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:

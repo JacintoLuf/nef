@@ -4,6 +4,10 @@ from pymongo.errors import DuplicateKeyError
 from session import async_db as db
 from models.monitoring_event_subscription import MonitoringEventSubscription 
 
+async def check_id(subId: str):
+    collection = db["monitoring_event_subscription"]
+    exists = await collection.find_one({'_id': subId})
+    return True if exists else False
 
 async def monitoring_event_subscriptionscription_get(scsAsId: str=None, subId: str=None):
     collection = db["monitoring_event_subscription"]
@@ -22,10 +26,10 @@ async def monitoring_event_subscriptionscription_get(scsAsId: str=None, subId: s
             docs.append(doc)
         return None if not docs else docs
 
-async def monitoring_event_subscriptionscription_insert(scsAsId: str, sub: MonitoringEventSubscription, location: str = None):
+async def monitoring_event_subscriptionscription_insert(scsAsId: str, sub: MonitoringEventSubscription, location: str = None, _id: str=None):
     collection = db["monitoring_event_subscription"]
-    subId = str(uuid.uuid4().hex)
-    document = {'_id': subId, 'scsAsId': scsAsId, 'sub': sub.to_dict(), 'location': location}
+    # subId = str(uuid.uuid4().hex) if not _id else _id
+    document = {'_id': _id, 'scsAsId': scsAsId, 'sub': sub.to_dict(), 'location': location}
     try:
         result = await collection.insert_one(document)
         conf.logger.info(result.inserted_id)
@@ -44,7 +48,7 @@ async def monitoring_event_subscriptionscription_update(scsAsId: str, subId: str
     if partial:
         doc = await collection.find_one({'_id': subId, 'scsAsId': scsAsId})
         if not doc:
-            return 404
+            return None
         updated_sub = MonitoringEventSubscription.from_dict(doc['sub'])
         monitoring_event_subscription = MonitoringEventSubscription.from_dict(sub)
         for attr_name in monitoring_event_subscription.attribute_map.keys():
