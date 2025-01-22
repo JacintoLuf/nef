@@ -358,7 +358,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
 
     if mon_evt_sub.monitoring_type in ['LOSS_OF_CONNECTIVITY','UE_REACHABILITY','LOCATION_REPORTING','CHANGE_OF_IMSI_IMEI_ASSOCIATION','ROAMING_STATUS','COMMUNICATION_FAILURE','PDN_CONNECTIVITY_STATUS','AVAILABILITY_AFTER_DDN_FAILURE','API_SUPPORT_CAPABILITY']:
         _id = str(uuid.uuid4().hex)
-        while monitoringEventSubscription.check_id(_id):
+        while await monitoringEventSubscription.check_id(_id):
             _id = str(uuid.uuid4().hex)
         res = await udm_handler.udm_event_exposure_subscription_create(mon_evt_sub, scsAsId, _id)
         data = res.json()
@@ -370,12 +370,12 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
             internal_id = await udm_handler.udm_sdm_group_identifiers_translation(mon_evt_sub.external_group_id)
             if internal_id:
                 _id = str(uuid.uuid4().hex)
-                while monitoringEventSubscription.check_id(_id):
+                while await monitoringEventSubscription.check_id(_id):
                     _id = str(uuid.uuid4().hex)
                 res = await amf_handler.amf_event_exposure_subscription_create(mon_evt_sub, scsAsId, internal_id, _id)
         else:
             _id = str(uuid.uuid4().hex)
-            while monitoringEventSubscription.check_id(_id):
+            while await monitoringEventSubscription.check_id(_id):
                 _id = str(uuid.uuid4().hex)
             res = await amf_handler.amf_event_exposure_subscription_create(mon_evt_sub, scsAsId, _id=_id)
         data = res.json()
@@ -592,12 +592,12 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
             
             pcf_binding = PcfBinding.from_dict(res['response'])
             _id = str(uuid.uuid4().hex)
-            while trafficInfluSub.check_id(_id):
+            while await trafficInfluSub.check_id(_id):
                 _id = str(uuid.uuid4().hex)
             res = await pcf_handler.pcf_policy_authorization_create_ti(pcf_binding, traffic_sub, _id)
         else:
             _id = str(uuid.uuid4().hex)
-            while trafficInfluSub.check_id(_id):
+            while await trafficInfluSub.check_id(_id):
                 _id = str(uuid.uuid4().hex)
             res = await pcf_handler.pcf_policy_authorization_create_ti(traffic_influ_sub=traffic_sub, _id=_id)
         
@@ -774,13 +774,13 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
             raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
         pcf_binding = PcfBinding.from_dict(res['response'])
         _id = str(uuid.uuid4().hex)
-        while asSessionWithQoSSub.check_id(_id):
+        while await asSessionWithQoSSub.check_id(_id):
             _id = str(uuid.uuid4().hex)
         response = await pcf_handler.pcf_policy_authorization_create_qos(pcf_binding, qos_sub, _id)
 
     else:
         _id = str(uuid.uuid4().hex)
-        while asSessionWithQoSSub.check_id(_id):
+        while await asSessionWithQoSSub.check_id(_id):
             _id = str(uuid.uuid4().hex)
         response = await pcf_handler.pcf_policy_authorization_create_qos(as_session_qos_sub=qos_sub, _id=_id)
     
