@@ -284,7 +284,7 @@ async def mon_evt_subs_get(scsAsId: str, subscriptionId: str):
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime Header': str(end_time)})
+    headers.update({'X-ElapsedTime-Header': str(end_time)})
     return Response(content=res, headers=headers, status_code=httpx.codes.OK)
 
 @app.get("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions")
@@ -296,7 +296,7 @@ async def mon_evt_subs_get_all(scsAsId: str):
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime Header': str(end_time)})
+    headers.update({'X-ElapsedTime-Header': str(end_time)})
     return Response(content=res, headers=headers, status_code=httpx.codes.OK)
 
 @app.post("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions")
@@ -396,7 +396,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
                 headers['location'] = location
             end_time = (time() - start_time) * 1000
             headers = conf.GLOBAL_HEADERS
-            headers.update({'X-ElapsedTime Header': str(end_time)})
+            headers.update({'X-ElapsedTime-Header': str(end_time)})
             return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
         elif mon_evt_sub.maximum_number_of_reports == 1:
             if res.headers['location']:
@@ -407,7 +407,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
                 headers['location'] = location
             end_time = (time() - start_time) * 1000
             headers = conf.GLOBAL_HEADERS
-            headers.update({'X-ElapsedTime Header': str(end_time)})
+            headers.update({'X-ElapsedTime-Header': str(end_time)})
             return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
     else:
         return Response(status_code=res.status_code, headers=headers, content="Subscription creation failed!")
@@ -425,7 +425,7 @@ async def mon_evt_sub_put(scsAsId: str, subscriptionId: str, data: Request):
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to update subscription'
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime Header': str(end_time)})
+    headers.update({'X-ElapsedTime-Header': str(end_time)})
     return Response(status_code=httpx.codes.OK, headers=headers, content="The subscription was updated successfully.")
 
 @app.patch("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
@@ -443,7 +443,7 @@ async def mon_evt_sub_patch(scsAsId: str, subscriptionId: str, data: Request):
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to update subscription'
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime Header': str(end_time)})
+    headers.update({'X-ElapsedTime-Header': str(end_time)})
     return Response(status_code=httpx.codes.OK, headers=headers, content="The subscription was updated successfully.")
 
 @app.delete("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
@@ -469,7 +469,7 @@ async def mon_evt_sub_delete(scsAsId: str, subscriptionId: str):
             if res == 1:
                 end_time = (time() - start_time) * 1000
                 headers = conf.GLOBAL_HEADERS
-                headers.update({'X-ElapsedTime Header': str(end_time)})
+                headers.update({'X-ElapsedTime-Header': str(end_time)})
                 return Response(status_code=httpx.codes.NO_CONTENT, headers=headers)
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
@@ -509,7 +509,7 @@ async def ti_get(afId: str, subId: str):
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime Header': str(end_time)})
+    headers.update({'X-ElapsedTime-Header': str(end_time)})
     return Response(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
@@ -520,7 +520,7 @@ async def ti_get_all(afId: str):
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime Header': str(end_time)})
+    headers.update({'X-ElapsedTime-Header': str(end_time)})
     return Response(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
 
 @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
@@ -564,7 +564,7 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
                     background_tasks.add_task(send_notification, test_notif.to_dict(), traffic_sub.notification_destination)
                 end_time = (time() - start_time) * 1000
                 headers = conf.GLOBAL_HEADERS
-                headers.update({'X-ElapsedTime Header': str(end_time)})
+                headers.update({'X-ElapsedTime-Header': str(end_time)})
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
                 conf.logger.info("Server error")
@@ -614,7 +614,7 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
                 headers['location'] = traffic_sub.__self
                 end_time = (time() - start_time) * 1000
                 headers = conf.GLOBAL_HEADERS
-                headers.update({'X-ElapsedTime Header': str(end_time)})
+                headers.update({'X-ElapsedTime-Header': str(end_time)})
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
                 conf.logger.info("Server error")
@@ -632,7 +632,7 @@ async def ti_put(afId: str, subId: str, data: Request):
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime Header': str(end_time)})
+    headers.update({'X-ElapsedTime-Header': str(end_time)})
     return Response(status_code=httpx.codes.OK, headers=headers, content=res)
 
 @app.patch("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
@@ -645,7 +645,7 @@ async def ti_patch(afId: str, subId: str, data: Request):
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime Header': str(end_time)})
+    headers.update({'X-ElapsedTime-Header': str(end_time)})
     return Response(status_code=httpx.codes.OK, headers=headers, content=res)
 
 @app.delete("/3gpp-trafficInfluence/v1/{afId}/subscriptions/{subId}")
@@ -666,7 +666,7 @@ async def delete_ti(afId: str, subId: str):
             if res == 1:
                 end_time = (time() - start_time) * 1000
                 headers = conf.GLOBAL_HEADERS
-                headers.update({'X-ElapsedTime Header': str(end_time)})
+                headers.update({'X-ElapsedTime-Header': str(end_time)})
                 return Response(status_code=httpx.codes.NO_CONTENT, headers=headers)
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
@@ -706,7 +706,7 @@ async def qos_get(scsAsId: str, subId: str=None):
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime Header': str(end_time)})
+    headers.update({'X-ElapsedTime-Header': str(end_time)})
     return Response(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
 
 @app.get("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
@@ -717,7 +717,7 @@ async def qos_get_all(scsAsId: str):
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime Header': str(end_time)})
+    headers.update({'X-ElapsedTime-Header': str(end_time)})
     return Response(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
 
 @app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
@@ -797,7 +797,7 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
             headers['location'] = qos_sub.__self
             end_time = (time() - start_time) * 1000
             headers = conf.GLOBAL_HEADERS
-            headers.update({'X-ElapsedTime Header': str(end_time)})
+            headers.update({'X-ElapsedTime-Header': str(end_time)})
             return JSONResponse(status_code=httpx.codes.CREATED, content=qos_sub.to_dict())
         else:
             conf.logger.info("Error creating resource")
@@ -815,7 +815,7 @@ async def qos_put(scsAsId: str, subId: str, data: Request):
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime Header': str(end_time)})
+    headers.update({'X-ElapsedTime-Header': str(end_time)})
     return Response(status_code=httpx.codes.OK, headers=headers, content="The subscription was updated successfully.")
 
 @app.patch("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
@@ -828,7 +828,7 @@ async def qos_patch(scAsId: str, subId: str, data: Request):
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime Header': str(end_time)})
+    headers.update({'X-ElapsedTime-Header': str(end_time)})
     return Response(status_code=httpx.codes.OK, headers=headers, content="The subscription was updated successfully.")
     
 @app.delete("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
@@ -847,7 +847,7 @@ async def qos_delete(scsAsId: str, subId: str):
         if res == 1:
             end_time = (time() - start_time) * 1000
             headers = conf.GLOBAL_HEADERS
-            headers.update({'X-ElapsedTime Header': str(end_time)})
+            headers.update({'X-ElapsedTime-Header': str(end_time)})
             return Response(status_code=httpx.codes.NO_CONTENT, headers=headers)
     raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
 
@@ -893,7 +893,7 @@ async def ue_id_retrieval(data: Request):
     ue_info = UeIdInfo(external_id=translated_id)
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime Header': str(end_time)})
+    headers.update({'X-ElapsedTime-Header': str(end_time)})
     return Response(status_code=httpx.codes.OK, headers=headers, content=ue_info)
 
 #----------------------clean db-------------------
