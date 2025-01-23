@@ -87,6 +87,40 @@ def stop_process(remote_ip, username, password, process_name):
     cmd = f"sudo pkill {process_name}"
     ssh_execute(remote_ip, username, password, cmd)
 
+def open_or_create_json():
+    if os.path.exists("times.json"):
+        with open("times.json", "r") as file:
+            try:
+                data_json = json.load(file)
+            except json.JSONDecodeError:
+                print("empty or invalid dictionary")
+                data_json = {
+                    'mon_c': [],
+                    'mon_d': [],
+                    'ti_c': [],
+                    'ti_d': [],
+                    'qos_c': [],
+                    'qos_d': []
+                }
+    else:
+        data_json = {
+            'mon_c': [],
+            'mon_d': [],
+            'ti_c': [],
+            'ti_d': [],
+            'qos_c': [],
+            'qos_d': []
+        }
+        with open("times.json", "w") as file:
+            json.dump(data_json, file, indent=4)
+    return data_json
+
+def write_to_json(key, val):
+    data_json = open_or_create_json()
+    data_json[key].append(val)
+    with open("times.json", "w") as file:
+        json.dump(data_json, file, indent=4)
+
 # Main test function
 def run_test():    
     # Capture file for tcpdump

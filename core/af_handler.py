@@ -8,6 +8,7 @@ from models.monitoring_event_report import MonitoringEventReport
 from models.pdn_connection_information import PdnConnectionInformation
 from models.event_notification import EventNotification
 import crud.trafficInfluSub as trafficInfluSub
+from models.traffic_influ_sub import TrafficInfluSub
 
 async def af_monitoring_notification_post(mon_rep: MonitoringReport=None, amf_evt_rep: AmfEventReport=None):
     mon_notif = MonitoringNotification()
@@ -69,11 +70,12 @@ async def af_imidiate_report(mon_rep: MonitoringReport=None, amf_evt_rep: AmfEve
     return mon_notif
 
 async def af_up_path_chg_notif(subId: str, evt_notif: EventNotification):
-    sub = trafficInfluSub.traffic_influence_subscription_get(subId=subId)
+    sub_dict = trafficInfluSub.traffic_influence_subscription_get(subId=subId)
+    sub = TrafficInfluSub.from_dict(sub_dict['sub'])
     try:
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.post(
-                sub.notif_uri,
+                sub.notification_destination,
                 headers=conf.GLOBAL_HEADERS,
                 data=json.dumps(evt_notif.to_dict())
             )

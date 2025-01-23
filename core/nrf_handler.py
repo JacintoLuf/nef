@@ -137,7 +137,7 @@ async def nf_status_subscribe(nf_types):
         validity_time = current_time + timedelta(days=1)
         formatted_time = validity_time.strftime("%Y-%m-%dT%H:%M:%SZ")
         sub = SubscriptionData(
-            nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}/nnrf-nfm/v1/subscriptions",
+            nf_status_notification_uri=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/nrf_subscription_update",
             req_nf_instance_id=conf.NEF_PROFILE.nf_instance_id,
             subscr_cond=SubscrCond(nf_type=nf_type),
             validity_time=formatted_time,

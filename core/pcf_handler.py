@@ -44,7 +44,7 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
         elif hasattr(req_data, attr_name) and attr_val:
             setattr(req_data, attr_name, attr_val)
 
-    req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}/up_path_change/{_id}"
+    req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/nsmf_up_path_change/{_id}"
     req_data.supp_feat = conf.SERVICE_NAMES['3gpp-traffic-influence']
     rout_req = AfRoutingRequirement(
             app_reloc=not traffic_influ_sub.app_relo_ind,
@@ -97,7 +97,7 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
         elif hasattr(req_data, attr_name) and attr_val:
             setattr(req_data, attr_name, attr_val)
 
-    req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}/up_path_change/{_id}"
+    req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/pcf_qos_notif/{_id}"
     req_data.supp_feat = 'ffffff' # conf.SERVICE_NAMES['3gpp-as-session-with-qos']
     tsn_qos_c = None
     # req_data.res_prio = "PRIO_1" ???????????????????

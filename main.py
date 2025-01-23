@@ -204,13 +204,13 @@ async def udm_evt_sub_callback(request: Request):
     # mon_evt_rep = MonitoringEventReport()
     return Response(status_code=httpx.codes.OK, headers=conf.GLOBAL_HEADERS)
 
-@app.post("/nnrf-nfm/v1/subscriptions")
+@app.post("/nnef-callback/nrf_subscription_update")
 async def nrf_notif(request: Request):
-    conf.logger.info("endpoint: /nnrf-nfm/v1/subscriptions")
+    conf.logger.info("endpoint: /nnef-callback/nrf_subscription_update")
     conf.logger.info(request.method)
     conf.logger.info(request.body)
 
-@app.post("/up_path_change/{subId}")
+@app.post("/nnef-callback/smf_up_path_change/{subId}")
 # @app.post("/up_path_change")
 async def up_path_chg_notif(subId: str, request: Request):
 # async def up_path_chg_notif(request: Request):
@@ -239,6 +239,12 @@ async def up_path_chg_notif(subId: str, request: Request):
         )
         res = await af_handler.af_up_path_chg_notif(subId, evt_notif)
     return Response(status_code=httpx.codes.NO_CONTENT)
+
+@app.post("/nnef-callback/pcf_qos_notif/{id}")
+async def nrf_notif(id: str, request: Request):
+    conf.logger.info("endpoint: /nnef-callback/pcf_qos_notif")
+    conf.logger.info(request.method)
+    conf.logger.info(request.body)
 
 
 

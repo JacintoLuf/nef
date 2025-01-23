@@ -1,0 +1,21 @@
+{
+    "dnn":"internet",
+    "snssai":{"sst":"1","sd":"111111"},
+    "ipv4Addr":"10.45.0.4",
+    "trafficRoutes":{"dnai":"up2"},
+    "routeInfo":{
+        "ipv4Addr": "8.8.8.8",
+        "portNumber":"53"
+    },
+    "subscribedEvents":["UP_PATH_CHANGE"],
+    "trafficFilters":[
+        {
+            "flowId":"2",
+            "flowDescriptions":["permit out ip from 10.45.0.0/16 to any"]
+        },
+        {
+            "flowId":"1",
+            "flowDescriptions":["permit out ip from any to any"]
+        }
+    ]
+}
