@@ -144,7 +144,7 @@ if __name__ == '__main__':
     while run:
         while not core:
             try:
-                inp = int(input("core:\n(1)OPEN5GS (2)free5gc\n"))
+                inp = int(input("core:\n(1)OPEN5GS\t(2)free5gc\n"))
             except Exception as e:
                 inp = 1
             core = "free5gc" if inp == 2 else "open5gs"
@@ -162,7 +162,10 @@ if __name__ == '__main__':
             if test_type == "mon_c":
                 test_file = "mon_evt.json"
             elif test_type == "qos_c":
-                inp = int(input("(1)QCI\t(2)QOS"))
+                try:
+                    inp = int(input("(1)QCI\t(2)QOS"))
+                except Exception as e:
+                    inp = 1
                 test_file = "qci_mod.json" if inp == 1 else "qos_mod.json"
             elif test_type == "ti_c":
                 test_file = "ti_open.json" if core == "open5gs" else "ti_free.json"
