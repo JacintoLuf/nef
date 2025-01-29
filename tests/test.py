@@ -143,12 +143,18 @@ if __name__ == '__main__':
     run = True
     while run:
         while not core:
-            inp = int(input("core:\n (1)open5gs (2)free5gc\tdefault: open5gs"))
+            try:
+                inp = int(input("core:\n(1)OPEN5GS (2)free5gc\n"))
+            except Exception as e:
+                inp = 1
             core = "free5gc" if inp == 2 else "open5gs"
             nef_ip = '10.255.32.164:7777' if core == "free5gc" else "10.255.38.50:7777"
 
         test_types = [key for key in tests.keys()]
-        inp = int(input("test type:\n"+" ".join(f"({index+1}){item}" for index, item in enumerate(test_types))))
+        try:
+            inp = int(input("test type:\n"+" ".join(f"({index+1}){item}" for index, item in enumerate(test_types))))
+        except Exception as e:
+            inp = 2
         test_type = test_types[inp-1]
 
         test_file = None
