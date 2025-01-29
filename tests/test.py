@@ -1,14 +1,9 @@
 import asyncio
-import argparse
 import os
-import time
 import json
-import socket
 import paramiko
 import httpx
-import subprocess as sub
 from threading import Thread
-# from openpyxl import Workbook
 
 # Variables
 core = None
@@ -156,19 +151,19 @@ if __name__ == '__main__':
         inp = int(input("test type:\n"+" ".join(f"({index+1}){item}" for index, item in enumerate(test_types))))
         test_type = test_types[inp-1]
 
-        match test_type:
-            case "mon_c":
+        test_file = None
+        while not test_file:
+            if test_type == "mon_c":
                 test_file = "mon_evt.json"
-            case "ti_c":
-                test_file = "ti_open.json" if core == "open5gs" else "ti_free.json"
-            case "qos_c":
+            elif test_type == "qos_c":
                 inp = int(input("(1)QCI\t(2)QOS"))
                 test_file = "qci_mod.json" if inp == 1 else "qos_mod.json"
+            elif test_type == "ti_c":
+                test_file = "ti_open.json" if core == "open5gs" else "ti_free.json"
 
-
-        input = False if str(input("Start? Y/n")).strip().lower() == "n" else True
-
-        asyncio.run(run_test(test_type, test_type))
+        start = False if str(input("Start? Y/n")).strip().lower() == "n" else True
+        if start:
+            asyncio.run(run_test(test_type, test_type))
 
         run = False if str(input("Run again? Y/n")).strip().lower() == "n" else True
 
