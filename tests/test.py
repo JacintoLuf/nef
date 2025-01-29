@@ -1,4 +1,5 @@
-# from openpyxl import Workbook
+import asyncio
+import argparse
 import os
 import time
 import json
@@ -7,22 +8,29 @@ import paramiko
 import httpx
 import subprocess as sub
 from threading import Thread
+# from openpyxl import Workbook
 
 # Variables
-iperf_server_ip = '10.255.44.44'
-iperf_client_ip = '10.45.0.2'
-nef_ip = '10.255.38.58:7777'
-tcpdump_machine_ip = '10.255.44.44'  # Same as the iperf server (or another remote machine)
-test_duration = 90  # Duration of the iperf test in seconds
+core = None
+nef_ip = None
 results = []
 results_txt = []
+tests = {
+    'mon_c': [f'http://{nef_ip}/3gpp-monitoring-event/v1/test/subscriptions',['mon_evt.json']],
+    # 'mon_d': [f'http://{nef_ip}/3gpp-as-session-with-qos/v1/test/subscriptions/'],
+    'ti_c': [f'http://{nef_ip}/3gpp-traffic-influence/v1/test/subscriptions',['ti_open.json', 'ti_free.json']],
+    # 'ti_d': [f'http://{nef_ip}/3gpp-traffic-influence/v1/test/subscriptions/'],
+    'qos_c': [f'http://{nef_ip}/3gpp-as-session-with-qos/v1/test/subscriptions',['qos_mod.json','qci_mod']],
+    # 'qos_d': [f'http://{nef_ip}/3gpp-as-session-with-qos/v1/test/subscriptions/']
+}
 
-# Specify the directory where results will be saved
-results_dir = os.path.join(os.getcwd(), 'captures')
-# Ensure the 'results' folder exists
-if not os.path.exists(results_dir):
-    os.makedirs(results_dir)
-files_count =len([name for name in os.listdir(results_dir) if os.path.isfile(os.path.join(results_dir, name))])
+tcpdump_folder = os.path.join(os.getcwd(), 'tcpdumps')
+if not os.path.exists(tcpdump_folder):
+    os.makedirs(tcpdump_folder)
+
+times_folder = os.path.join(os.getcwd(), 'times')
+if not os.path.exists(tcpdump_folder):
+    os.makedirs(tcpdump_folder)
 
 # SSH function to execute remote commands using Paramiko
 def ssh_execute(ip, username, password, command):
@@ -32,56 +40,33 @@ def ssh_execute(ip, username, password, command):
     stdin, stdout, stderr = ssh.exec_command(command)
     return stdout, stderr
 
-# Start iperf server on remote machine
-def start_iperf_server(server_ip, username, password):
-    print(f"Starting iperf3 server on {server_ip}...")
-    cmd = "iperf3 -s -D"
-    ssh_execute(server_ip, username, password, cmd)
-
-# Run iperf client on the UE (remote machine)
-def run_iperf_client(client_ip, username, password, bind_ip=None):
-    print(f"Starting iperf3 client on {client_ip}...")
-    cmd = f"iperf3 -c {iperf_server_ip} -B {bind_ip} -t {test_duration}"
-    stdout, stderr = ssh_execute(client_ip, username, password, cmd)
-
-    throughput_results = []
-    for line in stdout:
-        results_txt.append(f'{time.time()}#: {line}')
-        if "receiver" in line:
-            print(f"iperf result: {line.strip()}")
-            # Collect throughput information (assuming it's second last item in the line)
-            throughput = line.split()[-2]
-            throughput_results.append(float(throughput))
-    
-    return throughput_results
-
 # Start tcpdump on remote machine
 def start_tcpdump(tcpdump_ip, username, password, capture_file):
     print(f"Starting tcpdump on {tcpdump_ip}...")
-    cmd = f"sudo tcpdump -i any -w {capture_file} icmp"
+    cmd = f"sudo tcpdump -i any -w {capture_file}"
     ssh_execute(tcpdump_ip, username, password, cmd)
 
-# Change QoS via HTTP request
-def change_qos():
-    print("Changing QoS...")
-    endpoint = f'http://{nef_ip}/3gpp-as-session-with-qos/v1/test/subscriptions'
-    qos_message = {}
-    with open('captures/qos_mod.json', 'r') as file:
+# HTTP request
+async def send_request(request: str):
+    print(f"Request for {request}")
+    endpoint = tests[request][0]
+    # msg_file = os.path.join(os.path.dirname(__file__), request)
+    with open(f'messages/{tests[request][1]}', 'r') as file:
         data = json.load(file)
-    
-    try:
-        response: httpx.Response = httpx.post(endpoint, json=qos_message)
-        response.raise_for_status()
-        print(f"elapsed time: {response.elapsed}")
-        if response.headers['X-ElapsedTime Header']:
-            print(f"header elapsed time: {response.headers['X-ElapsedTime Header']}")
-        print("QoS successfully changed.")
-    except httpx.HTTPStatusError as err:
-        print(f"Failed to change QoS. Error: {err}")
-    except Exception as e:
-        print(f"Error sending QoS update: {e}")
 
-# Stop any running process (iperf3, tcpdump, etc.)
+    try:
+        async with httpx.AsyncClient(http1=False, http2=True) as client:
+            response = await client.post(
+                endpoint,
+                data=data
+            )
+        return response
+    except httpx.HTTPStatusError as e:
+        print(f"Failed request. Error: {e!r}")
+    except Exception as e:
+        print(f"Error sending QoS update: {e!r}")
+
+# Stop any running process
 def stop_process(remote_ip, username, password, process_name):
     print(f"Stopping {process_name} on {remote_ip}...")
     cmd = f"sudo pkill {process_name}"
@@ -122,47 +107,69 @@ def write_to_json(key, val):
         json.dump(data_json, file, indent=4)
 
 # Main test function
-def run_test():    
+async def run_test(test_type: str, test_file: str):
     # Capture file for tcpdump
-    capture_file = f'run_{files_count}.pcap'
-    
-    # Start iperf3 server on remote machine (iperf server)
-    iperf_server_thread = Thread(target=start_iperf_server, args=('10.255.44.44', 'nef', '1234'))
-    iperf_server_thread.start()
+    files_count=len([name for name in os.listdir(tcpdump_folder) if os.path.isfile(os.path.join(tcpdump_folder, name)) and test_type in name])
+    capture_file = f'{test_type}_{files_count}_{core}.pcap'
+    print(f"Capture file: {capture_file}")
 
-    # Start tcpdump on remote machine (same or different as iperf server)
-    tcpdump_thread = Thread(target=start_tcpdump, args=('10.255.32.147', 'nef', '1234', capture_file))
+    machine_ip = '10.255.35.205' if core == "free5gc" else "10.255.38.50"
+    machine_usr = 'ubuntu' if core == "free5gc" else 'nef'
+    machine_pwd = '1234'
+
+    # Start tcpdump on core machine
+    tcpdump_thread = Thread(
+        target=start_tcpdump, args=(
+            machine_ip,
+            machine_usr,
+            machine_pwd,
+            capture_file
+        )
+    )
     tcpdump_thread.start()
 
-    # Run iperf3 client from UEs (remote machine)
-    iperf_client_thread_1 = Thread(target=lambda: results.append(run_iperf_client('10.45.0.2', '', '')))
-    iperf_client_thread_2 = Thread(target=lambda: results.append(run_iperf_client('10.255.38.55', 'nef', '1234', '10.46.0.3')))
-    iperf_client_thread_1.start()
-    iperf_client_thread_2.start()
-
-    # Wait for 30 seconds and send QoS update
-    time.sleep(30)
-    # change_qos()
-
-    # Wait for the iperf tests to finish
-    iperf_client_thread_1.join()
-    iperf_client_thread_2.join()
-
-    # delete session
+    response = await send_request(test_type, test_file)
 
     # Stop iperf server and tcpdump after the test
-    stop_process('10.255.44.44', 'nef', '1234', "iperf3")
-    stop_process('10.255.32.147', 'nef', '1234', "tcpdump")
+    stop_process(machine_ip, machine_usr, machine_pwd, "tcpdump")
+
+
+    # Save time results to file
+    elapsed_time = response.elapsed
+    print(f"elapsed time: {elapsed_time}s")
+    if response.headers['X-ElapsedTime-Header']:
+        elapsed_time_header = response.headers['X-ElapsedTime-Header']
+        print(f"elapsed time header: {response.headers['X-ElapsedTime-Header']}s")
+    write_to_json('ti_c', elapsed_time)
 
     print("Test finished. Results collected.")
 
-    # Save results to file (for further analysis)
-    with open(f"throughput_results_{time.time()}.json", 'w') as f:
-        json.dump(results, f)
-    with open(f"test_{files_count}.json", 'w') as f:
-        for line in results_txt:
-            f.write(line + '\n')
-
 if __name__ == '__main__':
-    run_test()
+    run = True
+    while run:
+        while not core:
+            inp = int(input("core:\n (1)open5gs (2)free5gc\tdefault: open5gs"))
+            core = "free5gc" if inp == 2 else "open5gs"
+            nef_ip = '10.255.32.164:7777' if core == "free5gc" else "10.255.38.50:7777"
+
+        test_types = [key for key in tests.keys()]
+        inp = int(input("test type:\n"+" ".join(f"({index+1}){item}" for index, item in enumerate(test_types))))
+        test_type = test_types[inp-1]
+
+        match test_type:
+            case "mon_c":
+                test_file = "mon_evt.json"
+            case "ti_c":
+                test_file = "ti_open.json" if core == "open5gs" else "ti_free.json"
+            case "qos_c":
+                inp = int(input("(1)QCI\t(2)QOS"))
+                test_file = "qci_mod.json" if inp == 1 else "qos_mod.json"
+
+
+        input = False if str(input("Start? Y/n")).strip().lower() == "n" else True
+
+        asyncio.run(run_test(test_type, test_type))
+
+        run = False if str(input("Run again? Y/n")).strip().lower() == "n" else True
+
     print("All tasks completed.")

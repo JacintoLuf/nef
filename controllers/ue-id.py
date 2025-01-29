@@ -9,20 +9,13 @@ from models.ue_id_info import UeIdInfo
 import core.bsf_handler as bsf_handler
 import core.udm_handler as udm_handler
 
-@app.get("/3gpp-ue-id/v1/retrieve")
-async def try_ue_id_retrieval():
-    start_time = time.time()
-    end_time = (time.time() - start_time) * 1000
-    headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime Header': end_time})
-    return Response(status_code=httpx.codes.OK, headers=headers, content="Works")
 
 @app.post("/3gpp-ue-id/v1/retrieve")
 async def ue_id_retrieval(data: Request):
-    start_time = time.time()
+    start_time = time()
     try:
         data_dict = await data.json()
-        ue_req = UeIdReq().from_dict(data_dict)
+        ue_req = UeIdReq.from_dict(data_dict)
     except ValueError as e:
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"Failed to parse message. Err: {e.__str__}")
     except Exception as e:
@@ -37,7 +30,10 @@ async def ue_id_retrieval(data: Request):
     if "BSF" in conf.HOSTS.keys():
         bsf_params = {}
         if ue_req.ue_ip_addr:
-            bsf_params['ipv4Addr'] = ue_req.ue_ip_addr
+            if ue_req.ue_ip_addr.ipv4_addr:
+                bsf_params['ipv4Addr'] = ue_req.ue_ip_addr.ipv4_addr
+            if ue_req.ue_ip_addr.ipv6_addr:
+                bsf_params['ipv6Addr'] = ue_req.ue_ip_addr.ipv6_addr
         elif ue_req.ue_mac_addr:
             bsf_params['macAddr48'] = ue_req.ue_mac_addr
 
@@ -51,7 +47,7 @@ async def ue_id_retrieval(data: Request):
     translated_id = await udm_handler.udm_sdm_id_translation(pcf_binding.supi, ue_req)
 
     ue_info = UeIdInfo(external_id=translated_id)
-    end_time = (time.time() - start_time) * 1000
+    end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime Header': end_time})
+    headers.update({'X-ElapsedTime-Header': str(end_time)})
     return Response(status_code=httpx.codes.OK, headers=headers, content=ue_info)
