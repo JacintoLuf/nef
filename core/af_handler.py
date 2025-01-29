@@ -35,7 +35,7 @@ async def af_monitoring_notification_post(mon_rep: MonitoringReport=None, amf_ev
     mon_notif.monitoring_event_reports = [mon_evt_rep]
 
     try:
-        async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
+        async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.post(
                 "",
                 headers=conf.GLOBAL_HEADERS,
@@ -73,7 +73,7 @@ async def af_up_path_chg_notif(subId: str, evt_notif: EventNotification):
     sub_dict = trafficInfluSub.traffic_influence_subscription_get(subId=subId)
     sub = TrafficInfluSub.from_dict(sub_dict['sub'])
     try:
-        async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
+        async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.post(
                 sub.notification_destination,
                 headers=conf.GLOBAL_HEADERS,

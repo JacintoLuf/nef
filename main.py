@@ -138,7 +138,7 @@ async def read_root():
     return {'nfs instances': str(insts)}
 
 async def send_notification(data: str, link: str):
-    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
+    async with httpx.AsyncClient(http1=False, http2=True) as client:
         response = await client.post(
             link,
             headers=conf.GLOBAL_HEADERS,
