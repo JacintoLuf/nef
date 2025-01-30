@@ -1,6 +1,8 @@
 import asyncio
+from asyncio import subprocess
 import os
 import json
+import signal
 import paramiko
 import httpx
 from threading import Thread
@@ -34,11 +36,36 @@ def ssh_execute(ip, username, password, command):
     stdin, stdout, stderr = ssh.exec_command(command)
     return stdout, stderr
 
-# Start tcpdump on remote machine
-def start_tcpdump(tcpdump_ip, username, password, capture_file):
-    print(f"Starting tcpdump on {tcpdump_ip}...")
-    cmd = f"sudo tcpdump -i any -w {capture_file}"
-    ssh_execute(tcpdump_ip, username, password, cmd)
+# # Start tcpdump on remote machine
+# def start_tcpdump(tcpdump_ip, username, password, capture_file):
+#     print(f"Starting tcpdump on {tcpdump_ip}...")
+#     cmd = f"sudo tcpdump -i any -w {capture_file}"
+#     ssh_execute(tcpdump_ip, username, password, cmd)
+
+# Stop any running process
+def stop_process(remote_ip, username, password, process_name):
+    print(f"Stopping {process_name} on {remote_ip}...")
+    cmd = f"sudo pkill {process_name}"
+    ssh_execute(remote_ip, username, password, cmd)
+
+def start_tcpdump(capture_file):
+    print(f"Starting tcpdump, saving to {capture_file}...")
+    path = os.path.join(tcpdump_folder, capture_file)
+    # Start tcpdump in the background
+    process = subprocess.Popen(
+        ["sudo", "tcpdump", "-i", "any", "-w", path],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL
+    )
+
+    print(f"tcpdump started with PID {process.pid}")
+    return process
+
+def stop_tcpdump(process):
+    print(f"Stopping tcpdump with PID {process.pid}...")
+    os.kill(process.pid, signal.SIGTERM)  # Gracefully stop tcpdump
+    process.wait()  # Wait for process to exit
+    print("tcpdump stopped.")
 
 # HTTP request
 async def send_request(request: str, test_file: str):
@@ -71,12 +98,6 @@ async def send_request(request: str, test_file: str):
     except Exception as e:
         print(f"Error request: {e!r}")
         return None
-
-# Stop any running process
-def stop_process(remote_ip, username, password, process_name):
-    print(f"Stopping {process_name} on {remote_ip}...")
-    cmd = f"sudo pkill {process_name}"
-    ssh_execute(remote_ip, username, password, cmd)
 
 def open_or_create_json():
     if os.path.exists("times.json"):
@@ -139,25 +160,20 @@ async def run_test(test_type: str, test_file: str):
     capture_file = f'{test_type}_{files_count}_{core}.pcap'
     print(f"Capture file: {capture_file}")
 
-    machine_ip = '10.255.35.205' if core == "free5gc" else "10.255.38.50"
-    machine_usr = 'ubuntu' if core == "free5gc" else 'nef'
-    machine_pwd = '1234'
-
     # Start tcpdump on core machine
-    tcpdump_thread = Thread(
-        target=start_tcpdump, args=(
-            machine_ip,
-            machine_usr,
-            machine_pwd,
-            capture_file
-        )
-    )
-    tcpdump_thread.start()
+    # machine_ip = '10.255.35.205' if core == "free5gc" else "10.255.38.50"
+    # machine_usr = 'ubuntu' if core == "free5gc" else 'nef'
+    # machine_pwd = '1234'
+    # tcpdump_thread = Thread(target=start_tcpdump, args=(machine_ip,machine_usr,machine_pwd,capture_file))
+    # tcpdump_thread.start()
+
+    tcpdump_process = start_tcpdump(capture_file)
 
     response = await send_request(test_type, test_file)
 
     # Stop iperf server and tcpdump after the test
-    stop_process(machine_ip, machine_usr, machine_pwd, "tcpdump")
+    # stop_process(machine_ip, machine_usr, machine_pwd, "tcpdump")
+    stop_tcpdump(tcpdump_process)
 
     if response:
         # Save time results to file
