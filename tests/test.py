@@ -48,23 +48,23 @@ def stop_process(remote_ip, username, password, process_name):
     cmd = f"sudo pkill {process_name}"
     ssh_execute(remote_ip, username, password, cmd)
 
-def start_tcpdump(capture_file):
+async def start_tcpdump(capture_file):
+    """Start tcpdump asynchronously and return the process."""
     print(f"Starting tcpdump, saving to {capture_file}...")
-    path = os.path.join(tcpdump_folder, capture_file)
-    # Start tcpdump in the background
-    process = subprocess.Popen(
-        ["sudo", "tcpdump", "-i", "any", "-w", path],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL
+    process = await asyncio.create_subprocess_exec(
+        "sudo", "tcpdump", "-i", "any", "-w", f"tcpdumps/{capture_file}",
+        stdout=asyncio.subprocess.DEVNULL,
+        stderr=asyncio.subprocess.DEVNULL
     )
 
     print(f"tcpdump started with PID {process.pid}")
     return process
 
-def stop_tcpdump(process):
-    print(f"Stopping tcpdump with PID {process.pid}...")
-    os.kill(process.pid, signal.SIGTERM)  # Gracefully stop tcpdump
-    process.wait()  # Wait for process to exit
+async def stop_tcpdump(process):
+    """Stop the tcpdump process asynchronously."""
+    print("Stopping tcpdump...")
+    process.send_signal(signal.SIGTERM)  # Gracefully stop tcpdump
+    await process.wait()  # Wait for process to exit
     print("tcpdump stopped.")
 
 # HTTP request
@@ -167,13 +167,13 @@ async def run_test(test_type: str, test_file: str):
     # tcpdump_thread = Thread(target=start_tcpdump, args=(machine_ip,machine_usr,machine_pwd,capture_file))
     # tcpdump_thread.start()
 
-    tcpdump_process = start_tcpdump(capture_file)
+    tcpdump_process = await start_tcpdump(capture_file)
 
     response = await send_request(test_type, test_file)
 
     # Stop iperf server and tcpdump after the test
     # stop_process(machine_ip, machine_usr, machine_pwd, "tcpdump")
-    stop_tcpdump(tcpdump_process)
+    await stop_tcpdump(tcpdump_process)
 
     if response:
         # Save time results to file
