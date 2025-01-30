@@ -11,11 +11,11 @@ nef_ip = None
 results = []
 results_txt = []
 tests = {
-    'mon_c': [f'http://{nef_ip}/3gpp-monitoring-event/v1/test/subscriptions',['mon_evt.json']],
+    'mon_c': [f'http://{nef_ip}/3gpp-monitoring-event/v1/test/subscriptions'],
     # 'mon_d': [f'http://{nef_ip}/3gpp-as-session-with-qos/v1/test/subscriptions/'],
-    'ti_c': [f'http://{nef_ip}/3gpp-traffic-influence/v1/test/subscriptions',['ti_open.json', 'ti_free.json']],
+    'ti_c': [f'http://{nef_ip}/3gpp-traffic-influence/v1/test/subscriptions'],
     # 'ti_d': [f'http://{nef_ip}/3gpp-traffic-influence/v1/test/subscriptions/'],
-    'qos_c': [f'http://{nef_ip}/3gpp-as-session-with-qos/v1/test/subscriptions',['qos_mod.json','qci_mod']],
+    'qos_c': [f'http://{nef_ip}/3gpp-as-session-with-qos/v1/test/subscriptions'],
     # 'qos_d': [f'http://{nef_ip}/3gpp-as-session-with-qos/v1/test/subscriptions/']
 }
 
@@ -42,11 +42,11 @@ def start_tcpdump(tcpdump_ip, username, password, capture_file):
     ssh_execute(tcpdump_ip, username, password, cmd)
 
 # HTTP request
-async def send_request(request: str):
+async def send_request(request: str, test_file: str):
     print(f"Request for {request}")
     endpoint = tests[request][0]
     # msg_file = os.path.join(os.path.dirname(__file__), request)
-    with open(f'messages/{tests[request][1]}', 'r') as file:
+    with open(f'messages/{test_file}', 'r') as file:
         data = json.load(file)
 
     try:
