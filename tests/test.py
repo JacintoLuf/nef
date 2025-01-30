@@ -21,13 +21,8 @@ tests = {
 
 base_dir = os.path.dirname(os.path.abspath(__file__))  # Get script's directory
 
-tcpdump_folder = os.path.join(base_dir, 'tcpdumps')
-if not os.path.exists(tcpdump_folder):
-    os.makedirs(tcpdump_folder)
-
-times_folder = os.path.join(base_dir, 'times')
-if not os.path.exists(times_folder):
-    os.makedirs(tcpdump_folder)
+tcpdump_folder = os.makedirs(os.path.join(base_dir, 'tcpdumps'), exist_ok=True)
+times_folder = os.makedirs(os.path.join(base_dir, 'times'), exist_ok=True)
 
 # SSH function to execute remote commands using Paramiko
 def ssh_execute(ip, username, password, command):
@@ -58,6 +53,15 @@ async def send_request(request: str, test_file: str):
                 endpoint,
                 data=data
             )
+    
+        sub = response.headers['Location']
+        if sub:
+            print(f"Subscription: {sub}")
+            async with httpx.AsyncClient(http1=False, http2=True) as client:
+                res = await client.delete(
+                    sub
+                )
+            print(f"Subscription deleted: {res.status_code}")
         return response
     except httpx.HTTPStatusError as e:
         print(f"Failed request. Error: {e!r}")
@@ -160,7 +164,7 @@ async def run_test(test_type: str, test_file: str):
         if response.headers['X-ElapsedTime-Header']:
             elapsed_time_header = response.headers['X-ElapsedTime-Header']
             print(f"elapsed time header: {response.headers['X-ElapsedTime-Header']}s")
-        write_to_json('ti_c', elapsed_time)
+        write_to_json('test_type', elapsed_time)
 
         print("Test finished. Results collected.")
     else:
