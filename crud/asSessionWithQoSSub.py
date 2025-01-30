@@ -21,12 +21,6 @@ async def as_session_with_qos_subscription_get(scsAsId: str=None, subId: str=Non
         async for doc in collection.find({'scsAsId': scsAsId}):
             docs.append(doc)
         return None if not docs else docs
-    else:
-        #------security breach-----------
-        docs = []
-        async for doc in collection.find({}):
-            docs.append(doc)
-        return None if not docs else docs
 
 async def as_session_with_qos_subscription_insert(scsAsId: str, sub: AsSessionWithQoSSubscription, location: str, _id: str=None):
     collection = db["as_session_with_qos_sub"]
@@ -66,6 +60,29 @@ async def as_session_with_qos_subscription_delete(scsAsId: str, subId: str=None)
     if scsAsId and subId:
         try:
             result = await collection.delete_one({'_id': subId, 'scsAsId': scsAsId})
+            return n - await collection.count_documents({})
+        except Exception as e:
+            conf.logger.error(e)
+            return None
+    return None
+
+async def get(subId: str=None):
+    collection = db["as_session_with_qos_sub"]
+    if subId:
+        doc = await collection.find_one({'_id': subId})
+        return None if not doc else doc
+    else:
+        docs = []
+        async for doc in collection.find({}):
+            docs.append(doc)
+        return None if not docs else docs
+    
+async def delete(subId: str=None):
+    collection = db["as_session_with_qos_sub"]
+    n = await collection.count_documents({})
+    if subId:
+        try:
+            result = await collection.delete_one({'_id': subId})
             return n - await collection.count_documents({})
         except Exception as e:
             conf.logger.error(e)

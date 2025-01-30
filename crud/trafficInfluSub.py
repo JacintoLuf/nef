@@ -21,15 +21,6 @@ async def traffic_influence_subscription_get(afId: str=None, subId: str=None):
         async for doc in collection.find({'afId': afId}):
             docs.append(doc)
         return None if not docs else docs
-    elif subId:
-        doc = await collection.find_one({'_id': subId})
-        return None if not doc else doc
-    else:
-        #------security breach-----------
-        docs = []
-        async for doc in collection.find({}):
-            docs.append(doc)
-        return None if not docs else docs
 
 async def traffic_influence_subscription_insert(afId: str, sub: TrafficInfluSub, location: str, _id: str=None):
     collection = db["traffic_influ_sub"]
@@ -70,6 +61,29 @@ async def individual_traffic_influence_subscription_delete(afId: str, subId: str
     if afId and subId:
         try:
             result = await collection.delete_one({'_id': subId, 'afId': afId})
+            return n - await collection.count_documents({})
+        except Exception as e:
+            conf.logger.error(e)
+            return None
+    return None
+
+async def get(subId: str=None):
+    collection = db["traffic_influ_sub"]
+    if subId:
+        doc = await collection.find_one({'_id': subId})
+        return None if not doc else doc
+    else:
+        docs = []
+        async for doc in collection.find({}):
+            docs.append(doc)
+        return None if not docs else docs
+
+async def delete(subId: str=None):
+    collection = db["traffic_influ_sub"]
+    n = await collection.count_documents({})
+    if subId:
+        try:
+            result = await collection.delete_one({'_id': subId})
             return n - await collection.count_documents({})
         except Exception as e:
             conf.logger.error(e)

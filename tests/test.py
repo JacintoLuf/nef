@@ -73,8 +73,8 @@ async def send_request(request: str, test_file: str):
                 endpoint,
                 data=data
             )
-    
-        sub = response.headers['Location']
+
+        sub = response.headers['location']
         if sub:
             print(f"Subscription: {sub}")
             async with httpx.AsyncClient(http1=False, http2=True) as client:

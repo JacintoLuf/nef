@@ -19,13 +19,7 @@ async def monitoring_event_subscriptionscription_get(scsAsId: str=None, subId: s
         async for doc in collection.find({'scsAsId': scsAsId}):
             docs.append(doc)
         return None if not docs else docs
-    else:
-        #------security breach-----------
-        docs = []
-        async for doc in collection.find({}):
-            docs.append(doc)
-        return None if not docs else docs
-
+    
 async def monitoring_event_subscriptionscription_insert(scsAsId: str, sub: MonitoringEventSubscription, location: str = None, _id: str=None):
     collection = db["monitoring_event_subscription"]
     # subId = str(uuid.uuid4().hex) if not _id else _id
@@ -64,6 +58,29 @@ async def monitoring_event_subscriptionscription_delete(scsAsId: str, subId: str
     if scsAsId and subId:
         try:
             result = await collection.delete_one({'_id': subId, 'scsAsId': scsAsId})
+            return n - await collection.count_documents({})
+        except Exception as e:
+            conf.logger.error(e)
+            return None
+    return None
+
+async def get(subId: str=None):
+    collection = db["monitoring_event_subscription"]
+    if subId:
+        doc = await collection.find_one({'_id': subId})
+        return None if not doc else doc
+    else:
+        docs = []
+        async for doc in collection.find({}):
+            docs.append(doc)
+        return None if not docs else docs
+    
+async def delete(subId: str=None):
+    collection = db["monitoring_event_subscription"]
+    n = await collection.count_documents({})
+    if subId:
+        try:
+            result = await collection.delete_one({'_id': subId})
             return n - await collection.count_documents({})
         except Exception as e:
             conf.logger.error(e)

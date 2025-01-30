@@ -484,15 +484,14 @@ async def mon_evt_sub_delete(scsAsId: str, subscriptionId: str):
 # @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 @app.get("/tiget")
 async def tiget():
-    res = await trafficInfluSub.traffic_influence_subscription_get()
+    res = await trafficInfluSub.get()
     if not res:
         return {'subs': []}
     return {'subs': res}
 
 @app.get("/tidelete/{subId}")
 async def tidelete(subId: str):
-    scsAsId = "test_AF_1"
-    res = await trafficInfluSub.individual_traffic_influence_subscription_delete(scsAsId, subId)
+    res = await trafficInfluSub.get(subId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
     else:
@@ -501,7 +500,7 @@ async def tidelete(subId: str):
         if res.status_code != httpx.codes.NO_CONTENT:
             conf.logger.info("Context not found!")
 
-        res = await trafficInfluSub.individual_traffic_influence_subscription_delete(scsAsId, subId)
+        res = await trafficInfluSub.delete(subId)
         if res == 1:
             return Response(status_code=httpx.codes.NO_CONTENT)
     raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
@@ -682,15 +681,14 @@ async def delete_ti(afId: str, subId: str):
 #---------------------as-session-with-qos------------------------
 @app.get("/qget")
 async def qget():
-    res = await asSessionWithQoSSub.as_session_with_qos_subscription_get()
+    res = await asSessionWithQoSSub.get()
     if not res:
         return {'subs': []}
     return {'subs': res}
 
 @app.get("/qdelete/{subId}")
 async def qo_s_delete(subId: str):
-    scsAsId = "test_AF_1"
-    res = await asSessionWithQoSSub.as_session_with_qos_subscription_get(scsAsId, subId)
+    res = await asSessionWithQoSSub.get(subId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
     else:
@@ -699,7 +697,7 @@ async def qo_s_delete(subId: str):
         if res.status_code != httpx.codes.NO_CONTENT:
             conf.logger.info("Context not found!")
 
-        res = await asSessionWithQoSSub.as_session_with_qos_subscription_delete(scsAsId, subId)
+        res = await asSessionWithQoSSub.delete(subId)
         if res == 1:
             return Response(status_code=httpx.codes.NO_CONTENT)
     raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
