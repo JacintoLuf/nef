@@ -21,8 +21,10 @@ tests = {
 
 base_dir = os.path.dirname(os.path.abspath(__file__))  # Get script's directory
 
-tcpdump_folder = os.makedirs(os.path.join(base_dir, 'tcpdumps'), exist_ok=True)
-times_folder = os.makedirs(os.path.join(base_dir, 'times'), exist_ok=True)
+tcpdump_folder = os.path.join(base_dir, 'tcpdumps')
+os.makedirs(tcpdump_folder, exist_ok=True)
+times_folder = os.path.join(base_dir, 'times')
+os.makedirs(times_folder, exist_ok=True)
 
 # SSH function to execute remote commands using Paramiko
 def ssh_execute(ip, username, password, command):
