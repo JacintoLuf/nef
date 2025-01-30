@@ -75,21 +75,41 @@ def open_or_create_json():
             except json.JSONDecodeError:
                 print("empty or invalid dictionary")
                 data_json = {
-                    'mon_c': [],
-                    'mon_d': [],
-                    'ti_c': [],
-                    'ti_d': [],
-                    'qos_c': [],
-                    'qos_d': []
+                    'open5gs': {
+                        'mon_c': [],
+                        'mon_d': [],
+                        'ti_c': [],
+                        'ti_d': [],
+                        'qos_c': [],
+                        'qos_d': []
+                    },
+                    'free5gc': {
+                        'mon_c': [],
+                        'mon_d': [],
+                        'ti_c': [],
+                        'ti_d': [],
+                        'qos_c': [],
+                        'qos_d': []
+                    }
                 }
     else:
         data_json = {
-            'mon_c': [],
-            'mon_d': [],
-            'ti_c': [],
-            'ti_d': [],
-            'qos_c': [],
-            'qos_d': []
+            'open5gs': {
+                'mon_c': [],
+                'mon_d': [],
+                'ti_c': [],
+                'ti_d': [],
+                'qos_c': [],
+                'qos_d': []
+            },
+            'free5gc': {
+                'mon_c': [],
+                'mon_d': [],
+                'ti_c': [],
+                'ti_d': [],
+                'qos_c': [],
+                'qos_d': []
+            }
         }
         with open("times.json", "w") as file:
             json.dump(data_json, file, indent=4)
@@ -97,7 +117,7 @@ def open_or_create_json():
 
 def write_to_json(key, val):
     data_json = open_or_create_json()
-    data_json[key].append(val)
+    data_json[core][key].append(val)
     with open("times.json", "w") as file:
         json.dump(data_json, file, indent=4)
 
