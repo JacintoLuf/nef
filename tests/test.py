@@ -11,12 +11,12 @@ nef_ip = None
 results = []
 results_txt = []
 tests = {
-    'mon_c': [f'http://{nef_ip}/3gpp-monitoring-event/v1/test/subscriptions'],
-    # 'mon_d': [f'http://{nef_ip}/3gpp-as-session-with-qos/v1/test/subscriptions/'],
-    'ti_c': [f'http://{nef_ip}/3gpp-traffic-influence/v1/test/subscriptions'],
-    # 'ti_d': [f'http://{nef_ip}/3gpp-traffic-influence/v1/test/subscriptions/'],
-    'qos_c': [f'http://{nef_ip}/3gpp-as-session-with-qos/v1/test/subscriptions'],
-    # 'qos_d': [f'http://{nef_ip}/3gpp-as-session-with-qos/v1/test/subscriptions/']
+    'mon_c': [f'http://{nef_ip}:7777/3gpp-monitoring-event/v1/test/subscriptions'],
+    # 'mon_d': [f'http://{nef_ip}:7777/3gpp-as-session-with-qos/v1/test/subscriptions/'],
+    'ti_c': [f'http://{nef_ip}:7777/3gpp-traffic-influence/v1/test/subscriptions'],
+    # 'ti_d': [f'http://{nef_ip}:7777/3gpp-traffic-influence/v1/test/subscriptions/'],
+    'qos_c': [f'http://{nef_ip}:7777/3gpp-as-session-with-qos/v1/test/subscriptions'],
+    # 'qos_d': [f'http://{nef_ip}:7777/3gpp-as-session-with-qos/v1/test/subscriptions/']
 }
 
 base_dir = os.path.dirname(os.path.abspath(__file__))  # Get script's directory
@@ -42,7 +42,7 @@ def start_tcpdump(tcpdump_ip, username, password, capture_file):
 
 # HTTP request
 async def send_request(request: str, test_file: str):
-    print(f"Request for {request}")
+    print(f"Request for {request} endpoint: {tests[request][0]}")
     print(f"Test file: {test_file}")
     endpoint = tests[request][0]
     file_path = os.path.join(base_dir, "messages", test_file)
@@ -203,10 +203,10 @@ if __name__ == '__main__':
             elif test_type == "ti_c":
                 test_file = "ti_open.json" if core == "open5gs" else "ti_free.json"
 
-        start = False if str(input("Start? Y/n")).strip().lower() == "n" else True
+        start = False if str(input("Start? Y/n\n")).strip().lower() == "n" else True
         if start:
             asyncio.run(run_test(test_type, test_file))
 
-        run = False if str(input("Run again? Y/n")).strip().lower() == "n" else True
+        run = False if str(input("Run again? Y/n\n")).strip().lower() == "n" else True
 
     print("All tasks completed.")
