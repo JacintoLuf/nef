@@ -54,7 +54,7 @@ async def start_tcpdump(capture_file):
 async def stop_tcpdump(process):
     """Stop the tcpdump process asynchronously."""
     print("Stopping tcpdump...")
-    process.send_signal(signal.SIGTERM)
+    process.send_signal(signal.SIGKILL)
     await process.wait()
     print("tcpdump stopped.")
 
