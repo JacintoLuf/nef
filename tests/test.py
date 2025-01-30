@@ -190,12 +190,12 @@ if __name__ == '__main__':
             core = "free5gc" if inp == 2 else "open5gs"
             nef_ip = '10.255.32.164:7777' if core == "free5gc" else "10.255.38.50:7777"
             tests = {
-                'mon_c': [f'http://{nef_ip}:7777/3gpp-monitoring-event/v1/test/subscriptions'],
-                # 'mon_d': [f'http://{nef_ip}:7777/3gpp-as-session-with-qos/v1/test/subscriptions/'],
-                'ti_c': [f'http://{nef_ip}:7777/3gpp-traffic-influence/v1/test/subscriptions'],
-                # 'ti_d': [f'http://{nef_ip}:7777/3gpp-traffic-influence/v1/test/subscriptions/'],
-                'qos_c': [f'http://{nef_ip}:7777/3gpp-as-session-with-qos/v1/test/subscriptions'],
-                # 'qos_d': [f'http://{nef_ip}:7777/3gpp-as-session-with-qos/v1/test/subscriptions/']
+                'mon_c': [f'http://{nef_ip}/3gpp-monitoring-event/v1/test/subscriptions'],
+                # 'mon_d': [f'http://{nef_ip}/3gpp-as-session-with-qos/v1/test/subscriptions/'],
+                'ti_c': [f'http://{nef_ip}/3gpp-traffic-influence/v1/test/subscriptions'],
+                # 'ti_d': [f'http://{nef_ip}/3gpp-traffic-influence/v1/test/subscriptions/'],
+                'qos_c': [f'http://{nef_ip}/3gpp-as-session-with-qos/v1/test/subscriptions'],
+                # 'qos_d': [f'http://{nef_ip}/3gpp-as-session-with-qos/v1/test/subscriptions/']
             }
 
         test_types = [key for key in tests.keys()]
