@@ -1,25 +1,16 @@
 import asyncio
-from asyncio import subprocess
 import os
 import json
 import signal
 import paramiko
 import httpx
-from threading import Thread
 
 # Variables
 core = None
 nef_ip = None
 results = []
 results_txt = []
-tests = {
-    'mon_c': [f'http://{nef_ip}:7777/3gpp-monitoring-event/v1/test/subscriptions'],
-    # 'mon_d': [f'http://{nef_ip}:7777/3gpp-as-session-with-qos/v1/test/subscriptions/'],
-    'ti_c': [f'http://{nef_ip}:7777/3gpp-traffic-influence/v1/test/subscriptions'],
-    # 'ti_d': [f'http://{nef_ip}:7777/3gpp-traffic-influence/v1/test/subscriptions/'],
-    'qos_c': [f'http://{nef_ip}:7777/3gpp-as-session-with-qos/v1/test/subscriptions'],
-    # 'qos_d': [f'http://{nef_ip}:7777/3gpp-as-session-with-qos/v1/test/subscriptions/']
-}
+tests = None
 
 base_dir = os.path.dirname(os.path.abspath(__file__))  # Get script's directory
 
@@ -198,6 +189,14 @@ if __name__ == '__main__':
                 inp = 1
             core = "free5gc" if inp == 2 else "open5gs"
             nef_ip = '10.255.32.164:7777' if core == "free5gc" else "10.255.38.50:7777"
+            tests = {
+                'mon_c': [f'http://{nef_ip}:7777/3gpp-monitoring-event/v1/test/subscriptions'],
+                # 'mon_d': [f'http://{nef_ip}:7777/3gpp-as-session-with-qos/v1/test/subscriptions/'],
+                'ti_c': [f'http://{nef_ip}:7777/3gpp-traffic-influence/v1/test/subscriptions'],
+                # 'ti_d': [f'http://{nef_ip}:7777/3gpp-traffic-influence/v1/test/subscriptions/'],
+                'qos_c': [f'http://{nef_ip}:7777/3gpp-as-session-with-qos/v1/test/subscriptions'],
+                # 'qos_d': [f'http://{nef_ip}:7777/3gpp-as-session-with-qos/v1/test/subscriptions/']
+            }
 
         test_types = [key for key in tests.keys()]
         try:
