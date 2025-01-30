@@ -1,37 +1,31 @@
 import asyncio
 import json
-from time import time, sleep
 import uuid
 import httpx
-from fastapi import APIRouter, FastAPI, Request, Response, HTTPException, BackgroundTasks
-from fastapi.responses import JSONResponse
-from fastapi.exceptions import RequestValidationError
-from fastapi.routing import APIRoute
-from fastapi_utils.tasks import repeat_every
-from typing import Callable, Coroutine
-from models.amf_created_event_subscription import AmfCreatedEventSubscription
+from time import time
 from session import clean_db
 from api.config import conf
-from models.problem_details import ProblemDetails
-from models.pcf_binding import PcfBinding
-from models.monitoring_event_subscription import MonitoringEventSubscription
-from models.monitoring_event_report import MonitoringEventReport
-from models.monitoring_event_reports import MonitoringEventReports
-from models.created_ee_subscription import CreatedEeSubscription
-from models.traffic_influ_sub import TrafficInfluSub
-from models.traffic_influ_sub_patch import TrafficInfluSubPatch
-from models.event_notification import EventNotification
-from models.nsmf_event_exposure_notification import NsmfEventExposureNotification
+from fastapi_utils.tasks import repeat_every
+from fastapi import FastAPI, Request, Response, HTTPException, BackgroundTasks
+from fastapi.responses import JSONResponse
 from models.ue_id_req import UeIdReq
 from models.ue_id_info import UeIdInfo
+from models.pcf_binding import PcfBinding
+from models.traffic_influ_sub import TrafficInfluSub
+from models.event_notification import EventNotification
+from models.traffic_influ_sub_patch import TrafficInfluSubPatch
+from models.created_ee_subscription import CreatedEeSubscription
+from models.monitoring_event_subscription import MonitoringEventSubscription
+from models.amf_created_event_subscription import AmfCreatedEventSubscription
+from models.nsmf_event_exposure_notification import NsmfEventExposureNotification
 from models.as_session_with_qo_s_subscription import AsSessionWithQoSSubscription
+import core.af_handler as af_handler
 import core.nrf_handler as nrf_handler
 import core.amf_handler as amf_handler
 import core.bsf_handler as bsf_handler
 import core.pcf_handler as pcf_handler
 import core.udm_handler as udm_handler
 import core.udr_handler as udr_handler
-import core.af_handler as af_handler
 import crud.nfProfile as nfProfile
 import crud.trafficInfluSub as trafficInfluSub
 import crud.asSessionWithQoSSub as asSessionWithQoSSub
@@ -259,7 +253,7 @@ async def mon_get():
 @app.get("/mondelete/{subId}")
 async def mon_del(subId: str):
     try:
-        res = await monitoringEventSubscription.monitoring_event_subscriptionscription_get(subId)
+        res = await monitoringEventSubscription.get(subId)
         if not res:
             raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
         else:
@@ -274,7 +268,7 @@ async def mon_del(subId: str):
             if res.status_code != httpx.codes.NO_CONTENT:
                 conf.logger.info("Context not found!")
                 raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
-            res = await monitoringEventSubscription.monitoring_event_subscriptionscription_delete(subId)
+            res = await monitoringEventSubscription.delete(subId)
             if res == 1:
                 return Response(status_code=httpx.codes.NO_CONTENT)
     except Exception as e:
@@ -462,7 +456,7 @@ async def mon_evt_sub_delete(scsAsId: str, subscriptionId: str):
         else:
             location = res['location']
             async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
-                res = await client.post(
+                res = await client.delete(
                     location,
                     headers={'Accept': 'application/json,application/problem+json'},
                 )
@@ -481,7 +475,6 @@ async def mon_evt_sub_delete(scsAsId: str, subscriptionId: str):
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
 
 #---------------------traffic-influence------------------------
-# @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 @app.get("/tiget")
 async def tiget():
     res = await trafficInfluSub.get()
