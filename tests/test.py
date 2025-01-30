@@ -205,7 +205,7 @@ if __name__ == '__main__':
 
         start = False if str(input("Start? Y/n")).strip().lower() == "n" else True
         if start:
-            asyncio.run(run_test(test_type, test_type))
+            asyncio.run(run_test(test_type, test_file))
 
         run = False if str(input("Run again? Y/n")).strip().lower() == "n" else True
 
