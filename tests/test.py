@@ -19,12 +19,14 @@ tests = {
     # 'qos_d': [f'http://{nef_ip}/3gpp-as-session-with-qos/v1/test/subscriptions/']
 }
 
-tcpdump_folder = os.path.join(os.getcwd(), 'tcpdumps')
+base_dir = os.path.dirname(os.path.abspath(__file__))  # Get script's directory
+
+tcpdump_folder = os.path.join(base_dir, 'tcpdumps')
 if not os.path.exists(tcpdump_folder):
     os.makedirs(tcpdump_folder)
 
-times_folder = os.path.join(os.getcwd(), 'times')
-if not os.path.exists(tcpdump_folder):
+times_folder = os.path.join(base_dir, 'times')
+if not os.path.exists(times_folder):
     os.makedirs(tcpdump_folder)
 
 # SSH function to execute remote commands using Paramiko
@@ -44,9 +46,10 @@ def start_tcpdump(tcpdump_ip, username, password, capture_file):
 # HTTP request
 async def send_request(request: str, test_file: str):
     print(f"Request for {request}")
+    print(f"Test file: {test_file}")
     endpoint = tests[request][0]
-    # msg_file = os.path.join(os.path.dirname(__file__), request)
-    with open(f'messages/{test_file}', 'r') as file:
+    file_path = os.path.join(base_dir, "messages", test_file)
+    with open(file_path, 'r') as file:
         data = json.load(file)
 
     try:
@@ -58,8 +61,10 @@ async def send_request(request: str, test_file: str):
         return response
     except httpx.HTTPStatusError as e:
         print(f"Failed request. Error: {e!r}")
+        return None
     except Exception as e:
-        print(f"Error sending QoS update: {e!r}")
+        print(f"Error request: {e!r}")
+        return None
 
 # Stop any running process
 def stop_process(remote_ip, username, password, process_name):
@@ -148,16 +153,18 @@ async def run_test(test_type: str, test_file: str):
     # Stop iperf server and tcpdump after the test
     stop_process(machine_ip, machine_usr, machine_pwd, "tcpdump")
 
+    if response:
+        # Save time results to file
+        elapsed_time = response.elapsed
+        print(f"elapsed time: {elapsed_time}s")
+        if response.headers['X-ElapsedTime-Header']:
+            elapsed_time_header = response.headers['X-ElapsedTime-Header']
+            print(f"elapsed time header: {response.headers['X-ElapsedTime-Header']}s")
+        write_to_json('ti_c', elapsed_time)
 
-    # Save time results to file
-    elapsed_time = response.elapsed
-    print(f"elapsed time: {elapsed_time}s")
-    if response.headers['X-ElapsedTime-Header']:
-        elapsed_time_header = response.headers['X-ElapsedTime-Header']
-        print(f"elapsed time header: {response.headers['X-ElapsedTime-Header']}s")
-    write_to_json('ti_c', elapsed_time)
-
-    print("Test finished. Results collected.")
+        print("Test finished. Results collected.")
+    else:
+        print("Test failed. No response received.")
 
 if __name__ == '__main__':
     run = True
@@ -172,7 +179,7 @@ if __name__ == '__main__':
 
         test_types = [key for key in tests.keys()]
         try:
-            inp = int(input("test type:\n"+" ".join(f"({index+1}){item}" for index, item in enumerate(test_types))))
+            inp = int(input("test type:\n"+" ".join(f"({index+1}){item}" for index, item in enumerate(test_types))+"\n"))
         except Exception as e:
             inp = 2
         test_type = test_types[inp-1]
@@ -183,7 +190,7 @@ if __name__ == '__main__':
                 test_file = "mon_evt.json"
             elif test_type == "qos_c":
                 try:
-                    inp = int(input("(1)QCI\t(2)QOS"))
+                    inp = int(input("(1)QCI\t(2)QOS\n"))
                 except Exception as e:
                     inp = 1
                 test_file = "qci_mod.json" if inp == 1 else "qos_mod.json"
