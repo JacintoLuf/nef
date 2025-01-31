@@ -54,14 +54,15 @@ async def start_tcpdump(capture_file):
 async def stop_tcpdump(process):
     """Stop the tcpdump process asynchronously."""
     print("Stopping tcpdump...")
-    res = process.send_signal(signal.SIGKILL)
-    print(f"tcpdump stopped with return code {res}")
-    await process.wait()
-    # process = await asyncio.create_subprocess_exec(
+    process.terminate()
+    # process.send_signal(signal.SIGKILL)
+    # await process.wait()
+    # kill = await asyncio.create_subprocess_exec(
     #     "sudo", "kill", "-9", f"{process.pid}",
     #     stdout=asyncio.subprocess.DEVNULL,
     #     stderr=asyncio.subprocess.DEVNULL
     # )
+    # kill.terminate()
     print("tcpdump stopped.")
 
 # HTTP request
@@ -73,13 +74,18 @@ async def send_request(request: str, test_file: str):
     with open(file_path, 'r') as file:
         data = json.load(file)
 
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+    }
     try:
         async with httpx.AsyncClient(http1=False, http2=True) as client:
             response = await client.post(
                 endpoint,
+                headers=headers,
                 data=data
             )
-        print(f"Response: {response.text}")
+            print(f"Response: {response.text}")
         sub = response.headers['location']
         if sub:
             print(f"Subscription location: {sub}")

@@ -1,7 +1,10 @@
 {
     "dnn":"internet",
-    "snssai":{"sst":"1","sd":"111111"},
+    "snssai":{
+        "sst":"1",
+        "sd":"111111"
+    },
     "ipv4Addr":"10.45.0.3",
-    "subscribedEvents":["UP_PATH_CHANGE"],
-    "trafficFilters":[{"flowId":"2","flowDescriptions":["permit out ip from 10.45.0.0/16 to any"]}]
+    "trafficFilters":[{"flowDescriptions":["permit out ip from any to any"], "flowId":"2"}],
+    "subscribedEvents":["UP_PATH_CHANGE"]
 }
