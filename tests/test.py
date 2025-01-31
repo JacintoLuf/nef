@@ -54,15 +54,8 @@ async def start_tcpdump(capture_file):
 async def stop_tcpdump(process):
     """Stop the tcpdump process asynchronously."""
     print("Stopping tcpdump...")
-    process.terminate()
-    # process.send_signal(signal.SIGKILL)
-    # await process.wait()
-    # kill = await asyncio.create_subprocess_exec(
-    #     "sudo", "kill", "-9", f"{process.pid}",
-    #     stdout=asyncio.subprocess.DEVNULL,
-    #     stderr=asyncio.subprocess.DEVNULL
-    # )
-    # kill.terminate()
+    cmd = f"sudo kill {str(process.pid)}"
+    os.system(cmd)
     print("tcpdump stopped.")
 
 # HTTP request
@@ -73,7 +66,7 @@ async def send_request(request: str, test_file: str):
     file_path = os.path.join(base_dir, "messages", test_file)
     with open(file_path, 'r') as file:
         data = json.load(file)
-
+    print(f"Request data: {data}")
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
