@@ -84,7 +84,7 @@ async def send_request(request: str, test_file: str):
                 headers=headers,
                 data=json.dumps(data)
             )
-            print(f"Response: {response.status_code}")
+            print(f"Response: {response.status_code} - {response.text}")
         # sub = response.headers['location']
         if response.headers['location']:
             parsed_url = urlparse(response.headers['location'])
