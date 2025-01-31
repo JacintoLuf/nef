@@ -144,6 +144,7 @@ def open_or_create_json():
     return data_json
 
 def write_to_json(key, val):
+    print(f"Writing to json: {key} - {val}")
     data_json = open_or_create_json()
     data_json[core][key].append(val)
     with open("times.json", "w") as file:
