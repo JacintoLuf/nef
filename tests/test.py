@@ -84,7 +84,7 @@ async def send_request(request: str, test_file: str):
                 headers=headers,
                 data=json.dumps(data)
             )
-            print(f"Response: {response.text}")
+            print(f"Response: {response.status_code}")
         # sub = response.headers['location']
         if response.headers['location']:
             parsed_url = urlparse(response.headers['location'])
@@ -94,7 +94,7 @@ async def send_request(request: str, test_file: str):
                 res = await client.delete(
                     url=modified_url,
                 )
-            print(f"Subscription deleted: {res.text}")
+            print(f"Subscription delete response: {res.status_code} - {res.text}")
         return response
     except httpx.HTTPStatusError as e:
         print(f"Failed request. Error: {e!r}")
