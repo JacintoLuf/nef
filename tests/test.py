@@ -76,15 +76,15 @@ async def send_request(request: str, test_file: str):
             response = await client.post(
                 endpoint,
                 headers=headers,
-                data=data
+                data=json.dumps(data)
             )
             print(f"Response: {response.text}")
-        sub = response.headers['location']
-        if sub:
-            print(f"Subscription location: {sub}")
+        # sub = response.headers['location']
+        if response.headers['location']:
+            print(f"Subscription location: {response.headers['location']}")
             async with httpx.AsyncClient(http1=False, http2=True) as client:
                 res = await client.delete(
-                    sub
+                    response.headers['location']
                 )
             print(f"Subscription deleted: {res.status_code}")
         return response
