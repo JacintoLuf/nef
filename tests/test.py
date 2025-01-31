@@ -160,11 +160,12 @@ async def run_test(test_type: str, test_file: str):
 
     tcpdump_process = await start_tcpdump(capture_file)
 
-    response = await send_request(test_type, test_file)
-
-    # Stop iperf server and tcpdump after the test
-    # stop_process(machine_ip, machine_usr, machine_pwd, "tcpdump")
-    await stop_tcpdump(tcpdump_process)
+    try:
+        response = await send_request(test_type, test_file)
+        await stop_tcpdump(tcpdump_process)
+    except Exception as e:
+        print(f"Error: {e!r}")
+        await stop_tcpdump(tcpdump_process)
 
     if response:
         # Save time results to file
