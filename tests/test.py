@@ -175,12 +175,10 @@ async def run_test(test_type: str, test_file: str):
 
     if response:
         # Save time results to file
-        elapsed_time = response.elapsed
-        print(f"elapsed time: {elapsed_time}s")
         if response.headers['X-ElapsedTime-Header']:
             elapsed_time_header = response.headers['X-ElapsedTime-Header']
             print(f"elapsed time header: {response.headers['X-ElapsedTime-Header']}s")
-        write_to_json('test_type', elapsed_time)
+            write_to_json(test_type, elapsed_time_header)
 
         print("Test finished. Results collected.")
     else:
