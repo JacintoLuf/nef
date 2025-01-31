@@ -57,6 +57,11 @@ async def stop_tcpdump(process):
     print("Stopping tcpdump...")
     cmd = f"sudo kill {str(process.pid)}"
     os.system(cmd)
+    try:
+        process.terminate()  # Send SIGTERM
+        await process.wait()  # Wait for it to stop
+    except ProcessLookupError:
+        pass
     print("tcpdump stopped.")
 
 # HTTP request
