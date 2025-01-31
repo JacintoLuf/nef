@@ -4,6 +4,7 @@ import json
 import signal
 import paramiko
 import httpx
+from  urllib.parse import urlparse, urlunparse
 
 # Variables
 core = None
@@ -33,11 +34,11 @@ def ssh_execute(ip, username, password, command):
 #     cmd = f"sudo tcpdump -i any -w {capture_file}"
 #     ssh_execute(tcpdump_ip, username, password, cmd)
 
-# Stop any running process
-def stop_process(remote_ip, username, password, process_name):
-    print(f"Stopping {process_name} on {remote_ip}...")
-    cmd = f"sudo pkill {process_name}"
-    ssh_execute(remote_ip, username, password, cmd)
+# # Stop any running process
+# def stop_process(remote_ip, username, password, process_name):
+#     print(f"Stopping {process_name} on {remote_ip}...")
+#     cmd = f"sudo pkill {process_name}"
+#     ssh_execute(remote_ip, username, password, cmd)
 
 async def start_tcpdump(capture_file):
     """Start tcpdump asynchronously and return the process."""
@@ -81,12 +82,14 @@ async def send_request(request: str, test_file: str):
             print(f"Response: {response.text}")
         # sub = response.headers['location']
         if response.headers['location']:
-            print(f"Subscription location: {response.headers['location']}")
+            parsed_url = urlparse(response.headers['location'])
+            modified_url = urlunparse((parsed_url.scheme, nef_ip, parsed_url.path, parsed_url.params, parsed_url.query, parsed_url.fragment))
+            print(f"Subscription location: {modified_url}")
             async with httpx.AsyncClient(http1=False, http2=True) as client:
                 res = await client.delete(
-                    response.headers['location']
+                    url=modified_url,
                 )
-            print(f"Subscription deleted: {res.status_code}")
+            print(f"Subscription deleted: {res.text}")
         return response
     except httpx.HTTPStatusError as e:
         print(f"Failed request. Error: {e!r}")
