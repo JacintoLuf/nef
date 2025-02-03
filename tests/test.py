@@ -134,7 +134,7 @@ def open_or_create_json():
     if not os.path.exists(file_path):
         print("File does not exist. Creating a new one...")
         data_json = initialize_json()
-        write_json(file_path, data_json)
+        write_json(data_json)
         return data_json
 
     try:
