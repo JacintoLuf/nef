@@ -6,7 +6,7 @@ from time import time
 from session import clean_db
 from api.config import conf
 from fastapi_utils.tasks import repeat_every
-from fastapi import FastAPI, Request, Response, HTTPException, BackgroundTasks
+from fastapi import FastAPI, Request, Response, HTTPException, BackgroundTasks, Depends
 from fastapi.responses import JSONResponse
 from models.ue_id_req import UeIdReq
 from models.ue_id_info import UeIdInfo
@@ -45,7 +45,10 @@ import crud.monitoringEventSubscription as monitoringEventSubscription
 
 #         return custom_route_handler
 
-app = FastAPI(debug=True)
+async def request_logger(request: Request):
+    conf.logger.info(f"METHOD: {request.method}, URL: {request.url}")
+
+app = FastAPI(debug=True, dependencies=[Depends(request_logger)])
 # router = APIRouter(route_class=CustomRouter)
 # @app.middleware('http')
 # async def req_middleware(request: Request, call_next):
@@ -475,15 +478,17 @@ async def mon_evt_sub_delete(scsAsId: str, subscriptionId: str):
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
 
 #---------------------traffic-influence------------------------
-@app.get("/tiget")
-async def tiget():
-    res = await trafficInfluSub.get()
+@app.get("/tiget/{subId}")
+async def tiget(subid: str=None):
+    conf.logger.info("getting all subscription" if not subid else f"getting subscription: {subid}")
+    res = await trafficInfluSub.get(subId=subid)
     if not res:
         return {'subs': []}
     return {'subs': res}
 
 @app.get("/tidelete/{subId}")
 async def tidelete(subId: str):
+    conf.logger.info(f"deleting: {subId}")
     res = await trafficInfluSub.get(subId)
     if not res:
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
@@ -499,7 +504,7 @@ async def tidelete(subId: str):
     raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
-async def ti_get(afId: str, subId: str):
+async def ti_get(afId: str, subId: str=None):
     start_time = time()
     conf.logger.info(f"af id: {afId}, sub id: {subId}")
     res = await trafficInfluSub.traffic_influence_subscription_get(afId, subId)
@@ -510,16 +515,16 @@ async def ti_get(afId: str, subId: str):
     headers.update({'X-ElapsedTime-Header': str(end_time)})
     return Response(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
 
-@app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
-async def ti_get_all(afId: str):
-    start_time = time()
-    res = await trafficInfluSub.traffic_influence_subscription_get(afId)
-    if not res:
-        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
-    end_time = (time() - start_time) * 1000
-    headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime-Header': str(end_time)})
-    return Response(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
+# @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
+# async def ti_get_all(afId: str):
+#     start_time = time()
+#     res = await trafficInfluSub.traffic_influence_subscription_get(afId)
+#     if not res:
+#         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
+#     end_time = (time() - start_time) * 1000
+#     headers = conf.GLOBAL_HEADERS
+#     headers.update({'X-ElapsedTime-Header': str(end_time)})
+#     return Response(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
 
 @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 async def traffic_influ_create(afId: str, data: Request, background_tasks: BackgroundTasks):

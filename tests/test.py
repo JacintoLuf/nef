@@ -59,7 +59,6 @@ async def stop_tcpdump(process):
     os.system(cmd)
     try:
         process.terminate()  # Send SIGTERM
-        await process.wait()  # Wait for it to stop
     except ProcessLookupError:
         pass
     print("tcpdump stopped.")
