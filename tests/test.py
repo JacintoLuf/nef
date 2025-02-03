@@ -92,6 +92,7 @@ async def send_request(request: str, test_file: str):
             async with httpx.AsyncClient(http1=False, http2=True) as client:
                 res = await client.delete(
                     url=modified_url,
+                    headers=headers
                 )
             print(f"Subscription delete response: {res.status_code} - {res.text}")
         return response
