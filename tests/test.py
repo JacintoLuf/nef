@@ -189,8 +189,8 @@ async def run_test(test_type: str, test_file: str):
     #         write_to_json(test_type, elapsed_time_header)
 
         print("Test finished. Results collected.")
-    else:
-        print("Test failed. No response received.")
+    # else:
+    #     print("Test failed. No response received.")
 
 if __name__ == '__main__':
     run = True
