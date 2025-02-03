@@ -90,7 +90,7 @@ async def send_request(request: str, test_file: str):
         if response.headers['location']:
             parsed_url = urlparse(response.headers['location'])
             modified_url = urlunparse((parsed_url.scheme, nef_ip, parsed_url.path, parsed_url.params, parsed_url.query, parsed_url.fragment))
-            # print(f"Subscription location: {modified_url}")
+            print(f"Subscription location: {modified_url}")
             if response.headers["X-ElapsedTime-Header"]:
                 write_to_json(request, response.headers['X-ElapsedTime-Header'])
             else:
