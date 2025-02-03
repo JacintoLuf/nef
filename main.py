@@ -536,16 +536,16 @@ async def ti_get(afId: str, subId: str=None):
     headers.update({'X-ElapsedTime-Header': str(end_time)})
     return Response(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
 
-# @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
-# async def ti_get_all(afId: str):
-#     start_time = time()
-#     res = await trafficInfluSub.traffic_influence_subscription_get(afId)
-#     if not res:
-#         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
-#     end_time = (time() - start_time) * 1000
-#     headers = conf.GLOBAL_HEADERS
-#     headers.update({'X-ElapsedTime-Header': str(end_time)})
-#     return Response(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
+@app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
+async def ti_get_all(afId: str):
+    start_time = time()
+    res = await trafficInfluSub.traffic_influence_subscription_get(afId)
+    if not res:
+        raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="content not found")
+    end_time = (time() - start_time) * 1000
+    headers = conf.GLOBAL_HEADERS
+    headers.update({'X-ElapsedTime-Header': str(end_time)})
+    return Response(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
 
 @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 async def traffic_influ_create(afId: str, data: Request, background_tasks: BackgroundTasks):
