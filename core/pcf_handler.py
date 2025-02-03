@@ -1,5 +1,4 @@
 import json
-from fastapi import Response
 import httpx
 from api.config import conf
 from models.pcf_binding import PcfBinding
@@ -75,7 +74,7 @@ async def pcf_policy_authorization_create_ti(binding: PcfBinding=None, traffic_i
             headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
             data=json.dumps(app_session_context.to_dict())
         )
-        conf.logger.info(f"Response {response.status_code} for creating app session.\nContent: {response.text}")
+        conf.logger.info(f"Response {response.status_code} for creating app session. Content: {response.text}")
     return response
 
 async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_session_qos_sub: AsSessionWithQoSSubscription=None, _id: str=None):
@@ -136,7 +135,7 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
             headers={'Accept': 'application/json,application/problem+json', 'content-type': 'application/json'},
             data=json.dumps(app_session_context.to_dict())
         )
-        conf.logger.info(f"Response {response.status_code} for creating app session.\nContent: {response.text}")
+        conf.logger.info(f"Response {response.status_code} for creating app session. Content: {response.text}")
     return response
 
 async def pcf_policy_authorization_delete(subId: str=None):
@@ -146,5 +145,5 @@ async def pcf_policy_authorization_delete(subId: str=None):
             f"http://{conf.HOSTS['PCF'][0]}/npcf-policyauthorization/v1/app-sessions/{subId}/delete",
             headers={'Accept': 'application/json,application/problem+json'},
         )
-        conf.logger.info(f"Response {response.status_code} for deleting app session.\nContent: {response.text}")
+        conf.logger.info(f"Response {response.status_code} for deleting app session. Content: {response.text}")
     return response

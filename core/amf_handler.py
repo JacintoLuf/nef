@@ -1,6 +1,5 @@
 import json
 import httpx
-import uuid
 from api.config import conf
 from models.monitoring_event_subscription import MonitoringEventSubscription
 from models.amf_create_event_subscription import AmfCreateEventSubscription

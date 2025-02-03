@@ -686,6 +686,7 @@ async def delete_ti(afId: str, subId: str):
                 conf.logger.info("Context not found!")
                 raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
 
+            conf.logger.info(f"deleting: {subId} from db")
             res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
             if res == 1:
                 end_time = (time() - start_time) * 1000
@@ -877,6 +878,8 @@ async def qos_delete(scsAsId: str, subId: str):
         if res.status_code != httpx.codes.NO_CONTENT:
             conf.logger.info("Context not found!")
             raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
+        
+        conf.logger.info(f"deleting: {subId} from db")
         res = await asSessionWithQoSSub.as_session_with_qos_subscription_delete(scsAsId, subId)
         if res == 1:
             end_time = (time() - start_time) * 1000

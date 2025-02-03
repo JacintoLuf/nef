@@ -55,8 +55,8 @@ async def start_tcpdump(capture_file):
 async def stop_tcpdump(process):
     """Stop the tcpdump process asynchronously."""
     print("Stopping tcpdump...")
-    cmd = f"sudo kill {str(process.pid)}"
-    os.system(cmd)
+    # cmd = f"sudo kill {str(process.pid)}"
+    # os.system(cmd)
     cmd = f"sudo pkill tcpdump"
     os.system(cmd)
     try:
@@ -90,7 +90,11 @@ async def send_request(request: str, test_file: str):
         if response.headers['location']:
             parsed_url = urlparse(response.headers['location'])
             modified_url = urlunparse((parsed_url.scheme, nef_ip, parsed_url.path, parsed_url.params, parsed_url.query, parsed_url.fragment))
-            print(f"Subscription location: {modified_url}")
+            # print(f"Subscription location: {modified_url}")
+            if response["X-ElapsedTime-Header"]:
+                write_to_json(request, response['X-ElapsedTime-Header'])
+            else:
+                write_to_json(request, response.elapsed.total_seconds() * 1000)
             async with httpx.AsyncClient(http1=False, http2=True) as client:
                 res = await client.delete(
                     url=modified_url,
@@ -99,7 +103,10 @@ async def send_request(request: str, test_file: str):
             print(f"Subscription delete response: {res.status_code} - {res.text}")
             if res.status_code == 204:
                 delete_req = request.split("_")[0]+"_d"
-                write_to_json(delete_req, res["x-elapsedtime-header"])
+                if res['X-ElapsedTime-Header']:
+                    write_to_json(delete_req, res['X-ElapsedTime-Header'])
+                else:
+                    write_to_json(delete_req, res.elapsed.total_seconds() * 1000)
         return response
     except httpx.HTTPStatusError as e:
         print(f"Failed request. Error: {e!r}")
@@ -174,12 +181,12 @@ async def run_test(test_type: str, test_file: str):
         print(f"Error: {e!r}")
         await stop_tcpdump(tcpdump_process)
 
-    if response:
-        # Save time results to file
-        if response.headers['X-ElapsedTime-Header']:
-            elapsed_time_header = response.headers['X-ElapsedTime-Header']
-            print(f"elapsed time header: {response.headers['X-ElapsedTime-Header']}s")
-            write_to_json(test_type, elapsed_time_header)
+    # if response:
+    #     # Save time results to file
+    #     if response.headers['X-ElapsedTime-Header']:
+    #         elapsed_time_header = response.headers['X-ElapsedTime-Header']
+    #         print(f"elapsed time header: {response.headers['X-ElapsedTime-Header']}s")
+    #         write_to_json(test_type, elapsed_time_header)
 
         print("Test finished. Results collected.")
     else:
