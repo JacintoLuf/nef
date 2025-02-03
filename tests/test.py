@@ -91,8 +91,8 @@ async def send_request(request: str, test_file: str):
             parsed_url = urlparse(response.headers['location'])
             modified_url = urlunparse((parsed_url.scheme, nef_ip, parsed_url.path, parsed_url.params, parsed_url.query, parsed_url.fragment))
             # print(f"Subscription location: {modified_url}")
-            if response["X-ElapsedTime-Header"]:
-                write_to_json(request, response['X-ElapsedTime-Header'])
+            if response.headers["X-ElapsedTime-Header"]:
+                write_to_json(request, response.headers['X-ElapsedTime-Header'])
             else:
                 write_to_json(request, response.elapsed.total_seconds() * 1000)
             async with httpx.AsyncClient(http1=False, http2=True) as client:
@@ -103,8 +103,9 @@ async def send_request(request: str, test_file: str):
             print(f"Subscription delete response: {res.status_code} - {res.text}")
             if res.status_code == 204:
                 delete_req = request.split("_")[0]+"_d"
-                if res['X-ElapsedTime-Header']:
-                    write_to_json(delete_req, res['X-ElapsedTime-Header'])
+                if res.headers['X-ElapsedTime-Header']:
+                    print(f"Delete elapsed time: {res.headers['X-ElapsedTime-Header']}s")
+                    write_to_json(delete_req, res.headers['X-ElapsedTime-Header'])
                 else:
                     write_to_json(delete_req, res.elapsed.total_seconds() * 1000)
         return response
