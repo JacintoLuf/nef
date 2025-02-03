@@ -183,7 +183,7 @@ async def nf_status_subscribe(nf_types):
 
 async def nf_status_unsubscribe(subId=None):
     if not subId:
-        subs = subscriptionData.subscription_data_get()
+        subs = await subscriptionData.subscription_data_get()
         for sub in subs:
             async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
                 response = await client.delete(
