@@ -248,7 +248,18 @@ async def nrf_notif(id: str, request: Request):
 #---------------------monitoring-event------------------------
 @app.get("/monget")
 async def mon_get():
-    res = await monitoringEventSubscription.monitoring_event_subscriptionscription_get()
+    conf.logger.info("getting all subscription")
+    res = await monitoringEventSubscription.get()
+    if not res:
+        return {'subs': []}
+    return {'subs': res}
+
+@app.get("/monget/{subId}")
+async def mon_get(subId: str=None):
+    if not subId:
+        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail="Subscription ID not provided!")
+    conf.logger.info(f"getting subscription: {subId}")
+    res = await monitoringEventSubscription.get(subId)
     if not res:
         return {'subs': []}
     return {'subs': res}
@@ -478,9 +489,19 @@ async def mon_evt_sub_delete(scsAsId: str, subscriptionId: str):
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
 
 #---------------------traffic-influence------------------------
+@app.get("/tiget")
+async def tiget():
+    conf.logger.info("getting all subscription")
+    res = await trafficInfluSub.get()
+    if not res:
+        return {'subs': []}
+    return {'subs': res}
+
 @app.get("/tiget/{subId}")
 async def tiget(subid: str=None):
-    conf.logger.info("getting all subscription" if not subid else f"getting subscription: {subid}")
+    if not subid:
+        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail="Subscription ID not provided!")
+    conf.logger.info(f"getting subscription: {subid}")
     res = await trafficInfluSub.get(subId=subid)
     if not res:
         return {'subs': []}
@@ -679,7 +700,18 @@ async def delete_ti(afId: str, subId: str):
 #---------------------as-session-with-qos------------------------
 @app.get("/qget")
 async def qget():
+    conf.logger.info("getting all subscription")
     res = await asSessionWithQoSSub.get()
+    if not res:
+        return {'subs': []}
+    return {'subs': res}
+
+@app.get("/qget/{subId}")
+async def qget(subId: str=None):
+    if not subId:
+        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail="Subscription ID not provided!")
+    conf.logger.info(f"getting subscription: {subId}")
+    res = await asSessionWithQoSSub.get(subId)
     if not res:
         return {'subs': []}
     return {'subs': res}
