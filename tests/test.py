@@ -115,6 +115,7 @@ def write_json(file_path, data_json):
 
 def open_or_create_json():
     file_path = os.path.join(base_dir, "times.json")
+    print(f"Opening JSON file: {file_path}")
 
     if not os.path.exists(file_path):
         print("File does not exist. Creating a new one...")
