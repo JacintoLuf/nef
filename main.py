@@ -580,7 +580,7 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
         if res.status_code == httpx.codes.CREATED:
             sub_id = trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
             if sub_id:
-                traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-trafficInfluence/v1/{afId}/subscriptions/{sub_id}"
+                traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-traffic-influence/v1/{afId}/subscriptions/{sub_id}"
                 traffic_sub.supp_feat = "ffff"
                 headers={'location': traffic_sub.__self, 'content-type': 'application/json'}
                 if traffic_sub.request_test_notification:
@@ -672,7 +672,7 @@ async def ti_patch(afId: str, subId: str, data: Request):
     headers.update({'X-ElapsedTime-Header': str(end_time)})
     return Response(status_code=httpx.codes.OK, headers=headers, content=res)
 
-@app.delete("/3gpp-trafficInfluence/v1/{afId}/subscriptions/{subId}")
+@app.delete("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def delete_ti(afId: str, subId: str):
     start_time = time()
     try:
