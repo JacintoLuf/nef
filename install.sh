@@ -22,16 +22,19 @@ if [ $# -eq 0 ]; then
   export NAMESPACE=$default_core
   export PLMN=$default_plmn
   echo Deploying along with $CORE_5G in default namespace: $NAMESPACE in default PLMN: $PLMN
+fi
 if [ $# -eq 1 ]; then
   export CORE_5G=$1
   export NAMESPACE=$1
   export PLMN=$default_plmn
   echo Deploying along with $CORE_5G in default namespace: $NAMESPACE in default PLMN: $PLMN
+fi
 if [ $# -eq 2 ]; then
   export CORE_5G=$1
   export NAMESPACE=$2
   export PLMN=$default_plmn
   echo Deploying along with $CORE_5G in namespace: $NAMESPACE in default PLMN: $PLMN
+fi
 if [ $# -eq 3 ]; then
   export CORE_5G=$1
   export NAMESPACE=$2
