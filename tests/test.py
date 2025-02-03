@@ -147,7 +147,7 @@ def open_or_create_json():
     except (json.JSONDecodeError, FileNotFoundError):
         print("Empty or invalid JSON file. Resetting...")
         data_json = initialize_json()
-        write_json(file_path, data_json)
+        write_json(data_json)
     return data_json
 
 def write_to_json(key, val):
