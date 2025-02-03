@@ -57,6 +57,8 @@ async def stop_tcpdump(process):
     print("Stopping tcpdump...")
     cmd = f"sudo kill {str(process.pid)}"
     os.system(cmd)
+    cmd = f"sudo pkill tcpdump"
+    os.system(cmd)
     try:
         process.terminate()  # Send SIGTERM
     except ProcessLookupError:
@@ -95,6 +97,9 @@ async def send_request(request: str, test_file: str):
                     headers=headers
                 )
             print(f"Subscription delete response: {res.status_code} - {res.text}")
+            if res.status_code == 204:
+                delete_req = request.split("_")[0]+"_d"
+                write_to_json(delete_req, res["x-elapsedtime-header"])
         return response
     except httpx.HTTPStatusError as e:
         print(f"Failed request. Error: {e!r}")
