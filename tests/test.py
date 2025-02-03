@@ -107,7 +107,6 @@ async def send_request(request: str, test_file: str):
             if res.status_code == 204:
                 delete_req = request.split("_")[0]+"_d"
                 if res.headers['X-ElapsedTime-Header']:
-                    print(f"Delete elapsed time: {res.headers['X-ElapsedTime-Header']}s")
                     write_to_json(delete_req, res.headers['X-ElapsedTime-Header'])
                 else:
                     write_to_json(delete_req, res.elapsed.total_seconds() * 1000)
@@ -154,7 +153,6 @@ def open_or_create_json():
 def write_to_json(key, val):
     print(f"Writing to json: {key} - {val}")
     data_json = open_or_create_json()
-    data_json[core][key].append(val)
     if core in data_json and key in data_json[core]:
         data_json[core][key].append(val)
         write_json(data_json)
