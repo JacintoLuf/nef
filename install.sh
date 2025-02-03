@@ -37,6 +37,7 @@ if [ $# -eq 3 ]; then
   export NAMESPACE=$2
   export PLMN=$3
   echo Deploying along with $CORE_5G in namespace: $NAMESPACE in PLMN: $PLMN
+fi
 # else
 #   export CORE_5G=$1
 #   export PLMN=$default_plmn
