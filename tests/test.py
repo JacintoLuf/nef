@@ -103,60 +103,47 @@ async def send_request(request: str, test_file: str):
         print(f"Error request: {e!r}")
         return None
 
+def initialize_json():
+    return {
+        'open5gs': {'mon_c': [],'mon_d': [],'ti_c': [],'ti_d': [],'qos_c': [],'qos_d': []},
+        'free5gc': {'mon_c': [],'mon_d': [],'ti_c': [],'ti_d': [],'qos_c': [],'qos_d': []}
+    }
+
+def write_json(file_path, data_json):
+    with open(file_path, "w") as file:
+        json.dump(data_json, file, indent=4)
+
 def open_or_create_json():
-    if os.path.exists("times.json"):
-        with open("times.json", "r") as file:
-            try:
-                data_json = json.load(file)
-            except json.JSONDecodeError:
-                print("empty or invalid dictionary")
-                data_json = {
-                    'open5gs': {
-                        'mon_c': [],
-                        'mon_d': [],
-                        'ti_c': [],
-                        'ti_d': [],
-                        'qos_c': [],
-                        'qos_d': []
-                    },
-                    'free5gc': {
-                        'mon_c': [],
-                        'mon_d': [],
-                        'ti_c': [],
-                        'ti_d': [],
-                        'qos_c': [],
-                        'qos_d': []
-                    }
-                }
-    else:
-        data_json = {
-            'open5gs': {
-                'mon_c': [],
-                'mon_d': [],
-                'ti_c': [],
-                'ti_d': [],
-                'qos_c': [],
-                'qos_d': []
-            },
-            'free5gc': {
-                'mon_c': [],
-                'mon_d': [],
-                'ti_c': [],
-                'ti_d': [],
-                'qos_c': [],
-                'qos_d': []
-            }
-        }
-        with open("times.json", "w") as file:
-            json.dump(data_json, file, indent=4)
+    file_path = os.path.join(base_dir, "times.json")
+
+    if not os.path.exists(file_path):
+        print("File does not exist. Creating a new one...")
+        data_json = initialize_json()
+        write_json(file_path, data_json)
+        return data_json
+
+    try:
+        with open(file_path, "r") as file:
+            data_json = json.load(file)
+
+        if not isinstance(data_json, dict):
+            raise json.JSONDecodeError("Invalid format", "", 0)
+
+    except (json.JSONDecodeError, FileNotFoundError):
+        print("Empty or invalid JSON file. Resetting...")
+        data_json = initialize_json()
+        write_json(file_path, data_json)
     return data_json
 
 def write_to_json(key, val):
     print(f"Writing to json: {key} - {val}")
     data_json = open_or_create_json()
     data_json[core][key].append(val)
-    with open("times.json", "w") as file:
-        json.dump(data_json, file, indent=4)
+    if core in data_json and key in data_json[core]:
+        data_json[core][key].append(val)
+        write_json("times.json", data_json)
+    else:
+        print(f"Error: {core} or {key} not found in JSON structure!")
 
 # Main test function
 async def run_test(test_type: str, test_file: str):
