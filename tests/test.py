@@ -20,6 +20,9 @@ os.makedirs(tcpdump_folder, exist_ok=True)
 times_folder = os.path.join(base_dir, 'times')
 os.makedirs(times_folder, exist_ok=True)
 
+file_path = os.path.join(base_dir, "times", "times.json")
+
+
 # SSH function to execute remote commands using Paramiko
 def ssh_execute(ip, username, password, command):
     ssh = paramiko.SSHClient()
@@ -122,12 +125,11 @@ def initialize_json():
         'free5gc': {'mon_c': [],'mon_d': [],'ti_c': [],'ti_d': [],'qos_c': [],'qos_d': []}
     }
 
-def write_json(file_path, data_json):
+def write_json(data_json):
     with open(file_path, "w") as file:
         json.dump(data_json, file, indent=4)
 
 def open_or_create_json():
-    file_path = os.path.join(base_dir, "times", "times.json")
     print(f"Opening JSON file: {file_path}")
 
     if not os.path.exists(file_path):
@@ -155,7 +157,7 @@ def write_to_json(key, val):
     data_json[core][key].append(val)
     if core in data_json and key in data_json[core]:
         data_json[core][key].append(val)
-        write_json("times.json", data_json)
+        write_json(data_json)
     else:
         print(f"Error: {core} or {key} not found in JSON structure!")
 
