@@ -1,7 +1,3 @@
-import httpx
-from main import app
-from fastapi import APIRouter, Request, Response, HTTPException
-from api.config import conf
 import json
 import httpx
 from api.config import conf
