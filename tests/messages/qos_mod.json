@@ -10,7 +10,7 @@
     "flowInfo": [
         {
             "flowDescriptions": [
-                "permit in ip from any 1-50000 to any 1-50000"],
+                "permit in ip from any to any"],
             "flowId": 1
         }],
         "notificationDestination": "http://af:8080/notif",
@@ -20,5 +20,5 @@
             "sst": 1
         },
     "supportedFeatures": "ffffff",
-    "ueIpv4Addr": "10.45.0.2"
+    "ueIpv4Addr": "10.45.0.3"
 }

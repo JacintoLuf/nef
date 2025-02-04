@@ -323,12 +323,6 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"Failed to parse message. Err: {e.__str__}")
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
-
-    # if not mon_evt_sub.supported_features:
-    #     raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"EVENT_FEATURE_MISMATCH. Supported features are {conf.SERVICE_LIST['nnef-evt']}")
-    
-    # if hex(int(mon_evt_sub.supported_features, 16)) and hex(int(conf.SERVICE_LIST['nnef-evt'], 16)) == hex(0):
-    #     raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=f"EVENT_UNSUPPORTED. Supported features are {conf.SERVICE_LIST['nnef-evt']}")
     
     if mon_evt_sub.monitoring_type == "LOCATION_REPORTING" and mon_evt_sub.accuracy not in ["CGI_ECGI","TA_RA","GEO_AREA","CIVIC_ADDR"]:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Invalid Accuracy value! Valid values: CGI_ECGI, TA_RA, GEO_AREA and CIVIC_ADDR")
@@ -336,7 +330,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
     if mon_evt_sub.rep_period and mon_evt_sub.monitoring_type not in ["LOCATION_REPORTING", "NUMBER_OF_UES_IN_AN_AREA", "NUM_OF_REGD_UES", "NUM_OF_ESTD_PDU_SESSIONS"]:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Periodic Reporting not supported for this Monitoring type! Valid Monitoring types: LOCATION_REPORTING, NUMBER_OF_UES_IN_AN_AREA, NUM_OF_REGD_UES, NUM_OF_ESTD_PDU_SESSIONS")
 
-    if mon_evt_sub.monitoring_type not in ["LOCATION_REPORTING", "NUMBER_OF_UES_IN_AN_AREA"] and not mon_evt_sub.location_type:
+    if mon_evt_sub.monitoring_type in ["LOCATION_REPORTING", "NUMBER_OF_UES_IN_AN_AREA"] and not mon_evt_sub.location_type:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Cannot parse message. Must include Location Type!")
     
     if mon_evt_sub.location_type == "LAST_KNOWN_LOCATION" and mon_evt_sub.maximum_number_of_reports != 1:
@@ -352,9 +346,6 @@ async def mon_evt_subs_post(scsAsId: str, data: Request):
     if (mon_evt_sub.reachability_type == "SMS" and mon_evt_sub.monitoring_type == "UE_REACHABILITY") or (mon_evt_sub.location_type == "LAST_KNOWN_LOCATION" and mon_evt_sub.monitoring_type == "LOCATION_REPORTING"):
         if mon_evt_sub.maximum_number_of_reports != 1:
             raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Only one-time reporting supported for this event.')
-            
-    # if mon_evt_sub:
-    #     raise HTTPException(httpx.codes.BAD_REQUEST, detail="")
 
     if mon_evt_sub.location_type or mon_evt_sub.accuracy or mon_evt_sub.minimum_report_interval:
         if not ((mon_evt_sub.external_id is not None)^(mon_evt_sub.msisdn is not None)^(mon_evt_sub.ipv4_addr is not None)^(mon_evt_sub.ipv6_addr is not None)^(mon_evt_sub.external_group_id is not None)):

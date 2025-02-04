@@ -1,6 +1,6 @@
 {
     "externalId": "10002@domain.com",
-    "notificationDestination": "http://10.255.32.37:80",
+    "notificationDestination": "http://af:8080/notif",
     "monitoringType": "LOSS_OF_CONNECTIVITY",
     "maximumNumberOfReports": 1,
     "monitorExpireTime": "2022-01-28T13:00:48.634Z"
