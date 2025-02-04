@@ -8,7 +8,7 @@ from time import time
 from api.config import conf
 from fastapi import APIRouter, Request, Response, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
-from internal import send_notification
+from controllers.internal import send_notification
 from models.pcf_binding import PcfBinding
 from models.traffic_influ_sub import TrafficInfluSub
 from models.event_notification import EventNotification

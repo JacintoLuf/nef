@@ -3,7 +3,7 @@ import httpx
 from time import time
 from fastapi import APIRouter, Request, Response, HTTPException, BackgroundTasks
 from api.config import conf
-from internal import send_notification
+from controllers.internal import send_notification
 from models.created_ee_subscription import CreatedEeSubscription
 from models.monitoring_event_subscription import MonitoringEventSubscription
 from models.amf_created_event_subscription import AmfCreatedEventSubscription
