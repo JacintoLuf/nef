@@ -21,7 +21,7 @@ from session import clean_db
 
 router = APIRouter()
 
-@app.get("/")
+@router.get("/")
 async def read_root():
     insts = await nfProfile.get_all()
     return {'nfs instances': str(insts)}
@@ -35,7 +35,7 @@ async def send_notification(data: str, link: str):
         )
         conf.logger.info(response.text)
 
-@app.get("/ue/{ipv4}")
+@router.get("/ue/{ipv4}")
 async def ue_info(ipv4: str):
     supi = None
     if "BSF" in conf.HOSTS.keys():
@@ -79,12 +79,12 @@ async def ue_info(ipv4: str):
     return res
 
 #-----------------------------callback endpoints---------------------------------
-@app.post("/nnef-callback/amf-event-sub-callback")
+@router.post("/nnef-callback/amf-event-sub-callback")
 async def amf_evt_sub_callback(request: Request):
     conf.logger.info(request.method)
     conf.logger.info(request.body)
 
-@app.post("/nnef-callback/udm-event-sub-callback")
+@router.post("/nnef-callback/udm-event-sub-callback")
 async def udm_evt_sub_callback(request: Request):
     conf.logger.info("endpoint: /nnef-callback/udm-event-sub-callback")
     conf.logger.info(request.method)
@@ -93,14 +93,14 @@ async def udm_evt_sub_callback(request: Request):
     # mon_evt_rep = MonitoringEventReport()
     return Response(status_code=httpx.codes.OK, headers=conf.GLOBAL_HEADERS)
 
-@app.post("/nnef-callback/nrf_subscription_update")
+@router.post("/nnef-callback/nrf_subscription_update")
 async def nrf_notif(request: Request):
     conf.logger.info("endpoint: /nnef-callback/nrf_subscription_update")
     conf.logger.info(request.method)
     conf.logger.info(request.body)
 
-@app.post("/nnef-callback/smf_up_path_change/{subId}")
-# @app.post("/up_path_change")
+@router.post("/nnef-callback/smf_up_path_change/{subId}")
+# @router.post("/up_path_change")
 async def up_path_chg_notif(subId: str, request: Request):
 # async def up_path_chg_notif(request: Request):
     conf.logger.info("endpoint: /up_path_change")
@@ -129,7 +129,7 @@ async def up_path_chg_notif(subId: str, request: Request):
         res = await af_handler.af_up_path_chg_notif(subId, evt_notif)
     return Response(status_code=httpx.codes.NO_CONTENT)
 
-@app.post("/nnef-callback/pcf_qos_notif/{id}")
+@router.post("/nnef-callback/pcf_qos_notif/{id}")
 async def nrf_notif(id: str, request: Request):
     conf.logger.info("endpoint: /nnef-callback/pcf_qos_notif")
     conf.logger.info(request.method)
@@ -138,7 +138,7 @@ async def nrf_notif(id: str, request: Request):
 
 
 #---------------------monitoring-event------------------------
-@app.get("/monget")
+@router.get("/monget")
 async def mon_get():
     conf.logger.info("getting all subscription")
     res = await monitoringEventSubscription.get()
@@ -146,7 +146,7 @@ async def mon_get():
         return {'subs': []}
     return {'subs': res}
 
-@app.get("/monget/{subId}")
+@router.get("/monget/{subId}")
 async def mon_get(subId: str=None):
     if not subId:
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail="Subscription ID not provided!")
@@ -156,7 +156,7 @@ async def mon_get(subId: str=None):
         return {'subs': []}
     return {'subs': res}
 
-@app.get("/mondelete/{subId}")
+@router.get("/mondelete/{subId}")
 async def mon_del(subId: str):
     try:
         res = await monitoringEventSubscription.get(subId)
@@ -182,7 +182,7 @@ async def mon_del(subId: str):
     
 
 #---------------------traffic-influence------------------------
-@app.get("/tiget")
+@router.get("/tiget")
 async def tiget():
     conf.logger.info("getting all subscription")
     res = await trafficInfluSub.get()
@@ -190,7 +190,7 @@ async def tiget():
         return {'subs': []}
     return {'subs': res}
 
-@app.get("/tiget/{subId}")
+@router.get("/tiget/{subId}")
 async def tiget(subid: str=None):
     if not subid:
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail="Subscription ID not provided!")
@@ -200,7 +200,7 @@ async def tiget(subid: str=None):
         return {'subs': []}
     return {'subs': res}
 
-@app.get("/tidelete/{subId}")
+@router.get("/tidelete/{subId}")
 async def tidelete(subId: str):
     conf.logger.info(f"deleting: {subId}")
     res = await trafficInfluSub.get(subId)
@@ -219,7 +219,7 @@ async def tidelete(subId: str):
 
 
 #---------------------as-session-with-qos------------------------
-@app.get("/qget")
+@router.get("/qget")
 async def qget():
     conf.logger.info("getting all subscription")
     res = await asSessionWithQoSSub.get()
@@ -227,7 +227,7 @@ async def qget():
         return {'subs': []}
     return {'subs': res}
 
-@app.get("/qget/{subId}")
+@router.get("/qget/{subId}")
 async def qget(subId: str=None):
     if not subId:
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail="Subscription ID not provided!")
@@ -237,7 +237,7 @@ async def qget(subId: str=None):
         return {'subs': []}
     return {'subs': res}
 
-@app.get("/qdelete/{subId}")
+@router.get("/qdelete/{subId}")
 async def qo_s_delete(subId: str):
     res = await asSessionWithQoSSub.get(subId)
     if not res:
@@ -257,7 +257,7 @@ async def qo_s_delete(subId: str):
 #----------------------clean db-------------------
 #
 #
-@app.get("/clean")
+@router.get("/clean")
 async def clean():
     res = clean_db()
     if res:
