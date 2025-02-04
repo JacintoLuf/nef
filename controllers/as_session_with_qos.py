@@ -8,7 +8,7 @@ from time import time
 from api.config import conf
 from fastapi import APIRouter, Request, Response, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
-from main import send_notification
+from internal import send_notification
 from models.pcf_binding import PcfBinding
 from models.as_session_with_qo_s_subscription import AsSessionWithQoSSubscription
 import core.bsf_handler as bsf_handler
