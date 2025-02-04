@@ -1,7 +1,7 @@
 {
-    "externalId": "10002@domain.com",
     "notificationDestination": "http://af:8080/notif",
-    "monitoringType": "LOSS_OF_CONNECTIVITY",
+    "monitoringType": "REGISTRATION_STATE_REPORT",
     "maximumNumberOfReports": 1,
-    "monitorExpireTime": "2022-01-28T13:00:48.634Z"
+    "ipv4Addr":"10.45.0.2",
+    "dnn":"internet"
 }

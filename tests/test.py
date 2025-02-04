@@ -2,7 +2,7 @@ import asyncio
 import os
 import json
 import signal
-import paramiko
+# import paramiko
 import httpx
 from  urllib.parse import urlparse, urlunparse
 
@@ -24,12 +24,12 @@ file_path = os.path.join(base_dir, "times", "times.json")
 
 
 # SSH function to execute remote commands using Paramiko
-def ssh_execute(ip, username, password, command):
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(ip, username=username, password=password)
-    stdin, stdout, stderr = ssh.exec_command(command)
-    return stdout, stderr
+# def ssh_execute(ip, username, password, command):
+#     ssh = paramiko.SSHClient()
+#     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+#     ssh.connect(ip, username=username, password=password)
+#     stdin, stdout, stderr = ssh.exec_command(command)
+#     return stdout, stderr
 
 # # Start tcpdump on remote machine
 # def start_tcpdump(tcpdump_ip, username, password, capture_file):

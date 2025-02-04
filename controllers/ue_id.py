@@ -1,8 +1,7 @@
-import time
 import httpx
-from main import app
-from fastapi import Request, Response, HTTPException
+from fastapi import APIRouter, Request, Response, HTTPException
 from api.config import conf
+from time import time
 from models.pcf_binding import PcfBinding
 from models.ue_id_req import UeIdReq
 from models.ue_id_info import UeIdInfo
@@ -10,7 +9,9 @@ import core.bsf_handler as bsf_handler
 import core.udm_handler as udm_handler
 
 
-@app.post("/3gpp-ue-id/v1/retrieve")
+router = APIRouter()
+
+@router.post("/3gpp-ue-id/v1/retrieve")
 async def ue_id_retrieval(data: Request):
     start_time = time()
     try:
