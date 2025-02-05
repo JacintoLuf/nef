@@ -1,32 +1,22 @@
 {
-    "ipv4Addr": "10.45.0.2",
+    "ipv4Addr": "10.45.0.3",
     "notificationDestination": "http://af:7777/v1/callback",
     "snssai": {
       "sst": 1,
       "sd": "ffffff"
     },
+    "flowInfo":[{"flowDescriptions":["permit out ip from any to any "],"flowId":"1"}],
     "dnn": "internet",
-    "qosReference": 5,
-    "altQoSReferences": [
-      1, 2, 8
-    ],
-    "usageThreshold": {
-      "duration": 0,
-      "totalVolume": 0,
-      "downlinkVolume": 0,
-      "uplinkVolume": 0
-    },
-    "qosMonInfo": {
-      "reqQosMonParams": [
-        "DOWNLINK"
-      ],
-      "repFreqs": [
-        "EVENT_TRIGGERED"
-      ],
-      "latThreshDl": 0,
-      "latThreshUl": 0,
-      "latThreshRp": 0,
-      "waitTime": 0,
-      "repPeriod": 0
-    }
+    "qosReference": 2,
+    "altQoSReferences": [8, 9],
+    "events": [
+      "SESSION_TERMINATION",
+      "RELEASE_OF_BEARER",
+      "USAGE_REPORT",
+      "INDICATION_OF_FAILED_RESOURCES_ALLOCATION",
+      "INDICATION_OF_SUCCESSFUL_RESOURCES_ALLOCATION",
+      "QOS_GUARANTEED",
+      "QOS_NOT_GUARANTEED",
+      "QOS_MONITORING" 
+    ]
   }

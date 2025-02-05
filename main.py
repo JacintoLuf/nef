@@ -5,16 +5,14 @@ import httpx
 from time import time
 from session import clean_db
 from api.config import conf
-from fastapi_utils.tasks import repeat_every
-from fastapi import FastAPI, APIRouter, Request, Response, HTTPException, BackgroundTasks, Depends
+from fastapi import FastAPI, Request, Response, HTTPException, BackgroundTasks, Depends
 from fastapi.responses import JSONResponse
+from fastapi_utils.tasks import repeat_every
 from controllers.internal import router as internal_router
 from controllers.monitoring_event import router as monitoring_event_router
 from controllers.as_session_with_qos import router as as_session_with_qos_router
 from controllers.traffic_influence import router as traffic_influence_router
 from controllers.ue_id import router as ue_id_router
-from models.ue_id_req import UeIdReq
-from models.ue_id_info import UeIdInfo
 from models.pcf_binding import PcfBinding
 from models.traffic_influ_sub import TrafficInfluSub
 from models.event_notification import EventNotification
@@ -133,13 +131,17 @@ async def read_root():
     return {'nfs instances': str(insts)}
 
 async def send_notification(data: str, link: str):
-    async with httpx.AsyncClient(http1=False, http2=True) as client:
-        response = await client.post(
-            link,
-            headers=conf.GLOBAL_HEADERS,
-            data=json.dumps(data)
-        )
-        conf.logger.info(response.text)
+    conf.logger.info(f"Sending notification to {link}")
+    try:
+        async with httpx.AsyncClient(http1=False, http2=True) as client:
+            response = await client.post(
+                link,
+                headers=conf.GLOBAL_HEADERS,
+                data=json.dumps(data)
+            )
+            conf.logger.info(response.text)
+    except HTTPException as e:
+        conf.logger.info(f"Failed to send notification: {e!r}")
 
 @app.get("/ue/{ipv4}")
 async def ue_info(ipv4: str):
@@ -756,7 +758,7 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
     if (qos_sub.qos_reference and qos_sub.alt_qos_reqs) or (qos_sub.alt_qo_s_references and qos_sub.alt_qos_reqs):
         conf.logger.info("Alt QoS Ref & Alt QoS Reqs are mutually exclusive. If qos reference alt qos reqs should not be provided")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
-    if qos_sub.qos_mon_info and qos_sub.events and "QOS_MONITORING" not in qos_sub.events:
+    if qos_sub.qos_mon_info and "QOS_MONITORING" not in qos_sub.events:
         conf.logger.info("qos mon info and events and QOS_MONITORING not in events")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="cannot parse message")
     if qos_sub.alt_qo_s_references and not qos_sub.notification_destination:
@@ -859,52 +861,6 @@ async def qos_delete(scsAsId: str, subId: str):
             return Response(status_code=httpx.codes.NO_CONTENT, headers=headers)
     raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
 
-
-
-#----------------------------------ue-id------------------------------
-# @app.post("/3gpp-ue-id/v1/retrieve")
-# async def ue_id_retrieval(data: Request):
-#     start_time = time()
-#     try:
-#         data_dict = await data.json()
-#         ue_req = UeIdReq.from_dict(data_dict)
-#     except ValueError as e:
-#         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"Failed to parse message. Err: {e.__str__}")
-#     except Exception as e:
-#         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
-    
-#     if ue_req.ue_ip_addr and ue_req.ue_mac_addr:
-#         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of UeIpAddr, UeMacAddr")
-
-#     if ue_req.ip_domain and not ue_req.ue_ip_addr:
-#         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail="Cannot parse message. No UE ip address.")
-
-#     if "BSF" in conf.HOSTS.keys():
-#         bsf_params = {}
-#         if ue_req.ue_ip_addr:
-#             if ue_req.ue_ip_addr.ipv4_addr:
-#                 bsf_params['ipv4Addr'] = ue_req.ue_ip_addr.ipv4_addr
-#             if ue_req.ue_ip_addr.ipv6_addr:
-#                 bsf_params['ipv6Addr'] = ue_req.ue_ip_addr.ipv6_addr
-#         elif ue_req.ue_mac_addr:
-#             bsf_params['macAddr48'] = ue_req.ue_mac_addr
-
-#         res = await bsf_handler.bsf_management_discovery(bsf_params)
-#         if res['code'] != httpx.codes.OK:
-#             raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Session not found")
-#         pcf_binding = PcfBinding.from_dict(res['response'])
-#         if not pcf_binding.supi:
-#             raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="UE_ID_NOT_AVAILABLE") ###############################3
-
-#     translated_id = await udm_handler.udm_sdm_id_translation(pcf_binding.supi, ue_req)
-
-#     ue_info = UeIdInfo(external_id=translated_id)
-#     end_time = (time() - start_time) * 1000
-#     headers = conf.GLOBAL_HEADERS
-#     headers.update({'X-ElapsedTime-Header': str(end_time)})
-#     return Response(status_code=httpx.codes.OK, headers=headers, content=ue_info)
-
-#----------------------clean db-------------------
 #
 #
 @app.get("/clean")

@@ -1,6 +1,7 @@
 import json
 import httpx
 from api.config import conf
+from models.events_subsc_req_data import EventsSubscReqData
 from models.pcf_binding import PcfBinding
 from models.traffic_influ_sub import TrafficInfluSub
 from models.as_session_with_qo_s_subscription import AsSessionWithQoSSubscription
@@ -125,6 +126,17 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
     conf.logger.info(f"--------------------------------med comps------------------------------\n\
                      {med_comps.to_str()}\n---------------------------------------------------------------------")
     app_session_context = AppSessionContext(asc_req_data=req_data)
+
+    if as_session_qos_sub.events:
+        evt_sub_req_data = EventsSubscReqData()
+        evt_sub_req_data.events = as_session_qos_sub.events
+        evt_sub_req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/pcf_qos_notif/{_id}"
+        # evt_sub_req_data.req_qos_mon_params = as_session_qos_sub.req_qos_mon_params
+        # evt_sub_req_data.qos_mon = as_session_qos_sub.qos_mon
+        # evt_sub_req_data.req_anis = as_session_qos_sub.req_anis
+        evt_sub_req_data.usg_thres = as_session_qos_sub.usage_threshold
+        # evt_sub_req_data.notif_corre_id = as_session_qos_sub.notification_correlation_id
+        req_data.ev_subsc = evt_sub_req_data
 
     conf.logger.info(f"-------------------------app session context---------------------------\n\
                     {app_session_context.to_str()}\n------------------------------------------------------------------------")
