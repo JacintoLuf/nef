@@ -8,6 +8,7 @@ from models.as_session_with_qo_s_subscription import AsSessionWithQoSSubscriptio
 from models.app_session_context import AppSessionContext
 from models.app_session_context_req_data import AppSessionContextReqData
 from models.af_routing_requirement import AfRoutingRequirement
+from models.af_event_subscription import AfEventSubscription
 from models.media_component import MediaComponent
 from models.media_sub_component import MediaSubComponent
 from models.tsn_qos_container import TsnQosContainer
@@ -128,14 +129,24 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
     app_session_context = AppSessionContext(asc_req_data=req_data)
 
     if as_session_qos_sub.events:
+        af_evt_subs = []
+        for evt in as_session_qos_sub.events:
+            af_evt_sub = AfEventSubscription(event=evt)
+            if as_session_qos_sub.qos_mon_info:
+                # af_evt_sub.notif_method = as_session_qos_sub.qos_mon_info.notif_method
+                af_evt_sub.rep_period = as_session_qos_sub.qos_mon_info.rep_period
+                af_evt_sub.wait_time = as_session_qos_sub.qos_mon_info.wait_time
+            af_evt_subs.append(af_evt_sub)
         evt_sub_req_data = EventsSubscReqData()
-        evt_sub_req_data.events = as_session_qos_sub.events
+        evt_sub_req_data.events = af_evt_subs
         evt_sub_req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/pcf_qos_notif/{_id}"
-        # evt_sub_req_data.req_qos_mon_params = as_session_qos_sub.req_qos_mon_params
-        # evt_sub_req_data.qos_mon = as_session_qos_sub.qos_mon
-        # evt_sub_req_data.req_anis = as_session_qos_sub.req_anis
         evt_sub_req_data.usg_thres = as_session_qos_sub.usage_threshold
-        # evt_sub_req_data.notif_corre_id = as_session_qos_sub.notification_correlation_id
+        evt_sub_req_data.notif_corre_id = _id
+        if as_session_qos_sub.qos_mon_info:
+            evt_sub_req_data.req_qos_mon_params = as_session_qos_sub.qos_mon_info.req_qos_mon_params
+            evt_sub_req_data.qos_mon.rep_thresh_dl = as_session_qos_sub.qos_mon.rep_thresh_dl
+            evt_sub_req_data.qos_mon.rep_thresh_ul = as_session_qos_sub.qos_mon.rep_thresh_ul
+            evt_sub_req_data.qos_mon.rep_thresh_rp = as_session_qos_sub.qos_mon.rep_thresh_rp
         req_data.ev_subsc = evt_sub_req_data
 
     conf.logger.info(f"-------------------------app session context---------------------------\n\
