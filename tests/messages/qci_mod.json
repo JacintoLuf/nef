@@ -1,9 +1,9 @@
 {
-  "ueIpv4Addr": "10.45.0.2",
+  "ueIpv4Addr": "10.45.0.3",
   "notificationDestination": "http://af:8080/notif",
   "snssai": {
     "sst": 1,
-    "sd": "ffffff"
+    "sd": "111111"
   },
   "flowInfo":[{"flowDescriptions":["permit out ip from any to any"],"flowId":"1"}],
   "dnn": "internet",
