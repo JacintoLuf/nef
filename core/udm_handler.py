@@ -1,8 +1,6 @@
 import httpx
 import json
 import uuid
-import datetime
-from datetime import datetime, timezone, timedelta
 from api.config import conf
 from models.ue_id_req import UeIdReq
 from models.monitoring_event_subscription import MonitoringEventSubscription
@@ -12,7 +10,6 @@ from models.monitoring_configuration import MonitoringConfiguration
 from models.reporting_options import ReportingOptions
 from models.location_reporting_configuration import LocationReportingConfiguration
 from models.pdu_session_status_cfg import PduSessionStatusCfg
-import crud.createdEeSubscription as createdEeSubscription
 
 async def udm_sdm_id_translation(ueId: str=None, ue_req: UeIdReq=None):
     conf.logger.info(f"id to translate {ueId}")

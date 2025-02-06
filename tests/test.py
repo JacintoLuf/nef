@@ -68,6 +68,11 @@ async def stop_tcpdump(process):
         pass
     print("tcpdump stopped.")
 
+async def delete_tcpdump(capture_file):
+    print(f"Deleting tcpdump file {capture_file}...")
+    os.remove(os.path.join(tcpdump_folder, capture_file))
+    print("File deleted.")
+
 # HTTP request
 async def send_request(request: str, test_file: str):
     print(f"Request for {request} endpoint: {tests[request][0]}")
@@ -177,10 +182,13 @@ async def run_test(test_type: str, test_file: str):
 
     try:
         response = await send_request(test_type, test_file)
-        await stop_tcpdump(tcpdump_process)
     except Exception as e:
         print(f"Error: {e!r}")
-        await stop_tcpdump(tcpdump_process)
+    
+    await stop_tcpdump(tcpdump_process)
+    if not response.headers['location']:
+        await delete_tcpdump(capture_file)
+        
 
     # if response:
     #     # Save time results to file
@@ -189,7 +197,7 @@ async def run_test(test_type: str, test_file: str):
     #         print(f"elapsed time header: {response.headers['X-ElapsedTime-Header']}s")
     #         write_to_json(test_type, elapsed_time_header)
 
-        print("Test finished. Results collected.")
+    print("Test finished. Results collected.")
     # else:
     #     print("Test failed. No response received.")
 

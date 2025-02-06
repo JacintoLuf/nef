@@ -207,6 +207,16 @@ async def nrf_notif(request: Request):
     conf.logger.info(request.method)
     conf.logger.info(request.body)
 
+@app.post("/nnef-callback/pcf_qos_notif/{id}")
+async def pcf_qos_notif(id: str, request: Request):
+    conf.logger.info("endpoint: /nnef-callback/pcf_qos_notif")
+    conf.logger.info(request.body)
+    query = await asSessionWithQoSSub.get(id)
+    if query:
+        sub = AsSessionWithQoSSubscription.from_dict(query)
+        
+    return Response(status_code=httpx.codes.NO_CONTENT)
+
 @app.post("/nnef-callback/smf_up_path_change/{subId}")
 # @app.post("/up_path_change")
 async def up_path_chg_notif(subId: str, request: Request):
@@ -735,16 +745,22 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
 
     try:
         data_dict = await data.json()
-        qos_sub = AsSessionWithQoSSubscription().from_dict(data_dict)
+        qos_sub = AsSessionWithQoSSubscription.from_dict(data_dict)
     except ValueError as e:
         raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"Failed to parse message. Err: {e.__str__}")
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
 
-    if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
+    num_not_none = sum(attr is not None for attr in [qos_sub.ue_ipv4_addr, qos_sub.ue_ipv6_addr, qos_sub.mac_addr])
+    if num_not_none != 1:
+    # if not ((qos_sub.ue_ipv4_addr is not None)^(qos_sub.ue_ipv6_addr is not None)^(qos_sub.mac_addr is not None)):
+        conf.logger.info(f"ipv4: {qos_sub.ue_ipv4_addr is not None}, ipv6: {qos_sub.ue_ipv6_addr is not None}, mac: {qos_sub.mac_addr is not None}")
         conf.logger.info("Only one of ipv4Addr, ipv6Addr or macAddr")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of ipv4Addr, ipv6Addr or macAddr")
-    if not ((qos_sub.flow_info is not None)^(qos_sub.eth_flow_info is not None)^(qos_sub.exter_app_id is not None)):
+    num_not_none = sum(attr is not None for attr in [qos_sub.flow_info, qos_sub.eth_flow_info, qos_sub.exter_app_id])
+    if num_not_none != 1:
+    # if not ((qos_sub.flow_info is not None)^(qos_sub.eth_flow_info is not None)^(qos_sub.exter_app_id is not None)):
+        conf.logger.info(f"flow info: {qos_sub.flow_info is not None}, eth flow info: {qos_sub.eth_flow_info is not None}, ext app id: {qos_sub.exter_app_id is not None}")
         conf.logger.info("Only one of IP flow info, Ethernet flow info or External Application")
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Only one of IP flow info, Ethernet flow info or External Application")
     if (qos_sub.ue_ipv4_addr or qos_sub.ue_ipv6_addr) and not qos_sub.flow_info:
