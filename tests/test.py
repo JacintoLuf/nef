@@ -186,9 +186,11 @@ async def run_test(test_type: str, test_file: str):
         print(f"Error: {e!r}")
     
     await stop_tcpdump(tcpdump_process)
-    if not response.headers['location']:
+    try:
+        if not response or 'location' not in response.headers:
+            await delete_tcpdump(capture_file)
+    except Exception as e:
         await delete_tcpdump(capture_file)
-        
 
     # if response:
     #     # Save time results to file
