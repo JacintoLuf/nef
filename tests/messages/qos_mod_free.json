@@ -1,0 +1,32 @@
+{
+    "altQosReqs": [   
+        {
+            "altQosParamSetRef": "string",
+            "gbrDl": "5000000 bps",
+            "gbrUl": "5000000 bps",
+            "pdb": 1
+        }],
+    "dnn": "internet",
+    "flowInfo": [
+        {
+            "flowDescriptions": [
+                "permit in ip from any to any"],
+            "flowId": 1
+        }],
+        "notificationDestination": "http://af:8080/notif",
+        "snssai": 
+        {
+            "sst": 1
+        },
+    "ueIpv4Addr": "10.46.0.1",
+    "events": [
+      "SESSION_TERMINATION",
+      "RELEASE_OF_BEARER",
+      "USAGE_REPORT",
+      "INDICATION_OF_FAILED_RESOURCES_ALLOCATION",
+      "INDICATION_OF_SUCCESSFUL_RESOURCES_ALLOCATION",
+      "QOS_GUARANTEED",
+      "QOS_NOT_GUARANTEED",
+      "QOS_MONITORING" 
+    ]
+}

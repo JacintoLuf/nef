@@ -238,7 +238,10 @@ if __name__ == '__main__':
                     inp = int(input("(1)QCI\t(2)QOS\n"))
                 except Exception as e:
                     inp = 1
-                test_file = "qci_mod.json" if inp == 1 else "qos_mod.json"
+                if core == "open5gs":
+                    test_file = "qci_mod.json" if inp == 1 else "qos_mod.json"
+                else:
+                    test_file = "qci_mod_free.json" if inp == 1 else "qos_mod_free.json"
             elif test_type == "ti_c":
                 test_file = "ti_open.json" if core == "open5gs" else "ti_free.json"
 
