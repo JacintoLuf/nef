@@ -84,7 +84,7 @@ async def amf_event_exposure_subscription_create(monEvtSub: MonitoringEventSubsc
 
     amf_sub = AmfEventSubscription(
         event_list=amf_events,
-        event_notify_uri=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/amf-event-sub-callback", #monEvtSub.notification_destination
+        event_notify_uri=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/amf-event-sub-callback/{_id}", #monEvtSub.notification_destination
         nf_id=conf.API_UUID,
         # any_ue=True,
         group_id=int_group_id,
@@ -95,7 +95,7 @@ async def amf_event_exposure_subscription_create(monEvtSub: MonitoringEventSubsc
     amf_evt_sub = AmfCreateEventSubscription(subscription=amf_sub)
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.post(
-            f"http://{conf.HOSTS['AMF'][0]}/namf-evts/v1/subscriptions/{_id}",
+            f"http://{conf.HOSTS['AMF'][0]}/namf-evts/v1/subscriptions",
             headers=conf.GLOBAL_HEADERS,
             data=json.dumps(amf_evt_sub.to_dict())
         )

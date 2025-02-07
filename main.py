@@ -191,12 +191,12 @@ async def ue_info(ipv4: str):
 async def amf_evt_sub_callback(request: Request):
     conf.logger.info(request.method)
     conf.logger.info(request.body)
+    return Response(status_code=httpx.codes.OK, headers=conf.GLOBAL_HEADERS)
 
 @app.post("/nnef-callback/udm-event-sub-callback")
 async def udm_evt_sub_callback(request: Request):
     conf.logger.info("endpoint: /nnef-callback/udm-event-sub-callback")
     conf.logger.info(request.method)
-    conf.logger.info(request.headers)
     conf.logger.info(request.body)
     # mon_evt_rep = MonitoringEventReport()
     return Response(status_code=httpx.codes.OK, headers=conf.GLOBAL_HEADERS)
