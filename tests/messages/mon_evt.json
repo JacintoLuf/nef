@@ -2,6 +2,6 @@
     "notificationDestination": "http://af:8080/notif",
     "monitoringType": "REGISTRATION_STATE_REPORT",
     "maximumNumberOfReports": 1,
-    "ipv4Addr":"10.45.0.3",
+    "ipv4Addr":"10.46.0.1",
     "dnn":"internet"
 }
