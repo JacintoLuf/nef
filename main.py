@@ -375,6 +375,20 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
                 if created_evt.event_reports:
                     conf.logger.info(f"Creating event report for {mon_evt_sub.monitoring_type}")
                     mon_evt_sub.monitoring_event_report = af_handler.af_imidiate_report(mon_rep=created_evt.event_reports)
+                headers = conf.GLOBAL_HEADERS
+                if mon_evt_sub.request_test_notification:
+                    test_notif = {'subscription': mon_evt_sub.notification_destination}
+                    background_tasks.add_task(send_notification, test_notif, mon_evt_sub.notification_destination)
+                if res.headers['location']:
+                    inserted = monitoringEventSubscription.monitoring_event_subscriptionscription_insert(scsAsId, mon_evt_sub, res.headers['location'], _id)
+                    location = f"http://{conf.HOSTS['NEF'][0]}/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{inserted}"
+                    mon_evt_sub._self = location
+                    #mon_evt_sub.monitor_expire_time = 1 hr
+                    headers = conf.GLOBAL_HEADERS
+                    headers['location'] = location
+                end_time = (time() - start_time) * 1000
+                headers.update({'X-ElapsedTime-Header': str(end_time)})
+                return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
         except Exception as e:
             conf.logger.info(e)
     if mon_evt_sub.monitoring_type in ['NUMBER_OF_UES_IN_AN_AREA', 'REGISTRATION_STATE_REPORT', 'CONNECTIVITY_STATE_REPORT']:
@@ -392,26 +406,23 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
                 if created_evt.report_list:
                     conf.logger.info(f"Creating event report for {mon_evt_sub.monitoring_type}")
                     mon_evt_sub.monitoring_event_report = af_handler.af_imidiate_report(amf_evt_rep=created_evt.report_list)
+                headers = conf.GLOBAL_HEADERS
+                if mon_evt_sub.request_test_notification:
+                    test_notif = {'subscription': mon_evt_sub.notification_destination}
+                    background_tasks.add_task(send_notification, test_notif, mon_evt_sub.notification_destination)
+                if res.headers['location']:
+                    inserted = monitoringEventSubscription.monitoring_event_subscriptionscription_insert(scsAsId, mon_evt_sub, res.headers['location'], _id)
+                    location = f"http://{conf.HOSTS['NEF'][0]}/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{inserted}"
+                    mon_evt_sub._self = location
+                    headers = conf.GLOBAL_HEADERS
+                    headers['location'] = location
+                end_time = (time() - start_time) * 1000
+                headers.update({'X-ElapsedTime-Header': str(end_time)})
+                return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
         except Exception as e:
             conf.logger.info(e)
 
-    if res.status_code == httpx.codes.CREATED:
-        headers = conf.GLOBAL_HEADERS
-        if mon_evt_sub.request_test_notification:
-            test_notif = {'subscription': mon_evt_sub.notification_destination}
-            background_tasks.add_task(send_notification, test_notif, mon_evt_sub.notification_destination)
-        if res.headers['location']:
-            inserted = monitoringEventSubscription.monitoring_event_subscriptionscription_insert(scsAsId, mon_evt_sub, res.headers['location'], _id)
-            location = f"http://{conf.HOSTS['NEF'][0]}/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{inserted}"
-            mon_evt_sub._self = location
-            #mon_evt_sub.monitor_expire_time = 1 hr
-            headers = conf.GLOBAL_HEADERS
-            headers['location'] = location
-        end_time = (time() - start_time) * 1000
-        headers.update({'X-ElapsedTime-Header': str(end_time)})
-        return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
-    else:
-        return Response(status_code=res.status_code, headers=conf.GLOBAL_HEADERS, content="Subscription creation failed!")
+    return Response(status_code=res.status_code, headers=conf.GLOBAL_HEADERS, content="Subscription creation failed!")
         
 
 
