@@ -368,11 +368,15 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
     if mon_evt_sub.monitoring_type in ['LOSS_OF_CONNECTIVITY','UE_REACHABILITY','LOCATION_REPORTING','CHANGE_OF_IMSI_IMEI_ASSOCIATION','ROAMING_STATUS','COMMUNICATION_FAILURE','PDN_CONNECTIVITY_STATUS','AVAILABILITY_AFTER_DDN_FAILURE','API_SUPPORT_CAPABILITY']:
         conf.logger.info(f"Creating UDM event exposure subscription for {mon_evt_sub.monitoring_type}")
         res = await udm_handler.udm_event_exposure_subscription_create(mon_evt_sub, scsAsId, _id)
-        data = res.json()
-        created_evt = CreatedEeSubscription.from_dict(data)
-        if created_evt.event_reports:
-            conf.logger.info(f"Creating event report for {mon_evt_sub.monitoring_type}")
-            mon_evt_sub.monitoring_event_report = af_handler.af_imidiate_report(mon_rep=created_evt.event_reports)
+        try:
+            if res.status_code == httpx.codes.CREATED:
+                data = res.json()
+                created_evt = CreatedEeSubscription.from_dict(data)
+                if created_evt.event_reports:
+                    conf.logger.info(f"Creating event report for {mon_evt_sub.monitoring_type}")
+                    mon_evt_sub.monitoring_event_report = af_handler.af_imidiate_report(mon_rep=created_evt.event_reports)
+        except Exception as e:
+            conf.logger.info(e)
     if mon_evt_sub.monitoring_type in ['NUMBER_OF_UES_IN_AN_AREA', 'REGISTRATION_STATE_REPORT', 'CONNECTIVITY_STATE_REPORT']:
         conf.logger.info(f"Creating AMF event exposure subscription for {mon_evt_sub.monitoring_type}")
         if mon_evt_sub.external_group_id:
@@ -380,12 +384,16 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
             if internal_id:
                 res = await amf_handler.amf_event_exposure_subscription_create(mon_evt_sub, scsAsId, internal_id, _id)
         else:
-            res = await amf_handler.amf_event_exposure_subscription_create(mon_evt_sub, scsAsId, _id=_id)
-        data = res.json()
-        created_evt = AmfCreatedEventSubscription.from_dict(data_dict)
-        if created_evt.report_list:
-            conf.logger.info(f"Creating event report for {mon_evt_sub.monitoring_type}")
-            mon_evt_sub.monitoring_event_report = af_handler.af_imidiate_report(amf_evt_rep=created_evt.report_list)
+            res = await amf_handler.amf_event_exposure_subscription_create(mon_evt_sub, scsAsId, _id=_id)     
+        try:
+            if res.status_code == httpx.codes.CREATED:
+                data = res.json()
+                created_evt = AmfCreatedEventSubscription.from_dict(data_dict)
+                if created_evt.report_list:
+                    conf.logger.info(f"Creating event report for {mon_evt_sub.monitoring_type}")
+                    mon_evt_sub.monitoring_event_report = af_handler.af_imidiate_report(amf_evt_rep=created_evt.report_list)
+        except Exception as e:
+            conf.logger.info(e)
 
     if res.status_code == httpx.codes.CREATED:
         headers = conf.GLOBAL_HEADERS
