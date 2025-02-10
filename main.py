@@ -373,6 +373,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
             ue_identity = mon_evt_sub.msisdn
         else:
             ue_identity = mon_evt_sub.external_group_id
+        conf.logger.info(f"ue identity: {ue_identity}")
         res = await udm_handler.udm_event_exposure_subscription_create(mon_evt_sub, ue_identity, scsAsId, _id)
         try:
             if res.status_code == httpx.codes.CREATED:
