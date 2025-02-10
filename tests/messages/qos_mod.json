@@ -10,7 +10,7 @@
     "flowInfo": [
         {
             "flowDescriptions": [
-                "permit in ip from any to any"],
+                "permit out ip from any to any"],
             "flowId": 1
         }],
         "notificationDestination": "http://af:8080/notif",
