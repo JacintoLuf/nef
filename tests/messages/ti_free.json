@@ -1,8 +1,8 @@
 {
     "dnn":"internet",
     "snssai":{"sst":"1"},
-    "ipv4Addr":"10.46.0.1",
-    "trafficRoutes":{"dnai":"up2"},
+    "ipv4Addr":"10.46.0.4",
+    "trafficRoutes":{"dnai":"up1"},
     "routeInfo":{
         "ipv4Addr": "10.255.38.51",
         "portNumber":"5201"
