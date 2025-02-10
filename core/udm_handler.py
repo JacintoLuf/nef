@@ -109,7 +109,7 @@ async def udm_event_exposure_subscription_create(monEvtSub: MonitoringEventSubsc
     )}
     
     rep_opts = ReportingOptions(
-        report_mode="PERIODIC" if monEvtSub.maximum_number_of_reports or monEvtSub.monitor_expire_time else "ON_EVENT_DETECTION",
+        report_mode="PERIODIC" if monEvtSub.maximum_number_of_reports > 1 or monEvtSub.monitor_expire_time else "ON_EVENT_DETECTION",
         max_num_of_reports=monEvtSub.maximum_number_of_reports,
         expiry=monEvtSub.monitor_expire_time,
         # sampling_ratio=monEvtSub,

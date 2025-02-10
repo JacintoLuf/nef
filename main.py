@@ -365,9 +365,15 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
     while await monitoringEventSubscription.check_id(_id):
         _id = str(uuid.uuid4().hex)
 
-    if mon_evt_sub.monitoring_type in ['LOSS_OF_CONNECTIVITY','UE_REACHABILITY','LOCATION_REPORTING','CHANGE_OF_IMSI_IMEI_ASSOCIATION','ROAMING_STATUS','COMMUNICATION_FAILURE','PDN_CONNECTIVITY_STATUS','AVAILABILITY_AFTER_DDN_FAILURE','API_SUPPORT_CAPABILITY']:
+    if mon_evt_sub.monitoring_type in ['LOSS_OF_CONNECTIVITY','UE_REACHABILITY','LOCATION_REPORTING','CHANGE_OF_SUPI_PEI_ASSOCIATION','ROAMING_STATUS','COMMUNICATION_FAILURE','PDN_CONNECTIVITY_STATUS','AVAILABILITY_AFTER_DDN_FAILURE','API_SUPPORT_CAPABILITY']:
         conf.logger.info(f"Creating UDM event exposure subscription for {mon_evt_sub.monitoring_type}")
-        res = await udm_handler.udm_event_exposure_subscription_create(mon_evt_sub, scsAsId, _id)
+        if mon_evt_sub.external_id:
+            ue_identity = mon_evt_sub.external_id
+        elif mon_evt_sub.msisdn:
+            ue_identity = mon_evt_sub.msisdn
+        else:
+            ue_identity = mon_evt_sub.external_group_id
+        res = await udm_handler.udm_event_exposure_subscription_create(mon_evt_sub, ue_identity, scsAsId, _id)
         try:
             if res.status_code == httpx.codes.CREATED:
                 data = res.json()
