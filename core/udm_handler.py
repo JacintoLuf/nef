@@ -104,7 +104,7 @@ async def udm_event_exposure_subscription_create(monEvtSub: MonitoringEventSubsc
         suggested_packet_num_dl=monEvtSub.suggested_number_of_dl_packets if monEvtSub.monitoring_type == "UE_REACHABILITY_FOR_DATA" else None,
         # reachability_for_data_cfg=monEvtSub if monEvtSub.monitoring_type == "UE_REACHABILITY_FOR_DATA" else None,
         pdu_session_status_cfg=monEvtSub if monEvtSub.monitoring_type == "PDN_CONNECTIVITY_STATUS" else None,
-        afId=afId,
+        af_id=afId,
         idle_status_ind=monEvtSub.idle_status_indication if monEvtSub.monitoring_type == "UE_REACHABILITY_FOR_DATA" or monEvtSub.monitoring_type == "AVAILABILITY_AFTER_DDN_FAILURE" else None
     )}
     
