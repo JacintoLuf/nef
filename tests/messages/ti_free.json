@@ -1,7 +1,7 @@
 {
     "dnn":"internet",
     "snssai":{"sst":"1"},
-    "ipv4Addr":"10.46.0.4",
+    "ipv4Addr":"10.46.0.1",
     "trafficRoutes":{"dnai":"up1"},
     "routeInfo":{
         "ipv4Addr": "10.255.38.51",
@@ -9,10 +9,6 @@
     },
     "subscribedEvents":["UP_PATH_CHANGE"],
     "trafficFilters":[
-        {
-            "flowId":"2",
-            "flowDescriptions":["permit out udp from 10.46.0.0/16 to any"]
-        },
         {
             "flowId":"1",
             "flowDescriptions":["permit out ip from any to any"]
