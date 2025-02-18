@@ -161,8 +161,8 @@ def write_to_json(key, val):
 # Main test function
 async def run_test(test_type: str, test_file: str):
     # Capture file for tcpdump
-    files_count=len([name for name in os.listdir(tcpdump_folder) if os.path.isfile(os.path.join(tcpdump_folder, name)) and test_type in name])
-    capture_file = f'{core}_{test_type}_{files_count}.pcap'
+    files_count=len([name for name in os.listdir(tcpdump_folder) if os.path.isfile(os.path.join(tcpdump_folder, name)) and test_file in name])
+    capture_file = f'{core}_{test_type}_{test_file}_{files_count}.pcap'
     print(f"Capture file: {capture_file}")
 
     tcpdump_process = await start_tcpdump(capture_file)
