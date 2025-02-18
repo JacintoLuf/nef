@@ -1,7 +1,7 @@
 import asyncio
 import os
 import json
-import signal
+import time
 # import paramiko
 import httpx
 from  urllib.parse import urlparse, urlunparse
@@ -23,26 +23,6 @@ os.makedirs(times_folder, exist_ok=True)
 file_path = os.path.join(base_dir, "times", "times.json")
 
 
-# SSH function to execute remote commands using Paramiko
-# def ssh_execute(ip, username, password, command):
-#     ssh = paramiko.SSHClient()
-#     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-#     ssh.connect(ip, username=username, password=password)
-#     stdin, stdout, stderr = ssh.exec_command(command)
-#     return stdout, stderr
-
-# # Start tcpdump on remote machine
-# def start_tcpdump(tcpdump_ip, username, password, capture_file):
-#     print(f"Starting tcpdump on {tcpdump_ip}...")
-#     cmd = f"sudo tcpdump -i any -w {capture_file}"
-#     ssh_execute(tcpdump_ip, username, password, cmd)
-
-# # Stop any running process
-# def stop_process(remote_ip, username, password, process_name):
-#     print(f"Stopping {process_name} on {remote_ip}...")
-#     cmd = f"sudo pkill {process_name}"
-#     ssh_execute(remote_ip, username, password, cmd)
-
 async def start_tcpdump(capture_file):
     """Start tcpdump asynchronously and return the process."""
     print(f"Starting tcpdump, saving to {capture_file}...")
@@ -58,8 +38,6 @@ async def start_tcpdump(capture_file):
 async def stop_tcpdump(process):
     """Stop the tcpdump process asynchronously."""
     print("Stopping tcpdump...")
-    # cmd = f"sudo kill {str(process.pid)}"
-    # os.system(cmd)
     cmd = f"sudo pkill tcpdump"
     os.system(cmd)
     try:
@@ -95,26 +73,42 @@ async def send_request(request: str, test_file: str):
             )
             print(f"Response: {response.status_code} - {response.text}")
         # sub = response.headers['location']
-        if response.headers['location']:
+        if response.headers['location'] or request == "mon_c":
             parsed_url = urlparse(response.headers['location'])
             modified_url = urlunparse((parsed_url.scheme, nef_ip, parsed_url.path, parsed_url.params, parsed_url.query, parsed_url.fragment))
             print(f"Subscription location: {modified_url}")
-            if response.headers["X-ElapsedTime-Header"]:
-                write_to_json(request, response.headers['X-ElapsedTime-Header'])
+            if response.headers["X-ElapsedTime-Header"] and response.headers["core-elapsed-time"]:
+                nef_time = response.headers["X-ElapsedTime-Header"]-response.headers["core-elapsed-time"]
+                write_to_json(request, [response.headers['X-ElapsedTime-Header'], nef_time])
             else:
-                write_to_json(request, response.elapsed.total_seconds() * 1000)
-            async with httpx.AsyncClient(http1=False, http2=True) as client:
-                res = await client.delete(
-                    url=modified_url,
-                    headers=headers
-                )
-            print(f"Subscription delete response: {res.status_code} - {res.text}")
-            if res.status_code == 204:
-                delete_req = request.split("_")[0]+"_d"
-                if res.headers['X-ElapsedTime-Header']:
-                    write_to_json(delete_req, res.headers['X-ElapsedTime-Header'])
-                else:
-                    write_to_json(delete_req, res.elapsed.total_seconds() * 1000)
+                write_to_json(request, [response.elapsed.total_seconds() * 1000, None])
+            if request != "mon_c":
+                async with httpx.AsyncClient(http1=False, http2=True) as client:
+                    res = await client.get(
+                        url=modified_url,
+                        headers=headers
+                    )
+                print(f"Subscription get response: {res.status_code} - {res.text}")
+                if res.status_code == 204:
+                    delete_req = request.split("_")[0]+"_g"
+                    if res.headers['X-ElapsedTime-Header']:
+                        write_to_json(delete_req, [res.headers['X-ElapsedTime-Header'], None])
+                    else:
+                        write_to_json(delete_req, [res.elapsed.total_seconds() * 1000, None])
+
+                async with httpx.AsyncClient(http1=False, http2=True) as client:
+                    res = await client.delete(
+                        url=modified_url,
+                        headers=headers
+                    )
+                print(f"Subscription delete response: {res.status_code} - {res.text}")
+                if res.status_code == 204:
+                    delete_req = request.split("_")[0]+"_d"
+                    if res.headers['X-ElapsedTime-Header'] and res.headers["core-elapsed-time"]:
+                        nef_time = response.headers["X-ElapsedTime-Header"]-response.headers["core-elapsed-time"]
+                        write_to_json(delete_req, [res.headers['X-ElapsedTime-Header'], nef_time])
+                    else:
+                        write_to_json(delete_req, [res.elapsed.total_seconds() * 1000, None])
         return response
     except httpx.HTTPStatusError as e:
         print(f"Failed request. Error: {e!r}")
@@ -125,8 +119,8 @@ async def send_request(request: str, test_file: str):
 
 def initialize_json():
     return {
-        'open5gs': {'mon_c': [],'mon_d': [],'ti_c': [],'ti_d': [],'qos_c': [],'qos_d': []},
-        'free5gc': {'mon_c': [],'mon_d': [],'ti_c': [],'ti_d': [],'qos_c': [],'qos_d': []}
+        'open5gs': {'mon_g': [],'mon_c': [],'mon_d': [],'ti_g': [],'ti_c': [],'ti_d': [],'qos_g': [],'qos_c': [],'qos_d': []},
+        'free5gc': {'mon_g': [],'mon_c': [],'mon_d': [],'ti_g': [],'ti_c': [],'ti_d': [],'qos_g': [],'qos_c': [],'qos_d': []}
     }
 
 def write_json(data_json):
@@ -171,13 +165,6 @@ async def run_test(test_type: str, test_file: str):
     capture_file = f'{test_type}_{files_count}_{core}.pcap'
     print(f"Capture file: {capture_file}")
 
-    # Start tcpdump on core machine
-    # machine_ip = '10.255.35.205' if core == "free5gc" else "10.255.38.50"
-    # machine_usr = 'ubuntu' if core == "free5gc" else 'nef'
-    # machine_pwd = '1234'
-    # tcpdump_thread = Thread(target=start_tcpdump, args=(machine_ip,machine_usr,machine_pwd,capture_file))
-    # tcpdump_thread.start()
-
     tcpdump_process = await start_tcpdump(capture_file)
 
     try:
@@ -187,21 +174,12 @@ async def run_test(test_type: str, test_file: str):
     
     await stop_tcpdump(tcpdump_process)
     try:
-        if not response or 'location' not in response.headers:
+        if (not response or 'location' not in response.headers) and test_type != "mon_c":
             await delete_tcpdump(capture_file)
     except Exception as e:
         await delete_tcpdump(capture_file)
 
-    # if response:
-    #     # Save time results to file
-    #     if response.headers['X-ElapsedTime-Header']:
-    #         elapsed_time_header = response.headers['X-ElapsedTime-Header']
-    #         print(f"elapsed time header: {response.headers['X-ElapsedTime-Header']}s")
-    #         write_to_json(test_type, elapsed_time_header)
-
     print("Test finished. Results collected.")
-    # else:
-    #     print("Test failed. No response received.")
 
 if __name__ == '__main__':
     run = True
@@ -226,7 +204,7 @@ if __name__ == '__main__':
         try:
             inp = int(input("test type:\n"+" ".join(f"({index+1}){item}" for index, item in enumerate(test_types))+"\n"))
         except Exception as e:
-            inp = 2
+            inp = 1
         test_type = test_types[inp-1]
 
         test_file = None

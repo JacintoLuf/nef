@@ -397,6 +397,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
                     headers['location'] = location
                 end_time = (time() - start_time) * 1000
                 headers.update({'X-ElapsedTime-Header': str(end_time)})
+                headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
                 return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
         except Exception as e:
             conf.logger.info(e)
@@ -427,11 +428,16 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
                     headers['location'] = location
                 end_time = (time() - start_time) * 1000
                 headers.update({'X-ElapsedTime-Header': str(end_time)})
+                headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
                 return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
         except Exception as e:
             conf.logger.info(e)
-
-    return Response(status_code=res.status_code, headers=conf.GLOBAL_HEADERS, content="Subscription creation failed!")
+    end_time = (time() - start_time) * 1000
+    headers = conf.GLOBAL_HEADERS
+    headers.update({'X-ElapsedTime-Header': str(end_time)})
+    if res.elapsed:
+        headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
+    return Response(status_code=res.status_code, headers=headers, content="Subscription creation failed!")
         
 
 
@@ -478,13 +484,13 @@ async def mon_evt_sub_delete(scsAsId: str, subscriptionId: str):
         else:
             location = res['location']
             async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
-                res = await client.delete(
+                response = await client.delete(
                     location,
                     headers={'Accept': 'application/json,application/problem+json'},
                 )
-                conf.logger.info(f"Response {res.status_code} for deleting app session. Content:")
-                conf.logger.info(res.text)
-            if res.status_code != httpx.codes.NO_CONTENT:
+                conf.logger.info(f"Response {response.status_code} for deleting app session. Content:")
+                conf.logger.info(response.text)
+            if response.status_code != httpx.codes.NO_CONTENT:
                 conf.logger.info("Context not found!")
                 raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
             res = await monitoringEventSubscription.monitoring_event_subscriptionscription_delete(scsAsId, subscriptionId)
@@ -492,6 +498,7 @@ async def mon_evt_sub_delete(scsAsId: str, subscriptionId: str):
                 end_time = (time() - start_time) * 1000
                 headers = conf.GLOBAL_HEADERS
                 headers.update({'X-ElapsedTime-Header': str(end_time)})
+                headers.update({'core-elapsed-time': str(response.elapsed.total_seconds() * 1000)})
                 return Response(status_code=httpx.codes.NO_CONTENT, headers=headers)
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
@@ -597,6 +604,7 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
                 end_time = (time() - start_time) * 1000
                 headers = conf.GLOBAL_HEADERS
                 headers.update({'X-ElapsedTime-Header': str(end_time)})
+                headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
                 conf.logger.info("Server error")
@@ -647,11 +655,17 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
                 end_time = (time() - start_time) * 1000
                 headers = conf.GLOBAL_HEADERS
                 headers.update({'X-ElapsedTime-Header': str(end_time)})
+                headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
                 conf.logger.info("Server error")
                 return Response(status_code=httpx.codes.INTERNAL_SERVER_ERROR, content="Error creating resource!")
-    return Response(status_code=httpx.codes.INTERNAL_SERVER_ERROR, content="Unknown server error!")
+    end_time = (time() - start_time) * 1000
+    headers = conf.GLOBAL_HEADERS
+    headers.update({'X-ElapsedTime-Header': str(end_time)})
+    if res.elapsed:
+        headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
+    return Response(status_code=httpx.codes.INTERNAL_SERVER_ERROR, content="Unknown server error!", headers=headers)
 
 @app.put("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_put(afId: str, subId: str, data: Request):
@@ -690,8 +704,8 @@ async def delete_ti(afId: str, subId: str):
             raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
         else:
             contextId = res['location'].split('/')[-1]
-            res = await pcf_handler.pcf_policy_authorization_delete(contextId)
-            if res.status_code != httpx.codes.NO_CONTENT:
+            response = await pcf_handler.pcf_policy_authorization_delete(contextId)
+            if response.status_code != httpx.codes.NO_CONTENT:
                 conf.logger.info("Context not found!")
                 raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
 
@@ -701,6 +715,7 @@ async def delete_ti(afId: str, subId: str):
                 end_time = (time() - start_time) * 1000
                 headers = conf.GLOBAL_HEADERS
                 headers.update({'X-ElapsedTime-Header': str(end_time)})
+                headers.update({'core-elapsed-time': str(response.elapsed.total_seconds() * 1000)})
                 return Response(status_code=httpx.codes.NO_CONTENT, headers=headers)
     except Exception as e:
         raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
@@ -847,6 +862,7 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
             end_time = (time() - start_time) * 1000
             headers = conf.GLOBAL_HEADERS
             headers.update({'X-ElapsedTime-Header': str(end_time)})
+            headers.update({'core-elapsed-time': str(response.elapsed.total_seconds() * 1000)})
             return JSONResponse(status_code=httpx.codes.CREATED, headers=headers, content=qos_sub.to_dict())
         else:
             conf.logger.info("Error creating resource")
@@ -889,8 +905,8 @@ async def qos_delete(scsAsId: str, subId: str):
         raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
     else:
         contextId = res['location'].split('/')[-1]
-        res = await pcf_handler.pcf_policy_authorization_delete(contextId)
-        if res.status_code != httpx.codes.NO_CONTENT:
+        response = await pcf_handler.pcf_policy_authorization_delete(contextId)
+        if response.status_code != httpx.codes.NO_CONTENT:
             conf.logger.info("Context not found!")
             raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
         
@@ -900,6 +916,7 @@ async def qos_delete(scsAsId: str, subId: str):
             end_time = (time() - start_time) * 1000
             headers = conf.GLOBAL_HEADERS
             headers.update({'X-ElapsedTime-Header': str(end_time)})
+            headers.update({'core-elapsed-time': str(response.elapsed.total_seconds() * 1000)})
             return Response(status_code=httpx.codes.NO_CONTENT, headers=headers)
     raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
 
