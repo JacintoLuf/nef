@@ -27,7 +27,7 @@ async def start_tcpdump(capture_file):
     """Start tcpdump asynchronously and return the process."""
     print(f"Starting tcpdump, saving to {capture_file}...")
     process = await asyncio.create_subprocess_exec(
-        "tcpdump", "-i", "any", "-w", f"tcpdumps/{capture_file}",
+        "sudo", "tcpdump", "-i", "any", "-w", f"tcpdumps/{capture_file}",
         stdout=asyncio.subprocess.DEVNULL,
         stderr=asyncio.subprocess.DEVNULL,
         preexec_fn=os.setsid,
@@ -244,7 +244,7 @@ if __name__ == '__main__':
             asyncio.run(run_test(test_type, test_file))
 
         count += 1
-        if count > 0:
+        if count > 50:
             run = False
 
         # run = False if str(input("Run again? Y/n\n")).strip().lower() == "n" else True
