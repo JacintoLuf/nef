@@ -101,7 +101,6 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
     req_data.notif_uri = f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/pcf_qos_notif/{_id}"
     req_data.supp_feat = 'ffffff' # conf.SERVICE_NAMES['3gpp-as-session-with-qos']
     tsn_qos_c = None
-    # req_data.res_prio = "PRIO_1" ???????????????????
     if as_session_qos_sub.tsc_qos_req:
         tsn_qos_c = TsnQosContainer(
             max_tsc_burst_size=as_session_qos_sub.tsc_qos_req.max_tsc_burst_size,
@@ -111,15 +110,13 @@ async def pcf_policy_authorization_create_qos(binding: PcfBinding=None, as_sessi
 
     med_sub_cmp = {}
     for idx, f in enumerate(as_session_qos_sub.flow_info):
-        # conf.logger.info(f"flow descriptions: {f.flow_descriptions}")
-        # arr = [i for i in f.flow_descriptions]
-        med_sub_cmp[f.flow_id] = MediaSubComponent(f_num=f.flow_id, f_descs=f.flow_descriptions) #arr) #fnum waht is
+        med_sub_cmp[f.flow_id] = MediaSubComponent(f_num=f.flow_id, f_descs=f.flow_descriptions)
     med_comps = MediaComponent(qos_reference=as_session_qos_sub.qos_reference,
                                alt_ser_reqs=as_session_qos_sub.alt_qo_s_references,
                                alt_ser_reqs_data=as_session_qos_sub.alt_qos_reqs,
-                               med_comp_n=9,
+                               med_comp_n=0,
                                f_status="ENABLED",
-                               med_type="AUDIO",
+                               med_type=conf.QCI_MAP[as_session_qos_sub.qos_reference], #"AUDIO",
                                med_sub_comps=med_sub_cmp,
                             #    res_prio="PRIO_1", ???????????????????
                                tsn_qos=tsn_qos_c)
