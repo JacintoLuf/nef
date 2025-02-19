@@ -39,16 +39,16 @@ async def stop_tcpdump(process):
     """Stop the tcpdump process asynchronously."""
     print(f"Stopping tcpdump... {process.pid}")
 
-    process.send_signal(signal.SIGINT)  # Graceful stop
+    # process.send_signal(signal.SIGINT)  # Graceful stop
 
     while process.returncode is None:
-        print("tcpdump did not stop. Killing...")
+        # print("tcpdump did not stop. Killing...")
         process.kill()
         await process.wait()
-        if process.returncode is None:
-            print("tcpdump still did not stop. Trying to kill with sudo...")
-            cmd = f"sudo pkill tcpdump"
-            os.system(cmd)
+        # if process.returncode is None:
+        #     print("tcpdump still did not stop. Trying to kill with sudo...")
+        #     cmd = f"sudo pkill tcpdump"
+        #     os.system(cmd)
     # try:
     #     process.terminate()  # Send SIGTERM
     # except ProcessLookupError:
@@ -181,7 +181,7 @@ async def run_test(test_type: str, test_file: str):
     except Exception as e:
         print(f"Error: {e!r}")
     
-    await asyncio.sleep(5)
+    await asyncio.sleep(2)
     await stop_tcpdump(tcpdump_process)
     try:
         if (not response or 'location' not in response.headers) and test_type != "mon_c":
