@@ -40,7 +40,6 @@ async def stop_tcpdump(process):
     print(f"Stopping tcpdump... {process.pid}")
 
     process.send_signal(signal.SIGINT)  # Graceful stop
-    await process.wait()
 
     while process.returncode is None:
         print("tcpdump did not stop. Killing...")
