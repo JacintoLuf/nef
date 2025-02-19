@@ -1,6 +1,6 @@
 {
     "notificationDestination": "http://af:8080/notif",
-    "monitoringType": "CONNECTIVITY_STATE_REPORT",
+    "monitoringType": "UE_REACHABILITY",
     "maximumNumberOfReports": 1,
     "ipv4Addr":"10.45.0.3",
     "dnn":"internet"
