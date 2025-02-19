@@ -219,7 +219,7 @@ if __name__ == '__main__':
         #     inp = int(input("test type:\n"+" ".join(f"({index+1}){item}" for index, item in enumerate(test_types))+"\n"))
         # except Exception as e:
         #     inp = 1
-        inp = 2
+        inp = 3
         test_type = test_types[inp-1]
 
         test_file = None
@@ -245,7 +245,7 @@ if __name__ == '__main__':
             asyncio.run(run_test(test_type, test_file))
 
         count += 1
-        if count > 40:
+        if count > 20:
             run = False
 
         # run = False if str(input("Run again? Y/n\n")).strip().lower() == "n" else True
