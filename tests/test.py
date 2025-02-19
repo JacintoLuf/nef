@@ -229,9 +229,9 @@ if __name__ == '__main__':
             elif test_type == "qos_c":
                 try:
                     # inp = int(input("(1)QCI\t(2)QOS\n"))
-                    inp = 1
+                    inp = 2
                 except Exception as e:
-                    inp = 1
+                    inp = 2
                 if core == "open5gs":
                     test_file = "qci_mod.json" if inp == 1 else "qos_mod.json"
                 else:
