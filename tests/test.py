@@ -82,24 +82,24 @@ async def send_request(request: str, test_file: str):
                 data=json.dumps(data)
             )
             print(f"Response: {response.status_code} - {response.text}")
-        # sub = response.headers['location']
+
         if response.headers['location'] or request == "mon_c":
-            parsed_url = urlparse(response.headers['location'])
-            modified_url = urlunparse((parsed_url.scheme, nef_ip, parsed_url.path, parsed_url.params, parsed_url.query, parsed_url.fragment))
-            print(f"Subscription location: {modified_url}")
             if response.headers["X-ElapsedTime-Header"] and response.headers["core-elapsed-time"]:
                 nef_time = float(response.headers["X-ElapsedTime-Header"])-float(response.headers["core-elapsed-time"])
                 write_to_json(request, [response.headers['X-ElapsedTime-Header'], nef_time])
             else:
                 write_to_json(request, [response.elapsed.total_seconds() * 1000, None])
             if request != "mon_c":
+                parsed_url = urlparse(response.headers['location'])
+                modified_url = urlunparse((parsed_url.scheme, nef_ip, parsed_url.path, parsed_url.params, parsed_url.query, parsed_url.fragment))
+                print(f"Subscription location: {modified_url}")
                 async with httpx.AsyncClient(http1=False, http2=True) as client:
                     res = await client.get(
                         url=modified_url,
                         headers=headers
                     )
                 print(f"Subscription get response: {res.status_code} - {res.text}")
-                if res.status_code == 204:
+                if res.status_code == 200:
                     delete_req = request.split("_")[0]+"_g"
                     if res.headers['X-ElapsedTime-Header']:
                         write_to_json(delete_req, [res.headers['X-ElapsedTime-Header'], None])
@@ -219,7 +219,7 @@ if __name__ == '__main__':
         #     inp = int(input("test type:\n"+" ".join(f"({index+1}){item}" for index, item in enumerate(test_types))+"\n"))
         # except Exception as e:
         #     inp = 1
-        inp = 2
+        inp = 1
         test_type = test_types[inp-1]
 
         test_file = None
@@ -228,7 +228,8 @@ if __name__ == '__main__':
                 test_file = "mon_evt.json"
             elif test_type == "qos_c":
                 try:
-                    inp = int(input("(1)QCI\t(2)QOS\n"))
+                    # inp = int(input("(1)QCI\t(2)QOS\n"))
+                    inp = 1
                 except Exception as e:
                     inp = 1
                 if core == "open5gs":
@@ -244,7 +245,7 @@ if __name__ == '__main__':
             asyncio.run(run_test(test_type, test_file))
 
         count += 1
-        if count > 50:
+        if count > 20:
             run = False
 
         # run = False if str(input("Run again? Y/n\n")).strip().lower() == "n" else True
