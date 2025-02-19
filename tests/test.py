@@ -29,7 +29,8 @@ async def start_tcpdump(capture_file):
     process = await asyncio.create_subprocess_exec(
         "sudo", "tcpdump", "-i", "any", "-w", f"tcpdumps/{capture_file}",
         stdout=asyncio.subprocess.DEVNULL,
-        stderr=asyncio.subprocess.DEVNULL
+        stderr=asyncio.subprocess.DEVNULL,
+        preexec_fn=os.setpgrp,
     )
 
     print(f"tcpdump started with PID {process.pid}")
@@ -236,7 +237,8 @@ if __name__ == '__main__':
             elif test_type == "ti_c":
                 test_file = "ti_open.json" if core == "open5gs" else "ti_free.json"
 
-        start = False if str(input("Start? Y/n\n")).strip().lower() == "n" else True
+        # start = False if str(input("Start? Y/n\n")).strip().lower() == "n" else True
+        start = True
         if start:
             asyncio.run(run_test(test_type, test_file))
 
