@@ -219,7 +219,7 @@ if __name__ == '__main__':
         #     inp = int(input("test type:\n"+" ".join(f"({index+1}){item}" for index, item in enumerate(test_types))+"\n"))
         # except Exception as e:
         #     inp = 1
-        inp = 1
+        inp = 2
         test_type = test_types[inp-1]
 
         test_file = None
