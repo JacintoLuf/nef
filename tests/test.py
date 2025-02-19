@@ -78,7 +78,7 @@ async def send_request(request: str, test_file: str):
             modified_url = urlunparse((parsed_url.scheme, nef_ip, parsed_url.path, parsed_url.params, parsed_url.query, parsed_url.fragment))
             print(f"Subscription location: {modified_url}")
             if response.headers["X-ElapsedTime-Header"] and response.headers["core-elapsed-time"]:
-                nef_time = response.headers["X-ElapsedTime-Header"]-response.headers["core-elapsed-time"]
+                nef_time = float(response.headers["X-ElapsedTime-Header"])-float(response.headers["core-elapsed-time"])
                 write_to_json(request, [response.headers['X-ElapsedTime-Header'], nef_time])
             else:
                 write_to_json(request, [response.elapsed.total_seconds() * 1000, None])
@@ -105,7 +105,7 @@ async def send_request(request: str, test_file: str):
                 if res.status_code == 204:
                     delete_req = request.split("_")[0]+"_d"
                     if res.headers['X-ElapsedTime-Header'] and res.headers["core-elapsed-time"]:
-                        nef_time = response.headers["X-ElapsedTime-Header"]-response.headers["core-elapsed-time"]
+                        nef_time = float(response.headers["X-ElapsedTime-Header"])-float(response.headers["core-elapsed-time"])
                         write_to_json(delete_req, [res.headers['X-ElapsedTime-Header'], nef_time])
                     else:
                         write_to_json(delete_req, [res.elapsed.total_seconds() * 1000, None])
