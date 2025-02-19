@@ -30,7 +30,7 @@ async def start_tcpdump(capture_file):
         "sudo", "tcpdump", "-i", "any", "-w", f"tcpdumps/{capture_file}",
         stdout=asyncio.subprocess.DEVNULL,
         stderr=asyncio.subprocess.DEVNULL,
-        preexec_fn=os.setpgrp,
+        preexec_fn=os.setsid,
     )
 
     print(f"tcpdump started with PID {process.pid}")
@@ -40,15 +40,16 @@ async def stop_tcpdump(process):
     """Stop the tcpdump process asynchronously."""
     print(f"Stopping tcpdump... {process.pid}")
 
-    process.send_signal(signal.SIGTERM)  # Graceful stop
-    while process.returncode is None:
-        print("tcpdump did not stop. Killing...")
-        process.kill()
-        await process.wait()
-        if process.returncode is None:
-            print("tcpdump still did not stop. Trying to kill with sudo...")
-            cmd = f"sudo pkill tcpdump"
-            os.system(cmd)
+    os.killpg(os.getpgid(process.pid), signal.SIGTERM)
+    # process.send_signal(signal.SIGTERM)  # Graceful stop
+    # while process.returncode is None:
+    #     print("tcpdump did not stop. Killing...")
+    #     process.kill()
+    #     await process.wait()
+    #     if process.returncode is None:
+    #         print("tcpdump still did not stop. Trying to kill with sudo...")
+    #         cmd = f"sudo pkill tcpdump"
+    #         os.system(cmd)
     # try:
     #     process.terminate()  # Send SIGTERM
     # except ProcessLookupError:
