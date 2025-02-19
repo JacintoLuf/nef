@@ -39,10 +39,9 @@ async def stop_tcpdump(process):
     """Stop the tcpdump process asynchronously."""
     print(f"Stopping tcpdump... {process.pid}")
 
-    # process.send_signal(signal.SIGINT)  # Graceful stop
-
+    process.send_signal(signal.SIGTERM)  # Graceful stop
     while process.returncode is None:
-        # print("tcpdump did not stop. Killing...")
+        print("tcpdump did not stop. Killing...")
         process.kill()
         await process.wait()
         if process.returncode is None:
@@ -189,6 +188,7 @@ async def run_test(test_type: str, test_file: str):
     except Exception as e:
         await delete_tcpdump(capture_file)
 
+    await asyncio.sleep(10)
     print("Test finished. Results collected.")
 
 if __name__ == '__main__':
@@ -244,7 +244,6 @@ if __name__ == '__main__':
         if count > 0:
             run = False
 
-        asyncio.sleep(10)
         # run = False if str(input("Run again? Y/n\n")).strip().lower() == "n" else True
 
     print("All tasks completed.")
