@@ -27,7 +27,7 @@ async def start_tcpdump(capture_file):
     """Start tcpdump asynchronously and return the process."""
     print(f"Starting tcpdump, saving to {capture_file}...")
     process = await asyncio.create_subprocess_exec(
-        "sudo", "tcpdump", "-i", "any", "-w", f"tcpdumps/{capture_file}",
+        "tcpdump", "-i", "any", "-w", f"tcpdumps/{capture_file}",
         stdout=asyncio.subprocess.DEVNULL,
         stderr=asyncio.subprocess.DEVNULL,
         preexec_fn=os.setsid,
