@@ -45,10 +45,10 @@ async def stop_tcpdump(process):
         # print("tcpdump did not stop. Killing...")
         process.kill()
         await process.wait()
-        # if process.returncode is None:
-        #     print("tcpdump still did not stop. Trying to kill with sudo...")
-        #     cmd = f"sudo pkill tcpdump"
-        #     os.system(cmd)
+        if process.returncode is None:
+            print("tcpdump still did not stop. Trying to kill with sudo...")
+            cmd = f"sudo pkill tcpdump"
+            os.system(cmd)
     # try:
     #     process.terminate()  # Send SIGTERM
     # except ProcessLookupError:
@@ -193,12 +193,14 @@ async def run_test(test_type: str, test_file: str):
 
 if __name__ == '__main__':
     run = True
+    count = 0
     while run:
         while not core:
-            try:
-                inp = int(input("core:\n(1)OPEN5GS\t(2)free5gc\n"))
-            except Exception as e:
-                inp = 1
+            # try:
+            #     inp = int(input("core:\n(1)OPEN5GS\t(2)free5gc\n"))
+            # except Exception as e:
+            #     inp = 1
+            inp = 1
             core = "free5gc" if inp == 2 else "open5gs"
             nef_ip = '10.255.32.164:7777' if core == "free5gc" else "10.255.38.50:7777"
             tests = {
@@ -211,10 +213,11 @@ if __name__ == '__main__':
             }
 
         test_types = [key for key in tests.keys()]
-        try:
-            inp = int(input("test type:\n"+" ".join(f"({index+1}){item}" for index, item in enumerate(test_types))+"\n"))
-        except Exception as e:
-            inp = 1
+        # try:
+        #     inp = int(input("test type:\n"+" ".join(f"({index+1}){item}" for index, item in enumerate(test_types))+"\n"))
+        # except Exception as e:
+        #     inp = 1
+        inp = 1
         test_type = test_types[inp-1]
 
         test_file = None
@@ -237,6 +240,11 @@ if __name__ == '__main__':
         if start:
             asyncio.run(run_test(test_type, test_file))
 
-        run = False if str(input("Run again? Y/n\n")).strip().lower() == "n" else True
+        count += 1
+        if count > 0:
+            run = False
+
+        asyncio.sleep(10)
+        # run = False if str(input("Run again? Y/n\n")).strip().lower() == "n" else True
 
     print("All tasks completed.")
