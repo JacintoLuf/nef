@@ -83,7 +83,7 @@ async def send_request(request: str, test_file: str):
             )
             print(f"Response: {response.status_code} - {response.text}")
 
-        if response.headers['location'] or request == "mon_c":
+        if response.headers.get('location') or request == "mon_c":
             if response.headers["X-ElapsedTime-Header"] and response.headers["core-elapsed-time"]:
                 nef_time = float(response.headers["X-ElapsedTime-Header"])-float(response.headers["core-elapsed-time"])
                 write_to_json(request, [response.headers['X-ElapsedTime-Header'], nef_time])
@@ -101,7 +101,7 @@ async def send_request(request: str, test_file: str):
                 print(f"Subscription get response: {res.status_code} - {res.text}")
                 if res.status_code == 200:
                     delete_req = request.split("_")[0]+"_g"
-                    if res.headers['X-ElapsedTime-Header']:
+                    if res.headers.get('X-ElapsedTime-Header'):
                         write_to_json(delete_req, [res.headers['X-ElapsedTime-Header'], None])
                     else:
                         write_to_json(delete_req, [res.elapsed.total_seconds() * 1000, None])
@@ -114,7 +114,7 @@ async def send_request(request: str, test_file: str):
                 print(f"Subscription delete response: {res.status_code} - {res.text}")
                 if res.status_code == 204:
                     delete_req = request.split("_")[0]+"_d"
-                    if res.headers['X-ElapsedTime-Header'] and res.headers["core-elapsed-time"]:
+                    if res.headers.get('X-ElapsedTime-Header') and res.headers.get("core-elapsed-time"):
                         nef_time = float(response.headers["X-ElapsedTime-Header"])-float(response.headers["core-elapsed-time"])
                         write_to_json(delete_req, [res.headers['X-ElapsedTime-Header'], nef_time])
                     else:
