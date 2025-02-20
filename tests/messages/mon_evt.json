@@ -1,6 +1,6 @@
 {
     "notificationDestination": "http://af:8080/notif",
-    "monitoringType": "UE_REACHABILITY",
+    "monitoringType": "NUMBER_OF_UES_IN_AN_AREA",
     "maximumNumberOfReports": 1,
     "msisdn": "msisdn-12345",
     "ipv4Addr":"10.46.0.2",

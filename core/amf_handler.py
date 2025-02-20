@@ -87,6 +87,7 @@ async def amf_event_exposure_subscription_create(monEvtSub: MonitoringEventSubsc
         event_notify_uri=f"http://{conf.HOSTS['NEF'][0]}/nnef-callback/amf-event-sub-callback/{_id}", #monEvtSub.notification_destination
         nf_id=conf.API_UUID,
         # any_ue=True,
+        gpsi=monEvtSub.msisdn,
         group_id=int_group_id,
         options=amf_event_mode,
         source_nf_type="AF"
