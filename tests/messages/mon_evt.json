@@ -1,6 +1,6 @@
 {
     "notificationDestination": "http://af:8080/notif",
-    "monitoringType": "CONNECTIVITY_STATE_REPO",
+    "monitoringType": "CONNECTIVITY_STATE_REPORT",
     "maximumNumberOfReports": 1,
     "msisdn": "msisdn-12345",
     "ipv4Addr": "10.46.0.2",
