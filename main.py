@@ -403,6 +403,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
             else:
                 end_time = (time() - start_time) * 1000
                 headers.update({'X-ElapsedTime-Header': str(end_time)})
+                headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
                 return Response(status_code=res.status_code, headers=headers, content=res.content)
         except Exception as e:
             conf.logger.info(e)
@@ -441,6 +442,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
             else:
                 end_time = (time() - start_time) * 1000
                 headers.update({'X-ElapsedTime-Header': str(end_time)})
+                headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
                 return Response(status_code=res.status_code, headers=headers, content=res.content)
         except Exception as e:
             conf.logger.info(e)
@@ -614,7 +616,6 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
                     test_notif = EventNotification(af_trans_id=traffic_sub.af_trans_id)
                     background_tasks.add_task(send_notification, test_notif.to_dict(), traffic_sub.notification_destination)
                 end_time = (time() - start_time) * 1000
-                headers = conf.GLOBAL_HEADERS
                 headers.update({'X-ElapsedTime-Header': str(end_time)})
                 headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
@@ -622,7 +623,10 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
                 conf.logger.info("Server error")
                 raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Error creating resource")
         else:
-            raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Error creating resource")
+            end_time = (time() - start_time) * 1000
+            headers.update({'X-ElapsedTime-Header': str(end_time)})
+            headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
+            raise Response(status_code=res.status_code, headers=headers, content=res.content)
         
     #------------------------ipv4, ipv6 or eth---------------------------
     else:
@@ -665,7 +669,6 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
                 headers = conf.GLOBAL_HEADERS
                 headers['location'] = traffic_sub.__self
                 end_time = (time() - start_time) * 1000
-                headers = conf.GLOBAL_HEADERS
                 headers.update({'X-ElapsedTime-Header': str(end_time)})
                 headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
@@ -673,7 +676,10 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
                 conf.logger.info("Server error")
                 return HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Error creating resource!")
         else:
-            return Response(status_code=res.status_code, content=res.content)
+            end_time = (time() - start_time) * 1000
+            headers.update({'X-ElapsedTime-Header': str(end_time)})
+            headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
+            return Response(status_code=res.status_code, headers=headers, content=res.content)
 
 @app.put("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_put(afId: str, subId: str, data: Request):
@@ -792,6 +798,7 @@ async def qos_get_all(scsAsId: str):
 @app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
 async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTasks):
     start_time = time()
+    headers = conf.GLOBAL_HEADERS
     conf.logger.info(f"Initiating {scsAsId} AS Session With QoS subscription creation")
 
     try:
@@ -868,7 +875,6 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
             headers = conf.GLOBAL_HEADERS
             headers['location'] = qos_sub.__self
             end_time = (time() - start_time) * 1000
-            headers = conf.GLOBAL_HEADERS
             headers.update({'X-ElapsedTime-Header': str(end_time)})
             headers.update({'core-elapsed-time': str(response.elapsed.total_seconds() * 1000)})
             return JSONResponse(status_code=httpx.codes.CREATED, headers=headers, content=qos_sub.to_dict())
@@ -877,7 +883,10 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
             #delete from pcf
             return HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Error creating resource!")
     else:
-        return Response(status_code=response.status_code, content=response.content)
+        end_time = (time() - start_time) * 1000
+        headers.update({'X-ElapsedTime-Header': str(end_time)})
+        headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
+        return Response(status_code=response.status_code, headers=headers, content=response.content)
 
 @app.put("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
 async def qos_put(scsAsId: str, subId: str, data: Request):
