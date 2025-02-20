@@ -438,7 +438,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
     headers.update({'X-ElapsedTime-Header': str(end_time)})
     # if res.elapsed:
     #     headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
-    return Response(status_code=res.status_code, headers=headers, content="Subscription creation failed!")
+    return Response(status_code=httpx.codes.INTERNAL_SERVER_ERROR, headers=headers, content=f"Subscription creation failed! {e.__str__}")
         
 
 
