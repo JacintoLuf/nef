@@ -403,7 +403,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
             else:
                 end_time = (time() - start_time) * 1000
                 headers.update({'X-ElapsedTime-Header': str(end_time)})
-                return Response(status_code=res.status_code, headers=headers, detail="Subscription creation failed!")
+                return Response(status_code=res.status_code, headers=headers, content=res.content)
         except Exception as e:
             conf.logger.info(e)
             end_time = (time() - start_time) * 1000
@@ -441,7 +441,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
             else:
                 end_time = (time() - start_time) * 1000
                 headers.update({'X-ElapsedTime-Header': str(end_time)})
-                return Response(status_code=res.status_code, headers=headers, detail="Subscription creation failed!")
+                return Response(status_code=res.status_code, headers=headers, content=res.content)
         except Exception as e:
             conf.logger.info(e)
             end_time = (time() - start_time) * 1000
@@ -620,7 +620,7 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
                 conf.logger.info("Server error")
-                raise HTTPException(status_code=500, detail="Error creating resource")
+                raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Error creating resource")
         else:
             raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Error creating resource")
         
@@ -671,9 +671,9 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
                 return JSONResponse(status_code=httpx.codes.CREATED, content=traffic_sub.to_dict(), headers=headers)
             else:
                 conf.logger.info("Server error")
-                return Response(status_code=httpx.codes.INTERNAL_SERVER_ERROR, content="Error creating resource!")
+                return HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Error creating resource!")
         else:
-            return Response(status_code=res.status_code, content="Error creating resource!")
+            return Response(status_code=res.status_code, content=res.content)
 
 @app.put("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_put(afId: str, subId: str, data: Request):
@@ -875,7 +875,7 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
         else:
             conf.logger.info("Error creating resource")
             #delete from pcf
-            return Response(status_code=httpx.codes.INTERNAL_SERVER_ERROR, content="Error creating resource!")
+            return HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Error creating resource!")
     else:
         return Response(status_code=response.status_code, content=response.content)
 
