@@ -368,6 +368,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
     while await monitoringEventSubscription.check_id(_id):
         _id = str(uuid.uuid4().hex)
 
+    exception_error = None
     if mon_evt_sub.monitoring_type in ['LOSS_OF_CONNECTIVITY','UE_REACHABILITY','LOCATION_REPORTING','CHANGE_OF_SUPI_PEI_ASSOCIATION','ROAMING_STATUS','COMMUNICATION_FAILURE','PDN_CONNECTIVITY_STATUS','AVAILABILITY_AFTER_DDN_FAILURE','API_SUPPORT_CAPABILITY']:
         conf.logger.info(f"Creating UDM event exposure subscription for {mon_evt_sub.monitoring_type}")
         if mon_evt_sub.external_id:
@@ -401,6 +402,7 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
                 headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
                 return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
         except Exception as e:
+            exception_error = e
             conf.logger.info(e)
     if mon_evt_sub.monitoring_type in ['NUMBER_OF_UES_IN_AN_AREA', 'REGISTRATION_STATE_REPORT', 'CONNECTIVITY_STATE_REPORT']:
         conf.logger.info(f"Creating AMF event exposure subscription for {mon_evt_sub.monitoring_type}")
@@ -432,13 +434,14 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
                 headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
                 return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
         except Exception as e:
+            exception_error = e
             conf.logger.info(e)
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
     headers.update({'X-ElapsedTime-Header': str(end_time)})
     # if res.elapsed:
     #     headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
-    return Response(status_code=httpx.codes.INTERNAL_SERVER_ERROR, headers=headers, content=f"Subscription creation failed! {e.__str__}")
+    return Response(status_code=httpx.codes.INTERNAL_SERVER_ERROR, headers=headers, content=f"Subscription creation failed! {exception_error.__str__}")
         
 
 
