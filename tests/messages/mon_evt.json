@@ -2,7 +2,7 @@
     "notificationDestination": "http://af:8080/notif",
     "monitoringType": "UE_REACHABILITY",
     "maximumNumberOfReports": 1,
-    "msisdn": "12345",
+    "msisdn": "msisdn-12345",
     "ipv4Addr":"10.46.0.2",
     "dnn":"internet"
 }
