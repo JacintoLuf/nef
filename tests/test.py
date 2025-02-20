@@ -202,7 +202,7 @@ if __name__ == '__main__':
             #     inp = int(input("core:\n(1)OPEN5GS\t(2)free5gc\n"))
             # except Exception as e:
             #     inp = 1
-            inp = 1
+            inp = 2
             core = "free5gc" if inp == 2 else "open5gs"
             nef_ip = '10.255.32.164:7777' if core == "free5gc" else "10.255.38.50:7777"
             tests = {
@@ -219,7 +219,7 @@ if __name__ == '__main__':
         #     inp = int(input("test type:\n"+" ".join(f"({index+1}){item}" for index, item in enumerate(test_types))+"\n"))
         # except Exception as e:
         #     inp = 1
-        inp = 3
+        inp = 1
         test_type = test_types[inp-1]
 
         test_file = None
@@ -229,9 +229,9 @@ if __name__ == '__main__':
             elif test_type == "qos_c":
                 try:
                     # inp = int(input("(1)QCI\t(2)QOS\n"))
-                    inp = 2
+                    inp = 1
                 except Exception as e:
-                    inp = 2
+                    inp = 1
                 if core == "open5gs":
                     test_file = "qci_mod.json" if inp == 1 else "qos_mod.json"
                 else:
