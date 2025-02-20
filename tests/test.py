@@ -115,7 +115,7 @@ async def send_request(request: str, test_file: str):
                 if res.status_code == 204:
                     delete_req = request.split("_")[0]+"_d"
                     if res.headers.get('X-ElapsedTime-Header') and res.headers.get("core-elapsed-time"):
-                        nef_time = float(response.headers["X-ElapsedTime-Header"])-float(response.headers["core-elapsed-time"])
+                        nef_time = float(res.headers["X-ElapsedTime-Header"])-float(res.headers["core-elapsed-time"])
                         write_to_json(delete_req, [res.headers['X-ElapsedTime-Header'], nef_time])
                     else:
                         write_to_json(delete_req, [res.elapsed.total_seconds() * 1000, None])
@@ -220,7 +220,7 @@ if __name__ == '__main__':
         #     inp = int(input("test type:\n"+" ".join(f"({index+1}){item}" for index, item in enumerate(test_types))+"\n"))
         # except Exception as e:
         #     inp = 1
-        inp = 3
+        inp = 2 if count < 20 else 3
         test_type = test_types[inp-1]
 
         test_file = None
@@ -230,9 +230,9 @@ if __name__ == '__main__':
             elif test_type == "qos_c":
                 try:
                     # inp = int(input("(1)QCI\t(2)QOS\n"))
-                    inp = 2
+                    inp = 1 if count < 40 else 2
                 except Exception as e:
-                    inp = 2
+                    inp = 1 if count < 40 else 2
                 if core == "open5gs":
                     test_file = "qci_mod.json" if inp == 1 else "qos_mod.json"
                 else:
@@ -246,7 +246,7 @@ if __name__ == '__main__':
             asyncio.run(run_test(test_type, test_file))
 
         count += 1
-        if count > 20:
+        if count > 60:
             run = False
 
         # run = False if str(input("Run again? Y/n\n")).strip().lower() == "n" else True
