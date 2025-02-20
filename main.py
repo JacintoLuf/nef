@@ -353,12 +353,12 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
         if mon_evt_sub.maximum_number_of_reports != 1:
             raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail='Only one-time reporting supported for this event.')
     if mon_evt_sub.location_type or mon_evt_sub.accuracy or mon_evt_sub.minimum_report_interval:
-        num_not_none = sum(attr is not None for attr in [mon_evt_sub.msisdn, mon_evt_sub.ipv4_addr, mon_evt_sub.ipv6_addr, mon_evt_sub.external_group_id])
+        num_not_none = sum(attr is not None for attr in [mon_evt_sub.external_id, mon_evt_sub.msisdn, mon_evt_sub.ipv4_addr, mon_evt_sub.ipv6_addr, mon_evt_sub.external_group_id])
         if num_not_none != 1:
         # if not ((mon_evt_sub.external_id is not None)^(mon_evt_sub.msisdn is not None)^(mon_evt_sub.ipv4_addr is not None)^(mon_evt_sub.ipv6_addr is not None)^(mon_evt_sub.external_group_id is not None)):
             raise HTTPException(httpx.codes.BAD_REQUEST, detail='One of the properties "externalId", "msisdn", "ipv4Addr", "ipv6Addr" or "externalGroupId" shall be included for features "Location_notification" and "Communication_failure_notification"')
     if mon_evt_sub.location_type or mon_evt_sub.accuracy or mon_evt_sub.minimum_report_interval or mon_evt_sub.max_rpt_expire_intvl or mon_evt_sub.sampling_interval or mon_evt_sub.reporting_loc_est_ind or mon_evt_sub.linear_distance or mon_evt_sub.loc_qo_s or mon_evt_sub.svc_id or mon_evt_sub.ldr_type or mon_evt_sub.velocity_requested or mon_evt_sub.max_age_of_loc_est or mon_evt_sub.loc_time_window or mon_evt_sub.supported_gad_shapes or mon_evt_sub.code_word or mon_evt_sub.location_area5_g:
-        num_not_none = sum(attr is not None for attr in [mon_evt_sub.msisdn, mon_evt_sub.external_group_id])
+        num_not_none = sum(attr is not None for attr in [mon_evt_sub.external_id, mon_evt_sub.msisdn, mon_evt_sub.external_group_id])
         if num_not_none != 1:
             raise HTTPException(httpx.codes.BAD_REQUEST, detail='One of the properties "externalId", "msisdn" or "externalGroupId" shall be included for feature "eLCS"')
     if mon_evt_sub.monitoring_type == "NUMBER_OF_UES_IN_AN_AREA" and mon_evt_sub.maximum_number_of_reports != 1:
