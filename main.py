@@ -309,7 +309,7 @@ async def mon_evt_subs_get(scsAsId: str, subscriptionId: str):
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
     headers.update({'X-ElapsedTime-Header': str(end_time)})
-    return Response(content=res, headers=headers, status_code=httpx.codes.OK)
+    return JSONResponse(content=res, headers=headers, status_code=httpx.codes.OK)
 
 @app.get("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions")
 async def mon_evt_subs_get_all(scsAsId: str):
@@ -321,11 +321,12 @@ async def mon_evt_subs_get_all(scsAsId: str):
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
     headers.update({'X-ElapsedTime-Header': str(end_time)})
-    return Response(content=res, headers=headers, status_code=httpx.codes.OK)
+    return JSONResponse(content=res, headers=headers, status_code=httpx.codes.OK)
 
 @app.post("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions")
 async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: BackgroundTasks):
     start_time = time()
+    headers = conf.GLOBAL_HEADERS
     conf.logger.info(f"Initiating {scsAsId} Monitoring Event subscription creation")
 
     try:
@@ -368,7 +369,6 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
     while await monitoringEventSubscription.check_id(_id):
         _id = str(uuid.uuid4().hex)
 
-    exception_error = None
     if mon_evt_sub.monitoring_type in ['LOSS_OF_CONNECTIVITY','UE_REACHABILITY','LOCATION_REPORTING','CHANGE_OF_SUPI_PEI_ASSOCIATION','ROAMING_STATUS','COMMUNICATION_FAILURE','PDN_CONNECTIVITY_STATUS','AVAILABILITY_AFTER_DDN_FAILURE','API_SUPPORT_CAPABILITY']:
         conf.logger.info(f"Creating UDM event exposure subscription for {mon_evt_sub.monitoring_type}")
         if mon_evt_sub.external_id:
@@ -395,15 +395,20 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
                     location = f"http://{conf.HOSTS['NEF'][0]}/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{inserted}"
                     mon_evt_sub._self = location
                     #mon_evt_sub.monitor_expire_time = 1 hr
-                    headers = conf.GLOBAL_HEADERS
                     headers['location'] = location
                 end_time = (time() - start_time) * 1000
                 headers.update({'X-ElapsedTime-Header': str(end_time)})
                 headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
-                return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
+                return JSONResponse(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
+            else:
+                end_time = (time() - start_time) * 1000
+                headers.update({'X-ElapsedTime-Header': str(end_time)})
+                return Response(status_code=res.status_code, headers=headers, detail="Subscription creation failed!")
         except Exception as e:
-            exception_error = e
             conf.logger.info(e)
+            end_time = (time() - start_time) * 1000
+            headers.update({'X-ElapsedTime-Header': str(end_time)})
+            raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, headers=headers, content=f"Subscription creation failed!")
     if mon_evt_sub.monitoring_type in ['NUMBER_OF_UES_IN_AN_AREA', 'REGISTRATION_STATE_REPORT', 'CONNECTIVITY_STATE_REPORT']:
         conf.logger.info(f"Creating AMF event exposure subscription for {mon_evt_sub.monitoring_type}")
         if mon_evt_sub.external_group_id:
@@ -432,16 +437,18 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
                 end_time = (time() - start_time) * 1000
                 headers.update({'X-ElapsedTime-Header': str(end_time)})
                 headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
-                return Response(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
+                return JSONResponse(status_code=httpx.codes.CREATED, headers=headers, content=mon_evt_sub.to_dict())
+            else:
+                end_time = (time() - start_time) * 1000
+                headers.update({'X-ElapsedTime-Header': str(end_time)})
+                return Response(status_code=res.status_code, headers=headers, detail="Subscription creation failed!")
         except Exception as e:
-            exception_error = e
             conf.logger.info(e)
-    end_time = (time() - start_time) * 1000
-    headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime-Header': str(end_time)})
-    # if res.elapsed:
-    #     headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
-    return Response(status_code=httpx.codes.INTERNAL_SERVER_ERROR, headers=headers, content=f"Subscription creation failed! {exception_error.__str__}")
+            end_time = (time() - start_time) * 1000
+            headers.update({'X-ElapsedTime-Header': str(end_time)})
+            raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, headers=headers, detail="Subscription creation failed!")
+        
+    raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail="Invalid Monitoring Type")
         
 
 
@@ -553,7 +560,7 @@ async def ti_get(afId: str, subId: str=None):
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
     headers.update({'X-ElapsedTime-Header': str(end_time)})
-    return Response(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
+    return JSONResponse(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 async def ti_get_all(afId: str):
@@ -565,11 +572,12 @@ async def ti_get_all(afId: str):
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
     headers.update({'X-ElapsedTime-Header': str(end_time)})
-    return Response(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
+    return JSONResponse(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
 
 @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 async def traffic_influ_create(afId: str, data: Request, background_tasks: BackgroundTasks):
     start_time = time()
+    headers = conf.GLOBAL_HEADERS
     conf.logger.info(f"Initiating {afId} Traffic Influence subscription creation")
     try:
         data_dict = await data.json()
@@ -614,7 +622,7 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
                 conf.logger.info("Server error")
                 raise HTTPException(status_code=500, detail="Error creating resource")
         else:
-            raise HTTPException(status_code=500, detail="Error creating resource")
+            raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Error creating resource")
         
     #------------------------ipv4, ipv6 or eth---------------------------
     else:
@@ -664,12 +672,8 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
             else:
                 conf.logger.info("Server error")
                 return Response(status_code=httpx.codes.INTERNAL_SERVER_ERROR, content="Error creating resource!")
-    end_time = (time() - start_time) * 1000
-    headers = conf.GLOBAL_HEADERS
-    headers.update({'X-ElapsedTime-Header': str(end_time)})
-    if res.elapsed:
-        headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
-    return Response(status_code=httpx.codes.INTERNAL_SERVER_ERROR, content="Unknown server error!", headers=headers)
+        else:
+            return Response(status_code=res.status_code, content="Error creating resource!")
 
 @app.put("/3gpp-traffic-influence/v1/{afId}/subscriptions/{subId}")
 async def ti_put(afId: str, subId: str, data: Request):
@@ -771,7 +775,7 @@ async def qos_get(scsAsId: str, subId: str):
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
     headers.update({'X-ElapsedTime-Header': str(end_time)})
-    return Response(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
+    return JSONResponse(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
 
 @app.get("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
 async def qos_get_all(scsAsId: str):
@@ -783,7 +787,7 @@ async def qos_get_all(scsAsId: str):
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
     headers.update({'X-ElapsedTime-Header': str(end_time)})
-    return Response(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
+    return JSONResponse(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
 
 @app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
 async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTasks):
@@ -872,7 +876,8 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
             conf.logger.info("Error creating resource")
             #delete from pcf
             return Response(status_code=httpx.codes.INTERNAL_SERVER_ERROR, content="Error creating resource!")
-    return Response(status_code=response.status_code, content=response.content)
+    else:
+        return Response(status_code=response.status_code, content=response.content)
 
 @app.put("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
 async def qos_put(scsAsId: str, subId: str, data: Request):
