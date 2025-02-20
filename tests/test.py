@@ -1,5 +1,5 @@
 import asyncio
-import os
+import sys, os
 import json
 import signal
 # import paramiko
@@ -124,7 +124,8 @@ async def send_request(request: str, test_file: str):
         print(f"Failed request. Error: {e!r}")
         return None
     except Exception as e:
-        print(f"Error request: {e!r}")
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        print(f"Error request: {e!r} - {exc_tb.tb_lineno}")
         return None
 
 def initialize_json():
