@@ -562,7 +562,7 @@ async def ti_get(afId: str, subId: str=None):
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
     headers.update({'X-ElapsedTime-Header': str(end_time)})
-    return JSONResponse(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
+    return JSONResponse(content=res, headers=headers, status_code=httpx.codes.OK)
 
 @app.get("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 async def ti_get_all(afId: str):
@@ -574,7 +574,7 @@ async def ti_get_all(afId: str):
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
     headers.update({'X-ElapsedTime-Header': str(end_time)})
-    return JSONResponse(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
+    return JSONResponse(content=res, headers=headers, status_code=httpx.codes.OK)
 
 @app.post("/3gpp-traffic-influence/v1/{afId}/subscriptions")
 async def traffic_influ_create(afId: str, data: Request, background_tasks: BackgroundTasks):
@@ -781,7 +781,7 @@ async def qos_get(scsAsId: str, subId: str):
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
     headers.update({'X-ElapsedTime-Header': str(end_time)})
-    return JSONResponse(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
+    return JSONResponse(content=res, headers=headers, status_code=httpx.codes.OK)
 
 @app.get("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
 async def qos_get_all(scsAsId: str):
@@ -793,7 +793,7 @@ async def qos_get_all(scsAsId: str):
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
     headers.update({'X-ElapsedTime-Header': str(end_time)})
-    return JSONResponse(content=json.dumps(res), headers=headers, status_code=httpx.codes.OK)
+    return JSONResponse(content=res, headers=headers, status_code=httpx.codes.OK)
 
 @app.post("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions")
 async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTasks):
