@@ -885,7 +885,7 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
     else:
         end_time = (time() - start_time) * 1000
         headers.update({'X-ElapsedTime-Header': str(end_time)})
-        headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
+        # headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
         return Response(status_code=response.status_code, headers=headers, content=response.content)
 
 @app.put("/3gpp-as-session-with-qos/v1/{scsAsId}/subscriptions/{subId}")
