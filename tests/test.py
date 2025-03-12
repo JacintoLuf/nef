@@ -203,7 +203,7 @@ if __name__ == '__main__':
             #     inp = int(input("core:\n(1)OPEN5GS\t(2)free5gc\n"))
             # except Exception as e:
             #     inp = 1
-            inp = 2
+            inp =  2 if count < 5 else 1
             core = "free5gc" if inp == 2 else "open5gs"
             nef_ip = '10.255.32.164:7777' if core == "free5gc" else "10.255.38.50:7777"
             tests = {
@@ -246,7 +246,7 @@ if __name__ == '__main__':
             asyncio.run(run_test(test_type, test_file))
 
         count += 1
-        if count > 60:
+        if count >= 10:
             run = False
 
         # run = False if str(input("Run again? Y/n\n")).strip().lower() == "n" else True
