@@ -4,6 +4,13 @@
         "sst":"1",
         "sd":"111111"
     },
+    "trafficRoutes":[{
+        "dnai":"up1",
+        "routeInfo":{
+            "ipv4Addr": "10.255.38.51",
+            "portNumber":"5201"
+        }
+    }],
     "ipv4Addr":"10.45.0.3",
     "trafficFilters":[{"flowDescriptions":["permit out ip from any to any"], "flowId":"2"}],
     "subscribedEvents":["UP_PATH_CHANGE"]
