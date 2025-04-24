@@ -626,7 +626,7 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
             end_time = (time() - start_time) * 1000
             headers.update({'X-ElapsedTime-Header': str(end_time)})
             headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
-            raise Response(status_code=res.status_code, headers=headers, content=res.content)
+            raise Response(status_code=res.status_code, headers=headers)
         
     #------------------------ipv4, ipv6 or eth---------------------------
     else:
