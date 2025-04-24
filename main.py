@@ -604,7 +604,7 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
         if traffic_sub.gpsi:
             supi = udm_handler.udm_sdm_id_translation(traffic_sub.gpsi)
         elif traffic_sub.external_group_id:
-            intGroupId = udm_handler.udm_sdm_group_identifiers_translation(traffic_sub.external_group_id)
+            intGroupId = await udm_handler.udm_sdm_group_identifiers_translation(traffic_sub.external_group_id)
         res = await udr_handler.udr_app_data_insert(traffic_sub, intGroupId, supi)
         if res.status_code == httpx.codes.CREATED:
             sub_id = trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
