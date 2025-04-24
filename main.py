@@ -602,14 +602,14 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
             raise HTTPException(httpx.codes.BAD_REQUEST, detail="Cannot parse message")
         supi = intGroupId = None
         if traffic_sub.gpsi:
-            supi = udm_handler.udm_sdm_id_translation(traffic_sub.gpsi)
+            supi = await udm_handler.udm_sdm_id_translation(traffic_sub.gpsi)
             conf.logger.info(f"SUPI: {supi}")
         elif traffic_sub.external_group_id:
             intGroupId = await udm_handler.udm_sdm_group_identifiers_translation(traffic_sub.external_group_id)
             conf.logger.info(f"internal group id: {intGroupId}")
         res = await udr_handler.udr_app_data_insert(traffic_sub, intGroupId, supi)
         if res.status_code == httpx.codes.CREATED:
-            sub_id = trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
+            sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
             if sub_id:
                 traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-traffic-influence/v1/{afId}/subscriptions/{sub_id}"
                 traffic_sub.supp_feat = "ffff"
