@@ -607,7 +607,10 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
         elif traffic_sub.external_group_id:
             intGroupId = await udm_handler.udm_sdm_group_identifiers_translation(traffic_sub.external_group_id)
             conf.logger.info(f"internal group id: {intGroupId}")
-        res = await udr_handler.udr_app_data_insert(traffic_sub, intGroupId, supi)
+        _id = str(uuid.uuid4().hex)
+        while await trafficInfluSub.check_id(_id):
+            _id = str(uuid.uuid4().hex)
+        res = await udr_handler.udr_app_data_insert(traffic_sub, intGroupId, supi, _id)
         if res.status_code == httpx.codes.CREATED:
             sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
             if sub_id:
@@ -628,7 +631,7 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
             end_time = (time() - start_time) * 1000
             headers.update({'X-ElapsedTime-Header': str(end_time)})
             headers.update({'core-elapsed-time': str(res.elapsed.total_seconds() * 1000)})
-            raise Response(status_code=res.status_code, headers=headers)
+            raise HTTPException(status_code=res.status_code, headers=headers, detail=res.content)
         
     #------------------------ipv4, ipv6 or eth---------------------------
     else:
