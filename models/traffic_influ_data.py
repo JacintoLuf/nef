@@ -338,7 +338,7 @@ class TrafficInfluData(Model):
         :param inter_group_id: The inter_group_id of this TrafficInfluData.
         :type inter_group_id: str
         """
-        if inter_group_id is not None and (not re.search(r'^[A-Fa-f0-9]{8}-[0-9]{3}-[0-9]{2,3}-([A-Fa-f0-9][A-Fa-f0-9]){1,10}$', inter_group_id) or "AnyUE"):  # noqa: E501
+        if inter_group_id is not None and inter_group_id != "AnyUE" and not re.search(r'^[A-Fa-f0-9]{8}-[0-9]{3}-[0-9]{2,3}-([A-Fa-f0-9][A-Fa-f0-9]){1,10}$', inter_group_id):  # noqa: E501
             raise ValueError("Invalid value for `inter_group_id`, must be a follow pattern or equal to `/^[A-Fa-f0-9]{8}-[0-9]{3}-[0-9]{2,3}-([A-Fa-f0-9][A-Fa-f0-9]){1,10}$/`")  # noqa: E501
 
         self._inter_group_id = inter_group_id
