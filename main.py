@@ -616,7 +616,7 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
             _id = str(uuid.uuid4().hex)
         res = await udr_handler.udr_app_data_insert(traffic_sub, intGroupId, supi, _id)
         if res.status_code == httpx.codes.CREATED:
-            sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'])
+            sub_id = await trafficInfluSub.traffic_influence_subscription_insert(afId, traffic_sub, res.headers['location'], _id)
             if sub_id:
                 traffic_sub.__self = f"http://{conf.HOSTS['NEF'][0]}/3gpp-traffic-influence/v1/{afId}/subscriptions/{sub_id}"
                 traffic_sub.supp_feat = "ffff"
