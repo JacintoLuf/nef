@@ -602,7 +602,11 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
             raise HTTPException(httpx.codes.BAD_REQUEST, detail="Cannot parse message")
         supi = intGroupId = None
         if traffic_sub.gpsi:
-            supi = await udm_handler.udm_sdm_id_translation(traffic_sub.gpsi)
+            translated = await udm_handler.udm_sdm_id_translation(traffic_sub.gpsi)
+            if translated.status_code == httpx.codes.OK:
+                supi = translated.json()['supi']
+            else:
+                supi = traffic_sub.gpsi
             conf.logger.info(f"SUPI: {supi}")
         elif traffic_sub.external_group_id:
             intGroupId = await udm_handler.udm_sdm_group_identifiers_translation(traffic_sub.external_group_id)
