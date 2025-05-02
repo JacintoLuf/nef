@@ -727,7 +727,12 @@ async def delete_ti(afId: str, subId: str):
             raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
         else:
             contextId = res['location'].split('/')[-1]
-            response = await pcf_handler.pcf_policy_authorization_delete(contextId)
+            async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
+                response = await client.delete(
+                    res['location']+"/delete",
+                    headers={'Accept': 'application/json,application/problem+json'}
+                )
+            conf.logger.info(response.text)
             if response.status_code != httpx.codes.NO_CONTENT:
                 conf.logger.info("Context not found!")
                 raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")

@@ -63,20 +63,3 @@ async def udr_app_data_insert(traffic_influ_sub: TrafficInfluSub, intGroupID: st
             conf.logger.info(response.text)
             
     return response
-
-
-async def udr_app_data_delete(sub: TrafficInfluSub):
-
-    async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
-            response = await client.delete(
-                f"http://{conf.HOSTS['UDR'][0]}/nudr-dr/v1/application-data/influenceData",
-                headers={'Accept': 'application/json,application/problem+json'},
-                data=json.dumps(sub.to_dict())
-            )
-            conf.logger.info(response.text)
-            
-    return response
-
-async def udr_pfd_provision_create():
-      
-    return
