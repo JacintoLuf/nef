@@ -23,9 +23,10 @@ async def udm_sdm_id_translation(ueId: str=None, ue_req: UeIdReq=None):
             params['af-id'] = ue_req.af_id
 
     try:
+        version = "v1" if conf.CORE=="free5gc" else "v2"
         async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
             response = await client.get(
-                f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v1/{ueId}/id-translation-result",
+                f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/{version}/{ueId}/id-translation-result",
                 headers=conf.GLOBAL_HEADERS,
                 params=params
             )
@@ -37,10 +38,11 @@ async def udm_sdm_id_translation(ueId: str=None, ue_req: UeIdReq=None):
 
 async def udm_sdm_group_identifiers_translation(ext_group_id: str=None):
     params = {'ext_group_id': ext_group_id}
-
+    
+    version = "v1" if conf.CORE=="free5gc" else "v2"
     async with httpx.AsyncClient(http1=True if conf.CORE=="free5gc" else False, http2=None if conf.CORE=="free5gc" else True) as client:
         response = await client.get(
-            f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/v1/group-data/group-identifiers",
+            f"http://{conf.HOSTS['UDM'][0]}/nudm-sdm/{version}/group-data/group-identifiers",
             headers=conf.GLOBAL_HEADERS,
             params=params
         )
