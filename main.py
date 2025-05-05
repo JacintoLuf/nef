@@ -228,7 +228,7 @@ async def up_path_chg_notif(subId: str, request: Request):
         smf_notif = NsmfEventExposureNotification(data)
         notifs = smf_notif.event_notifs
     except Exception as e:
-        conf.logger.info(e.__str__)
+        conf.logger.info(str(e))
     for notif in notifs:
         evt_notif = EventNotification(
             dnai_chg_type=notif.dnai_chg_type,
@@ -296,7 +296,7 @@ async def mon_del(subId: str):
             if res == 1:
                 return Response(status_code=httpx.codes.NO_CONTENT)
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=str(e))
 
 
 @app.get("/3gpp-monitoring-event/v1/{scsAsId}/subscriptions/{subscriptionId}")
@@ -333,9 +333,9 @@ async def mon_evt_subs_post(scsAsId: str, data: Request, background_tasks: Backg
         data_dict = await data.json()
         mon_evt_sub = MonitoringEventSubscription.from_dict(data_dict)
     except ValueError as e:
-        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"Failed to parse message. Err: {e.__str__}")
+        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"Failed to parse message. Err: {str(e)}")
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=str(e))
     
     if mon_evt_sub.monitoring_type == "LOCATION_REPORTING" and mon_evt_sub.accuracy not in ["CGI_ECGI","TA_RA","GEO_AREA","CIVIC_ADDR"]:
         raise HTTPException(httpx.codes.BAD_REQUEST, detail="Invalid Accuracy value! Valid values: CGI_ECGI, TA_RA, GEO_AREA and CIVIC_ADDR")
@@ -462,7 +462,7 @@ async def mon_evt_sub_put(scsAsId: str, subscriptionId: str, data: Request):
         mon_evt_sub = MonitoringEventSubscription.from_dict(data_dict)
         await monitoringEventSubscription.monitoring_event_subscriptionscription_update(scsAsId, subscriptionId, mon_evt_sub.to_dict())
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to update subscription'
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=str(e)) # 'Failed to update subscription'
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
     headers.update({'X-ElapsedTime-Header': str(end_time)})
@@ -480,7 +480,7 @@ async def mon_evt_sub_patch(scsAsId: str, subscriptionId: str, data: Request):
     
         await monitoringEventSubscription.monitoring_event_subscriptionscription_update(scsAsId, subscriptionId, mon_evt_sub.to_dict())
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__) # 'Failed to update subscription'
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=str(e)) # 'Failed to update subscription'
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
     headers.update({'X-ElapsedTime-Header': str(end_time)})
@@ -514,7 +514,7 @@ async def mon_evt_sub_delete(scsAsId: str, subscriptionId: str):
                 headers.update({'core-elapsed-time': str(response.elapsed.total_seconds() * 1000)})
                 return Response(status_code=httpx.codes.NO_CONTENT, headers=headers)
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=str(e))
 
 #---------------------traffic-influence------------------------
 @app.get("/tiget")
@@ -585,9 +585,9 @@ async def traffic_influ_create(afId: str, data: Request, background_tasks: Backg
         data_dict = await data.json()
         traffic_sub = TrafficInfluSub.from_dict(data_dict)
     except ValueError as e:
-        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"Failed to parse message. Err: {e.__str__}")
+        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"Failed to parse message. Err: {str(e)}")
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=str(e))
 
     if not ((traffic_sub.af_app_id is not None)^(traffic_sub.traffic_filters is not None)^(traffic_sub.eth_traffic_filters is not None)):
         conf.logger.info(f"app id: {type(traffic_sub.af_app_id)}, traffic filters: {type(traffic_sub.traffic_filters)}, eth traffic filters: {type(traffic_sub.eth_traffic_filters)}")
@@ -698,7 +698,7 @@ async def ti_put(afId: str, subId: str, data: Request):
         traffic_sub = TrafficInfluSub.from_dict(data_dict)
         res = await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=traffic_sub.to_dict())
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=str(e))
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
     headers.update({'X-ElapsedTime-Header': str(end_time)})
@@ -711,7 +711,7 @@ async def ti_patch(afId: str, subId: str, data: Request):
         traffic_sub = TrafficInfluSubPatch.from_dict(data.json())
         res = await trafficInfluSub.individual_traffic_influence_subscription_update(afId=afId, subId=subId, sub=traffic_sub.to_dict(), partial=True)
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=str(e))
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
     headers.update({'X-ElapsedTime-Header': str(end_time)})
@@ -735,7 +735,6 @@ async def delete_ti(afId: str, subId: str):
             conf.logger.info(response.text)
             if response.status_code != httpx.codes.NO_CONTENT:
                 conf.logger.info("Context not found!")
-                raise HTTPException(status_code=httpx.codes.NOT_FOUND, detail="Subscription not found!")
 
             conf.logger.info(f"deleting: {subId} from db")
             res = await trafficInfluSub.individual_traffic_influence_subscription_delete(afId, subId)
@@ -746,7 +745,7 @@ async def delete_ti(afId: str, subId: str):
                 headers.update({'core-elapsed-time': str(response.elapsed.total_seconds() * 1000)})
                 return Response(status_code=httpx.codes.NO_CONTENT, headers=headers)
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=str(e))
 
 
 
@@ -819,9 +818,9 @@ async def qos_create(scsAsId: str, data: Request, background_tasks: BackgroundTa
         data_dict = await data.json()
         qos_sub = AsSessionWithQoSSubscription.from_dict(data_dict)
     except ValueError as e:
-        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"Failed to parse message. Err: {e.__str__}")
+        raise HTTPException(status_code=httpx.codes.BAD_REQUEST, detail=f"Failed to parse message. Err: {str(e)}")
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=str(e))
 
     num_not_none = sum(attr is not None for attr in [qos_sub.ue_ipv4_addr, qos_sub.ue_ipv6_addr, qos_sub.mac_addr])
     if num_not_none != 1:
@@ -909,7 +908,7 @@ async def qos_put(scsAsId: str, subId: str, data: Request):
         qosSub = AsSessionWithQoSSubscription.from_dict(data.json())
         await asSessionWithQoSSub.as_session_with_qos_subscription_update(scsAsId=scsAsId, subId=subId, sub=qosSub.to_dict())
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=str(e))
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
     headers.update({'X-ElapsedTime-Header': str(end_time)})
@@ -922,7 +921,7 @@ async def qos_patch(scAsId: str, subId: str, data: Request):
         qosSub = AsSessionWithQoSSubscription.from_dict(data.json())
         await asSessionWithQoSSub.as_session_with_qos_subscription_update(scsAsId=scAsId, subId=subId, sub=qosSub.to_dict(), partial=True)
     except Exception as e:
-        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=e.__str__)
+        raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail=str(e))
     end_time = (time() - start_time) * 1000
     headers = conf.GLOBAL_HEADERS
     headers.update({'X-ElapsedTime-Header': str(end_time)})
