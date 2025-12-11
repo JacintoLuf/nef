@@ -8,6 +8,7 @@ from api.config import conf
 from fastapi import FastAPI, Request, Response, HTTPException, BackgroundTasks, Depends
 from fastapi.responses import JSONResponse
 from fastapi_utils.tasks import repeat_every
+from controllers.oauth import oauth_router
 from controllers.internal import router as internal_router
 from controllers.monitoring_event import router as monitoring_event_router
 from controllers.as_session_with_qos import router as as_session_with_qos_router
@@ -40,8 +41,7 @@ async def request_logger(request: Request):
 
 app = FastAPI(debug=True, dependencies=[Depends(request_logger)])
 
-# all_routers = [internal_router, monitoring_event_router, traffic_influence_router, as_session_with_qos_router, ue_id_router]
-all_routers = [ue_id_router]
+all_routers = [oauth_router, internal_router, monitoring_event_router, traffic_influence_router, as_session_with_qos_router, ue_id_router]
 for router in all_routers:
     app.include_router(router)
 
@@ -951,8 +951,8 @@ async def qos_delete(scsAsId: str, subId: str):
             return Response(status_code=httpx.codes.NO_CONTENT, headers=headers)
     raise HTTPException(status_code=httpx.codes.INTERNAL_SERVER_ERROR, detail="Failed to delete subscription")
 
-#
-#
+
+
 @app.get("/clean")
 async def clean():
     res = clean_db()

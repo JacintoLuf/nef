@@ -4,6 +4,7 @@ import logging
 import logging.config
 from api.hypercorn_config import logconfig_dict
 from typing import List
+from pydantic_settings import BaseSettings
 from models.ip_end_point import IpEndPoint
 from models.nf_profile import NFProfile
 from models.nf_service import NFService
